@@ -5,16 +5,29 @@
 @section('plugins.Sweetalert2', true)
 
 @section('content_header')
-<div class="header-highlight"></div>
-<h1 class="m-0 text-dark">Gerenciar Usuários</h1>
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="m-0 text-dark font-weight-bold">
+            <i class="fas fa-users text-primary mr-3"></i>
+            Gerenciar Usuários
+        </h1>
+        <p class="text-muted mt-1 mb-0">Administre usuários do sistema de forma centralizada</p>
+    </div>
+    <div>
+        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalNovoUsuario">
+            <i class="fas fa-user-plus mr-1"></i>
+            Novo Usuário
+        </button>
+    </div>
+</div>
 @stop
 
 @section('content')
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">
-            <div class="d-flex justify-content-end">
-                <a href="{{ route('admin.perfis') }}" class="btn btn-outline-primary btn-sm mr-2">
+            <div class="d-flex justify-content-start">
+                <a href="{{ route('admin.perfis') }}" class="btn btn-outline-primary btn-sm">
                     <i class="fas fa-arrow-left"></i> Voltar para Perfis
                 </a>
             </div>
@@ -23,10 +36,13 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light section-header">
+            <div class="modern-card">
+                <div class="card-header-modern">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Usuários do Sistema</h5>
+                        <h5 class="card-title-modern">
+                            <i class="fas fa-users text-primary mr-2"></i>
+                            Usuários do Sistema
+                        </h5>
                         <div class="input-group search-container" style="width: 300px;">
                             <input type="text" class="form-control form-control-sm" 
                                    id="buscar-usuario"
@@ -39,8 +55,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body table-responsive p-0">
-                    <table class="table table-hover">
+                <div class="card-body-modern">
+                    <table class="modern-table">
                         <thead>
                             <tr>
                                 <th>Nome</th>
@@ -81,6 +97,61 @@
                     </table>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Criar Novo Usuário -->
+<div class="modal fade" id="modalNovoUsuario" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-plus mr-2"></i> Novo Usuário
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="form-novo-usuario" onsubmit="criarUsuario(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="novo-nome" class="font-weight-bold">Nome</label>
+                        <input type="text" class="form-control" id="novo-nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="novo-login" class="font-weight-bold">Login</label>
+                        <input type="text" class="form-control" id="novo-login" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="novo-email" class="font-weight-bold">Email (opcional)</label>
+                        <input type="email" class="form-control" id="novo-email">
+                    </div>
+                    <div class="form-group">
+                        <label for="nova-empresa" class="font-weight-bold">Empresa</label>
+                        <input type="text" class="form-control" id="nova-empresa" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nova-senha" class="font-weight-bold">Senha</label>
+                        <input type="password" class="form-control" id="nova-senha" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="novo-perfil" class="font-weight-bold">Perfil</label>
+                        <select class="form-control" id="novo-perfil">
+                            <option value="">Sem perfil</option>
+                            @foreach(\App\Models\Profile::all() as $perfil)
+                                <option value="{{ $perfil->id }}">{{ $perfil->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i> Criar Usuário
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -280,6 +351,68 @@ async function fetchWithAuth(url, options = {}) {
     }
 }
 
+async function criarUsuario(event) {
+    event.preventDefault();
+    
+    const nome = document.getElementById('novo-nome').value;
+    const login = document.getElementById('novo-login').value;
+    const email = document.getElementById('novo-email').value;
+    const empresa = document.getElementById('nova-empresa').value;
+    const senha = document.getElementById('nova-senha').value;
+    const perfilId = document.getElementById('novo-perfil').value;
+    
+    try {
+        // Mostrar loading
+        Swal.fire({
+            title: 'Criando...',
+            text: 'Criando novo usuário',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        const response = await fetchWithAuth('/api/usuarios/criar', {
+            method: 'POST',
+            body: JSON.stringify({
+                name: nome,
+                login: login,
+                email: email || null,
+                empresa: empresa,
+                password: senha,
+                profile_id: perfilId || null
+            })
+        });
+        
+        if (response.success) {
+            $('#modalNovoUsuario').modal('hide');
+            
+            // Limpar formulário
+            document.getElementById('form-novo-usuario').reset();
+            
+            await Swal.fire({
+                icon: 'success',
+                title: 'Sucesso!',
+                text: 'Usuário criado com sucesso!',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            
+            window.location.reload();
+        } else {
+            throw new Error(response.message || 'Erro ao criar usuário');
+        }
+    } catch (error) {
+        console.error('Erro ao criar usuário:', error);
+        
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro!',
+            text: error.message || 'Erro ao criar usuário. Tente novamente.'
+        });
+    }
+}
+
 async function editarUsuario(id) {
     try {
         // Mostrar loading
@@ -454,4 +587,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+@endpush
+
+@push('css')
+<link rel="stylesheet" href="{{ asset('css/modern-design.css') }}">
 @endpush 

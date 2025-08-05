@@ -68,11 +68,4 @@ class Kernel extends HttpKernel
         'verifica.permissao' => \App\Http\Middleware\VerificaPermissao::class,
         'verifica.permissao.api' => \App\Http\Middleware\VerificaPermissaoApi::class,
     ];
-
-    protected $routeMiddleware = [
-        // ... outros middlewares ...
-        'check-permission' => \App\Http\Middleware\CheckPermission::class,
-        'verifica.permissao' => \App\Http\Middleware\VerificaPermissao::class,
-        'verifica.permissao.api' => \App\Http\Middleware\VerificaPermissaoApi::class,
-    ];
 }

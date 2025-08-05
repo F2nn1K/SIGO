@@ -5,22 +5,25 @@
 @section('plugins.Sweetalert2', true)
 
 @section('content_header')
-<div class="header-highlight"></div>
-<h1 class="m-0 text-dark">Gerenciar Perfis</h1>
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="m-0 text-dark font-weight-bold">
+            <i class="fas fa-user-tag text-primary mr-3"></i>
+            Gerenciar Perfis
+        </h1>
+        <p class="text-muted mt-1 mb-0">Configure perfis de usuários e suas permissões</p>
+    </div>
+    <div>
+        <button class="btn btn-primary btn-sm" id="btn-novo-perfil">
+            <i class="fas fa-plus mr-1"></i>
+            Novo Perfil
+        </button>
+    </div>
+</div>
 @stop
 
 @section('content')
 <div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-end">
-                <button class="btn btn-primary btn-sm" id="btn-novo-perfil">
-                    <i class="fas fa-plus-circle"></i> Novo Perfil
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Menu de navegação simples -->
     <ul class="nav nav-tabs mb-4">
         <li class="nav-item">
@@ -43,9 +46,12 @@
     <div class="row">
         <!-- Coluna da lista de perfis -->
         <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light section-header">
-                    <h5 class="card-title mb-0">Perfis Disponíveis ({{ $perfis->count() }})</h5>
+            <div class="modern-card">
+                <div class="card-header-modern">
+                    <h5 class="card-title-modern">
+                        <i class="fas fa-list text-primary mr-2"></i>
+                        Perfis Disponíveis ({{ $perfis->count() }})
+                    </h5>
                 </div>
                 <div class="card-body p-0">
                     @if($perfis->count() > 0)
@@ -71,10 +77,13 @@
         
         <!-- Coluna de detalhes do perfil -->
         <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light section-header">
+            <div class="modern-card">
+                <div class="card-header-modern">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Detalhes do Perfil</h5>
+                        <h5 class="card-title-modern">
+                            <i class="fas fa-edit text-primary mr-2"></i>
+                            Detalhes do Perfil
+                        </h5>
                         @if(isset($perfilSelecionado))
                         <button type="button" class="btn btn-danger btn-sm" onclick="confirmarExclusao({{ $perfilSelecionado->id }}, '{{ $perfilSelecionado->name }}')">
                             <i class="fas fa-trash"></i> Excluir Perfil
@@ -82,7 +91,7 @@
                         @endif
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body-modern">
                     @if(isset($perfilSelecionado))
                     <form action="/perfis/{{ $perfilSelecionado->id }}" method="POST">
                         @csrf
@@ -234,4 +243,37 @@
         $('#modalConfirmacaoExclusao').modal('show');
     }
 </script>
+@endpush
+
+@push('css')
+<link rel="stylesheet" href="{{ asset('css/modern-design.css') }}">
+<style>
+    /* Estilo específico para lista de perfis */
+    .list-group-item:hover {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.02) 0%, rgba(147, 197, 253, 0.02) 100%);
+        transform: translateX(2px);
+        transition: all 0.2s ease;
+    }
+    
+    .list-group-item.active {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        border-color: #3b82f6;
+    }
+    
+    /* Estilo para área de permissões */
+    .custom-control-label {
+        font-weight: 500;
+        color: #334155;
+    }
+    
+    .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+    }
+    
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: #10b981;
+        border-color: #10b981;
+    }
+</style>
 @endpush 

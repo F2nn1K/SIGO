@@ -113,61 +113,7 @@ class DiariasController extends Controller
         return back()->with('message', 'Função de exportação a ser implementada.');
     }
 
-    public function relatorio1001()
-    {
-        $dataInicio = request()->input('data_inicio', Carbon::now()->startOfMonth()->format('Y-m-d'));
-        $dataFim = request()->input('data_fim', Carbon::now()->format('Y-m-d'));
-        
-        $query = Diaria::query();
-        
-        if (request()->filled('data_inicio')) {
-            $query->where('data_inclusao', '>=', $dataInicio . ' 00:00:00');
-        }
-        
-        if (request()->filled('data_fim')) {
-            $query->where('data_inclusao', '<=', $dataFim . ' 23:59:59');
-        }
-        
-        $diarias = $query->orderBy('data_inclusao', 'desc')->get();
-        
-        $totalDiarias = $diarias->sum('diaria');
-        $departamentos = Funcionario::select('departamento')->distinct()->pluck('departamento');
-        
-        return view('diarias.relatorio1001', compact('diarias', 'totalDiarias', 'departamentos', 'dataInicio', 'dataFim'));
-    }
-
-    public function relatorio1000()
-    {
-        $dataInicio = request()->input('data_inicio', Carbon::now()->startOfMonth()->format('Y-m-d'));
-        $dataFim = request()->input('data_fim', Carbon::now()->format('Y-m-d'));
-        
-        $query = Diaria::query();
-        
-        if (request()->filled('data_inicio')) {
-            $query->where('data_inclusao', '>=', $dataInicio . ' 00:00:00');
-        }
-        
-        if (request()->filled('data_fim')) {
-            $query->where('data_inclusao', '<=', $dataFim . ' 23:59:59');
-        }
-        
-        if (request()->filled('departamento')) {
-            $query->where('departamento', request()->input('departamento'));
-        }
-        
-        $diarias = $query->orderBy('data_inclusao', 'desc')->get();
-        
-        $totalDiarias = $diarias->sum('diaria');
-        $departamentos = Funcionario::select('departamento')->distinct()->pluck('departamento');
-        
-        return view('diarias.relatorio1000', [
-            'diarias' => $diarias,
-            'totalDiarias' => $totalDiarias,
-            'departamentos' => $departamentos,
-            'dataInicio' => $dataInicio,
-            'dataFim' => $dataFim
-        ]);
-    }
+    // Métodos relatorio1000 e relatorio1001 removidos
 
     public function buscarDiariasGerentes(Request $request)
     {
@@ -272,13 +218,7 @@ class DiariasController extends Controller
         }
     }
 
-    public function relatorio1002()
-    {
-        $dataInicio = request()->input('data_inicio', Carbon::now()->startOfMonth()->format('Y-m-d'));
-        $dataFim = request()->input('data_fim', Carbon::now()->format('Y-m-d'));
-        
-        return view('diarias.relatorio1002', compact('dataInicio', 'dataFim'));
-    }
+    // Método relatorio1002 removido
 
     public function buscarRecursosHumanos(Request $request)
     {

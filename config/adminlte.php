@@ -305,24 +305,14 @@ return [
             'icon' => 'fas fa-tachometer-alt',
         ],
         [
-            'text'    => 'Relatórios',
-            'icon'    => 'fas fa-chart-bar',
-            'url'  => '#',
-            'submenu' => [
+            'text'        => 'Relatórios',
+            'icon'        => 'fas fa-chart-bar',
+            'submenu'     => [
                 [
-                    'text' => 'Relatório 1000',
-                    'url'  => 'relatorio-1000',
-                    'icon' => 'fas fa-file-contract',
-                ],
-                [
-                    'text' => 'Relatório 1001',
-                    'url'  => 'relatorio-1001',
-                    'icon' => 'fas fa-file-invoice',
-                ],
-                [
-                    'text' => 'Relatório 1002',
-                    'url'  => 'relatorio-1002',
-                    'icon' => 'fas fa-users',
+                    'text' => 'Relatório Estoque',
+                    'url'  => 'relatorios/estoque',
+                    'icon' => 'fas fa-boxes',
+                    'can'  => 'Relatorio Estoque',
                 ],
             ],
         ],
@@ -331,9 +321,10 @@ return [
             'icon'        => 'fas fa-users',
             'submenu'     => [
                 [
-                    'text' => 'Tarefas',
-                    'url'  => 'rh/tarefas',
-                    'icon' => 'fas fa-clipboard-list',
+                    'text' => 'Controle de Estoque',
+                    'url'  => 'brs/controle-estoque',
+                    'icon' => 'fas fa-boxes',
+                    'can'  => 'Controle de Estoque',
                 ],
                 [
                     'text' => 'Documentos RH',

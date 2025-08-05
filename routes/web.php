@@ -50,10 +50,30 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/diarias', [App\Http\Controllers\DiariasController::class, 'store'])->name('diarias.store');
     });
 
+    // Rotas de BRS - Controle de Estoque - protegidas pela permissão 'Controle de Estoque'
+    Route::middleware(['can:Controle de Estoque'])->group(function () {
+    Route::get('/brs/controle-estoque', [App\Http\Controllers\ControleEstoqueController::class, 'index'])->name('brs.controle-estoque');
+    Route::get('/api/funcionarios', [App\Http\Controllers\ControleEstoqueController::class, 'buscarFuncionarios']);
+    Route::get('/api/centro-custos', [App\Http\Controllers\ControleEstoqueController::class, 'buscarCentroCustos']);
+    Route::get('/api/produtos', [App\Http\Controllers\ControleEstoqueController::class, 'buscarProdutos']);
+    Route::get('/api/produtos-em-falta', [App\Http\Controllers\ControleEstoqueController::class, 'produtosEmFalta']);
+    Route::get('/api/produtos/buscar', [App\Http\Controllers\ControleEstoqueController::class, 'buscarProdutosPorNome']);
+    Route::post('/api/produtos', [App\Http\Controllers\ControleEstoqueController::class, 'criarProduto']);
+    Route::put('/api/produtos/{id}', [App\Http\Controllers\ControleEstoqueController::class, 'atualizarProduto']);
+    Route::post('/api/entradas', [App\Http\Controllers\ControleEstoqueController::class, 'registrarEntrada']);
+    Route::post('/api/baixas', [App\Http\Controllers\ControleEstoqueController::class, 'registrarBaixa']);
+});
+
     // Rotas de Relatórios - protegidas por suas respectivas permissões
     Route::get('/relatorios', function() {
         return view('relatorios.index');
     })->middleware('auth')->name('relatorios.index');
+    
+    Route::middleware(['can:Relatorio Estoque'])->group(function () {
+        Route::get('/relatorios/estoque', [App\Http\Controllers\RelatorioEstoqueController::class, 'index'])->name('relatorios.estoque');
+        Route::post('/api/relatorio-estoque', [App\Http\Controllers\RelatorioEstoqueController::class, 'gerarRelatorio']);
+        Route::post('/api/relatorio-estoque/exportar', [App\Http\Controllers\RelatorioEstoqueController::class, 'exportarExcel']);
+    });
 
     // Rotas de Permissões
     Route::middleware(['auth'])->group(function () {
@@ -312,24 +332,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/diarias/exportar', [DiariasController::class, 'exportar'])->name('diarias.exportar');
     });
 
-    // Relatórios (com verificação de permissão específica)
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/relatorio-1000', [DiariasController::class, 'relatorio1000'])
-            ->middleware('can:Ver Relatório 1000')
-            ->name('relatorio.1000');
-        
-        Route::get('/relatorio-1001', [DiariasController::class, 'relatorio1001'])
-            ->middleware('can:Ver Relatório 1001')
-            ->name('relatorio.1001');
-        
-        Route::get('/relatorio-1002', [DiariasController::class, 'relatorio1002'])
-            ->middleware(['auth', 'can:Ver Relatório 1002'])
-            ->name('relatorio.1002');
-        
-        Route::get('/relatorios/buscar-recursos-humanos', [DiariasController::class, 'buscarRecursosHumanos'])
-            ->middleware('can:Ver Relatório 1002')
-            ->name('relatorio.rh.buscar');
-    });
+    // Rota principal de relatórios removida - relatórios específicos desabilitados
 
     // Rota para buscar diárias dos gerentes
     Route::get('/relatorios/buscar-diarias-gerentes', [DiariasController::class, 'buscarDiariasGerentes'])
@@ -604,11 +607,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::put('/update/{problema}', [RHController::class, 'update'])->name('rh.update');
             });
             
-            // Rotas de Tarefas - requer permissão 'Tarefas'
-            Route::middleware(['can:Tarefas'])->group(function () {
-                Route::get('/tarefas', [RHController::class, 'tarefas'])->name('rh.tarefas');
-                Route::put('/problemas/{problema}/iniciar', [RHController::class, 'iniciar'])->name('rh.iniciar');
-            });
+            // Rotas de Tarefas removidas
             
             // Rota para Documentos RH - requer permissão 'Documentos RH'
             Route::middleware(['can:Documentos RH'])->group(function () {
@@ -680,11 +679,7 @@ Route::middleware(['auth'])->group(function () {
                 })->name('rh.documentos.store');
             });
             
-            // Rotas de Tarefas por Usuários - requer permissão 'Tarefas Usuarios'
-            Route::middleware(['can:Tarefas Usuarios'])->group(function () {
-                Route::get('/tarefas-por-usuarios', [RHController::class, 'tarefasPorUsuarios'])->name('rh.tarefas-por-usuarios');
-                Route::put('/problemas/{problema}/concluir', [RHController::class, 'concluir'])->name('rh.concluir');
-            });
+            // Rotas de Tarefas por Usuários removidas
 
             // Rotas do Cronograma
             Route::prefix('cronograma')->middleware(['can:Cronograma'])->group(function () {
@@ -707,12 +702,7 @@ Route::get('/gerenciar-permissoes', function () {
     return redirect('/permissoes');
 });
 
-// Remover este redirecionamento que causa erro
-// Route::get('/permissoes', function () {
-//    return redirect()->route('admin.permissoes');
-// });
-
-// Remover redirecionamento que causa loop
+// Rota de perfis
 Route::get('/perfis', function () {
     $perfis = \App\Models\Profile::all();
     $permissoes = \App\Models\Permission::all();
@@ -727,17 +717,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         return view('admin.gerenciar-permissoes', compact('users', 'profiles'));
     })->name('gerenciar-permissoes');
     
-    // Remover esta rota que está causando conflito
-    // Route::get('/permissoes', function () {
-    //     return app(\App\Http\Controllers\PermissoesController::class)->index();
-    // })->name('admin.permissoes');
-    
-    // Remover a rota admin.perfis que está causando conflito
-    // Route::get('/perfis', function () {
-    //    $perfis = \App\Models\Profile::all();
-    //    $usuarios = \App\Models\User::with('profile')->get();
-    //    return view('admin.gerenciar-perfis', compact('perfis', 'usuarios'));
-    // })->name('admin.perfis');
+    // Rotas de conflito removidas
 });
 
 // APIs para gerenciamento de permissões
@@ -1076,207 +1056,7 @@ Route::get('/debug/teste-data/{data?}', function($data = null) {
     }
 });
 
-// Nova rota para mostrar todas as tarefas, independente do status
-Route::get('/mostrar-todas-tarefas', function() {
-    try {
-        // Verificar todos os registros existentes
-        $todosRegistros = DB::table('rh_problemas')->get();
-        
-        echo "<h2>Todos os registros encontrados: " . $todosRegistros->count() . "</h2>";
-        
-        // Agrupar por status
-        $porStatus = [];
-        foreach ($todosRegistros as $registro) {
-            $status = $registro->status ?? 'null';
-            if (!isset($porStatus[$status])) {
-                $porStatus[$status] = 0;
-            }
-            $porStatus[$status]++;
-        }
-        
-        echo "<h3>Agrupados por status:</h3>";
-        echo "<ul>";
-        foreach ($porStatus as $status => $count) {
-            echo "<li>Status '{$status}': {$count} registros</li>";
-        }
-        echo "</ul>";
-        
-        // Tentar resolver a inconsistência
-        echo "<h3>Tentando corrigir os registros:</h3>";
-        
-        // 1. Correção de registros nulls
-        $nullsCorrigidos = DB::table('rh_problemas')
-            ->whereNull('status')
-            ->update(['status' => 'Pendente']);
-        
-        echo "<p>Registros com status NULL corrigidos: {$nullsCorrigidos}</p>";
-        
-        // 2. Padronização de status
-        $concluidos = DB::table('rh_problemas')
-            ->whereRaw("LOWER(status) LIKE '%conclu%'")
-            ->update(['status' => 'Concluído']);
-        
-        echo "<p>Registros de concluídos padronizados: {$concluidos}</p>";
-        
-        $emAndamento = DB::table('rh_problemas')
-            ->whereRaw("LOWER(status) LIKE '%andamento%'")
-            ->update(['status' => 'Em andamento']);
-        
-        echo "<p>Registros em andamento padronizados: {$emAndamento}</p>";
-        
-        $pendentes = DB::table('rh_problemas')
-            ->whereRaw("LOWER(status) LIKE '%pend%'")
-            ->update(['status' => 'Pendente']);
-        
-        echo "<p>Registros pendentes padronizados: {$pendentes}</p>";
-        
-        // 3. Forçar atualização do status para todos os itens na view de administrador
-        // Isso vai garantir que todos os registros sejam atualizados com valores válidos
-        $atualizadosTotal = DB::statement('
-            UPDATE rh_problemas 
-            SET status = CASE 
-                WHEN LOWER(status) LIKE "%conclu%" THEN "Concluído"
-                WHEN LOWER(status) LIKE "%andamento%" THEN "Em andamento"
-                ELSE "Pendente"
-            END
-        ');
-        
-        echo "<p>Força geral de atualização executada</p>";
-        
-        // 4. Verificar novamente os registros após as correções
-        $statusCorrigidos = DB::table('rh_problemas')
-            ->select('status', DB::raw('count(*) as total'))
-            ->groupBy('status')
-            ->get();
-            
-        echo "<h3>Status após correção:</h3>";
-        echo "<ul>";
-        foreach ($statusCorrigidos as $status) {
-            echo "<li>Status '{$status->status}': {$status->total} registros</li>";
-        }
-        echo "</ul>";
-        
-        // 5. Para garantir consistência, vamos retornar todos os registros na view
-        $registros = DB::table('rh_problemas as rp')
-            ->select(
-                'rp.id',
-                'rp.descricao',
-                'rp.status',
-                'rp.prioridade',
-                'rp.detalhes',
-                'rp.resposta',
-                'rp.data_resposta',
-                'rp.inicio_contagem',
-                'rp.prazo_entrega',
-                'rp.finalizado_em',
-                'rp.created_at',
-                'rp.updated_at',
-                DB::raw('COALESCE(u.name, "Não atribuído") as usuario_nome')
-            )
-            ->leftJoin('users as u', 'rp.usuario_id', '=', 'u.id')
-            ->orderBy('rp.created_at', 'desc')
-            ->get();
-            
-        // Exibir todos os registros independente de status
-        echo "<h2>Todos os registros (independente de status):</h2>";
-        echo "<table border='1' cellpadding='3' style='border-collapse: collapse;'>";
-        echo "<tr><th>ID</th><th>Descrição</th><th>Status</th><th>Usuário</th><th>Criado em</th></tr>";
-        
-        foreach ($registros as $registro) {
-            echo "<tr>";
-            echo "<td>{$registro->id}</td>";
-            echo "<td>{$registro->descricao}</td>";
-            echo "<td><strong>{$registro->status}</strong></td>";
-            echo "<td>{$registro->usuario_nome}</td>";
-            echo "<td>{$registro->created_at}</td>";
-            echo "</tr>";
-        }
-        
-        echo "</table>";
-        
-        echo "<p><a href='/rh/administrador' style='padding: 10px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;'>Voltar para Administrador RH</a></p>";
-        
-        return "";
-    } catch (\Exception $e) {
-        return "Erro: " . $e->getMessage();
-    }
-})->middleware('auth');
-
-// Rota para listar explicitamente as tarefas concluídas
-Route::get('/tarefas-concluidas', function() {
-    try {
-        $concluidas = DB::table('rh_problemas')
-            ->where('status', 'Concluído')
-            ->orWhere('status', 'Concluido')
-            ->orWhere('status', 'concluído')
-            ->orWhere('status', 'concluido')
-            ->orWhereRaw("LOWER(status) LIKE '%conclu%'")
-            ->get();
-            
-        echo "<h2>Tarefas Concluídas: " . $concluidas->count() . "</h2>";
-        
-        if ($concluidas->count() > 0) {
-            echo "<table border='1' cellpadding='3' style='border-collapse: collapse;'>";
-            echo "<tr><th>ID</th><th>Descrição</th><th>Status</th><th>Criado em</th></tr>";
-            
-            foreach ($concluidas as $tarefa) {
-                echo "<tr>";
-                echo "<td>{$tarefa->id}</td>";
-                echo "<td>{$tarefa->descricao}</td>";
-                echo "<td><strong>{$tarefa->status}</strong></td>";
-                echo "<td>{$tarefa->created_at}</td>";
-                echo "</tr>";
-            }
-            
-            echo "</table>";
-        } else {
-            echo "<p>Nenhuma tarefa concluída encontrada.</p>";
-        }
-        
-        // Para cada tarefa, verificar se é mostrada na view de administrador
-        if ($concluidas->count() > 0) {
-            echo "<h3>Verificando se estas tarefas aparecem na view de administrador:</h3>";
-            
-            // Buscar exatamente como a view de administrador busca
-            $problemasAdm = DB::table('rh_problemas as rp')
-                ->select(
-                    'rp.id',
-                    'rp.descricao',
-                    'rp.status'
-                )
-                ->whereRaw('1=1')
-                ->orderBy('rp.created_at', 'desc')
-                ->get();
-                
-            // Criar um array de IDs dos problemas na view de administrador
-            $idsAdm = $problemasAdm->pluck('id')->toArray();
-            
-            echo "<table border='1' cellpadding='3' style='border-collapse: collapse;'>";
-            echo "<tr><th>ID</th><th>Descrição</th><th>Status</th><th>Aparece na View</th></tr>";
-            
-            foreach ($concluidas as $tarefa) {
-                $aparece = in_array($tarefa->id, $idsAdm) ? "SIM" : "NÃO";
-                $cor = $aparece == "SIM" ? "green" : "red";
-                
-                echo "<tr>";
-                echo "<td>{$tarefa->id}</td>";
-                echo "<td>{$tarefa->descricao}</td>";
-                echo "<td><strong>{$tarefa->status}</strong></td>";
-                echo "<td style='color: {$cor}'><strong>{$aparece}</strong></td>";
-                echo "</tr>";
-            }
-            
-            echo "</table>";
-        }
-        
-        echo "<p><a href='/rh/administrador' style='padding: 10px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; margin-right: 10px;'>Voltar para Administrador RH</a>";
-        echo "<a href='/mostrar-todas-tarefas' style='padding: 10px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px;'>Ver Todas as Tarefas</a></p>";
-        
-        return "";
-    } catch (\Exception $e) {
-        return "Erro: " . $e->getMessage();
-    }
-})->middleware('auth');
+// Rotas de debug de tarefas removidas
 
 // APIs para gerenciamento de perfis
 Route::middleware(['auth'])->prefix('api')->group(function () {

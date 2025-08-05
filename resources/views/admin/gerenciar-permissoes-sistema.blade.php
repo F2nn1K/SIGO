@@ -4,22 +4,25 @@
 
 @section('content_header')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<div class="header-highlight"></div>
-<h1 class="m-0 text-dark">Gerenciar Permissões do Sistema</h1>
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="m-0 text-dark font-weight-bold">
+            <i class="fas fa-key text-primary mr-3"></i>
+            Gerenciar Permissões
+        </h1>
+        <p class="text-muted mt-1 mb-0">Configure permissões e controle de acesso do sistema</p>
+    </div>
+    <div>
+        <button class="btn btn-primary btn-sm" id="btn-nova-permissao">
+            <i class="fas fa-plus mr-1"></i>
+            Nova Permissão
+        </button>
+    </div>
+</div>
 @stop
 
 @section('content')
 <div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-end">
-                <button class="btn btn-primary btn-sm" id="btn-nova-permissao">
-                    <i class="fas fa-plus-circle"></i> Nova Permissão
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Menu de navegação simples -->
     <ul class="nav nav-tabs mb-4">
         <li class="nav-item">
@@ -39,21 +42,22 @@
         </li>
     </ul>
 
-    <!-- Tabela de Permissões - SIMPLES -->
+    <!-- Tabela de Permissões Moderna -->
     <div class="row">
         <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-key mr-2"></i>Permissões Disponíveis
+            <div class="modern-card">
+                <div class="card-header-modern">
+                    <h5 class="card-title-modern">
+                        <i class="fas fa-shield-alt text-primary mr-2"></i>
+                        Permissões Disponíveis
                     </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body-modern">
                     {{-- DEBUG: Total de permissões encontradas: {{ $permissoes->count() }} --}}
                     @if($permissoes->count() > 0)
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="thead-light">
+                            <table class="modern-table">
+                                <thead>
                                     <tr>
                                         <th>ID</th>
                                         <th>Nome</th>
@@ -314,4 +318,8 @@ $(document).ready(function() {
     });
 });
 </script>
+@endpush
+
+@push('css')
+<link rel="stylesheet" href="{{ asset('css/modern-design.css') }}">
 @endpush 

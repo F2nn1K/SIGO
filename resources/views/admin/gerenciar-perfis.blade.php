@@ -6,8 +6,21 @@
 
 @section('content_header')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<div class="header-highlight"></div>
-<h1 class="m-0 text-dark">Gerenciar Usuários</h1>
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="m-0 text-dark font-weight-bold">
+            <i class="fas fa-users text-primary mr-3"></i>
+            Gerenciar Usuários
+        </h1>
+        <p class="text-muted mt-1 mb-0">Gerencie usuários, perfis e permissões do sistema</p>
+    </div>
+    <div>
+        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalNovoUsuario">
+            <i class="fas fa-user-plus mr-1"></i>
+            Novo Usuário
+        </button>
+    </div>
+</div>
 @stop
 
 @section('content')
@@ -33,24 +46,29 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-light section-header">
+            <div class="modern-card">
+                <div class="card-header-modern">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Usuários do Sistema</h5>
-                        <div class="input-group search-container" style="width: 300px;">
-                            <input type="text" class="form-control form-control-sm" 
-                                    id="buscar-usuario"
-                                    placeholder="Buscar usuários...">
-                            <div class="input-group-append">
-                                <span class="input-group-text">
-                                    <i class="fas fa-search"></i>
-                                </span>
+                        <h5 class="card-title-modern">
+                            <i class="fas fa-table text-primary mr-2"></i>
+                            Usuários do Sistema
+                        </h5>
+                        <div class="modern-search-container">
+                            <div class="input-group">
+                                <input type="text" class="form-control modern-search-input" 
+                                        id="buscar-usuario"
+                                        placeholder="Buscar usuários...">
+                                <div class="input-group-append">
+                                    <span class="input-group-text modern-search-icon">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-body table-responsive p-0">
-                    <table class="table table-hover">
+                <div class="card-body-modern">
+                    <table class="modern-table">
                         <thead>
                             <tr>
                                 <th>Nome</th>
@@ -89,6 +107,57 @@
                     </table>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Criar Novo Usuário -->
+<div class="modal fade" id="modalNovoUsuario" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-plus mr-2"></i> Novo Usuário
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="form-novo-usuario" onsubmit="criarUsuario(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="novo-nome" class="font-weight-bold">Nome</label>
+                        <input type="text" class="form-control" id="novo-nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="novo-login" class="font-weight-bold">Login</label>
+                        <input type="text" class="form-control" id="novo-login" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="novo-email" class="font-weight-bold">Email (opcional)</label>
+                        <input type="email" class="form-control" id="novo-email">
+                    </div>
+                    <div class="form-group">
+                        <label for="nova-senha" class="font-weight-bold">Senha</label>
+                        <input type="password" class="form-control" id="nova-senha" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="novo-perfil" class="font-weight-bold">Perfil</label>
+                        <select class="form-control" id="novo-perfil">
+                            <option value="">Sem perfil</option>
+                            @foreach($perfis as $perfil)
+                                <option value="{{ $perfil->id }}">{{ $perfil->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i> Criar Usuário
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -173,158 +242,7 @@
 @stop
 
 @push('css')
-<style>
-    /* Destaque azul no topo */
-    .header-highlight {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #3b82f6, #4f46e5, #8b5cf6);
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
-        z-index: 100;
-        margin-top: -1px;
-    }
-    
-    .content-header {
-        position: relative;
-        padding-top: 1.5rem;
-        box-shadow: 0 4px 12px -5px rgba(59, 130, 246, 0.15);
-        margin-bottom: 1.5rem;
-        background: linear-gradient(180deg, #f9fafb 0%, rgba(249, 250, 251, 0) 100%);
-    }
-    
-    .section-header {
-        background-color: #f8fafc;
-        border-bottom: 1px solid #edf2f7;
-        padding: 1rem;
-    }
-    
-    /* Cards modernos */
-    .card {
-        border: none;
-        border-radius: 12px;
-        transition: all 0.3s ease;
-        animation: fadeIn 0.3s ease-out;
-    }
-    
-    .card-header {
-        border-radius: 12px 12px 0 0 !important;
-    }
-    
-    .shadow-sm {
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05) !important;
-    }
-    
-    /* Estilos para a lista de perfis */
-    .perfis-list {
-        max-height: 500px;
-        overflow-y: auto;
-    }
-    
-    .perfis-list .nav-link {
-        border-radius: 0;
-        padding: 0.75rem 1rem;
-        transition: all 0.2s ease;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-left: 4px solid transparent;
-        color: #4b5563;
-    }
-    
-    .perfis-list .nav-link.active {
-        background-color: #3b82f6;
-        color: white;
-        border-left: 4px solid #2563eb;
-    }
-    
-    .perfis-list .nav-link:not(.active):hover {
-        background-color: #f8fafc;
-        border-left: 4px solid #e2e8f0;
-        transform: translateX(2px);
-    }
-
-    /* Tabela moderna */
-    .table {
-        margin-bottom: 0;
-    }
-    
-    .table th {
-        background-color: #f8fafc;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.5px;
-        padding: 1rem;
-        border-bottom: 2px solid #eaedf2;
-        color: #5a6473;
-    }
-    
-    .table td {
-        padding: 1rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #f0f2f7;
-        color: #4a5568;
-    }
-    
-    .table tbody tr {
-        transition: all 0.2s ease;
-    }
-    
-    .table tbody tr:hover {
-        background-color: rgba(59, 130, 246, 0.04);
-        transform: translateY(-1px);
-    }
-    
-    /* Campo de busca personalizado */
-    .search-container {
-        position: relative;
-    }
-    
-    .search-container input {
-        border-radius: 20px;
-        padding-left: 30px;
-        border: 1px solid #d0d0d0;
-        transition: all 0.3s;
-    }
-    
-    .search-container input:focus {
-        border-color: #2a93d5;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
-    }
-    
-    .search-container .input-group-text {
-        background: transparent;
-        border: none;
-        color: #888;
-        position: absolute;
-        right: 0;
-        z-index: 4;
-    }
-    
-    /* Estilos para as abas */
-    .nav-tabs .nav-link {
-        border: none;
-        border-bottom: 3px solid transparent;
-        color: #64748b;
-        font-weight: 500;
-        padding: 0.75rem 1rem;
-        transition: all 0.2s ease;
-    }
-    
-    .nav-tabs .nav-link:hover {
-        color: #3b82f6;
-        border-bottom-color: #e2e8f0;
-    }
-    
-    .nav-tabs .nav-link.active {
-        color: #3b82f6;
-        border-bottom-color: #3b82f6;
-        background-color: transparent;
-    }
-</style>
+<link rel="stylesheet" href="{{ asset('css/modern-design.css') }}">
 @endpush
 
 @push('js')
@@ -338,6 +256,82 @@
             });
         });
     });
+
+    // Função para criar novo usuário
+    function criarUsuario(event) {
+        event.preventDefault();
+        
+        const nome = document.getElementById('novo-nome').value;
+        const login = document.getElementById('novo-login').value;
+        const email = document.getElementById('novo-email').value;
+        const senha = document.getElementById('nova-senha').value;
+        const perfilId = document.getElementById('novo-perfil').value;
+        
+        try {
+            // Mostrar loading
+            Swal.fire({
+                title: 'Criando...',
+                text: 'Criando novo usuário',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            fetch('/api/usuarios/criar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    name: nome,
+                    login: login,
+                    email: email || null,
+                    password: senha,
+                    profile_id: perfilId || null
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        $('#modalNovoUsuario').modal('hide');
+                        
+                        // Limpar formulário
+                        document.getElementById('form-novo-usuario').reset();
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Sucesso!',
+                            text: 'Usuário criado com sucesso!',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        
+                        window.location.reload();
+                    } else {
+                        throw new Error(data.message || 'Erro ao criar usuário');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao criar usuário:', error);
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: error.message || 'Erro ao criar usuário. Tente novamente.'
+                    });
+                });
+        } catch (error) {
+            console.error('Erro ao criar usuário:', error);
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro!',
+                text: 'Erro ao processar a solicitação. Tente novamente.'
+            });
+        }
+    }
 
     // Funções para editar e alterar status
     function editarUsuario(id) {

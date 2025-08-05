@@ -45,7 +45,6 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Livewire::component('gerenciar-permissoes', GerenciarPermissoes::class);
-        Livewire::component('relatorio-r-h', \App\Livewire\RelatorioRH1002::class);
         Livewire::component('cadastro-diarias', \App\Livewire\CadastroDiarias::class);
     }
 }
