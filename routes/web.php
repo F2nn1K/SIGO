@@ -35,13 +35,9 @@ Route::get('/diarias/mecejana', function () {
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard
-    Route::get('/home', function() {
-        return view('admin.dashboard-livewire');
-    })->name('home');
+    Route::get('/home', [App\Http\Controllers\DashboardController::class, 'index'])->name('home');
     
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard-livewire');
-    })->middleware(['auth'])->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
 
     // Rotas de Diárias - protegidas pela permissão 'Ver Diárias'
     Route::middleware(['can:Ver Diárias'])->group(function () {
@@ -73,6 +69,18 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/relatorios/estoque', [App\Http\Controllers\RelatorioEstoqueController::class, 'index'])->name('relatorios.estoque');
         Route::post('/api/relatorio-estoque', [App\Http\Controllers\RelatorioEstoqueController::class, 'gerarRelatorio']);
         Route::post('/api/relatorio-estoque/exportar', [App\Http\Controllers\RelatorioEstoqueController::class, 'exportarExcel']);
+    });
+
+    Route::middleware(['can:Relatorio Centro Custo'])->group(function () {
+        Route::get('/relatorios/centro-custo', [App\Http\Controllers\RelatorioCentroCustoController::class, 'index'])->name('relatorios.centro-custo');
+        Route::post('/api/relatorio-centro-custo', [App\Http\Controllers\RelatorioCentroCustoController::class, 'gerarRelatorio']);
+        Route::post('/api/relatorio-centro-custo/exportar', [App\Http\Controllers\RelatorioCentroCustoController::class, 'exportarExcel']);
+    });
+
+    Route::middleware(['can:Relatorio por Funcionario'])->group(function () {
+        Route::get('/relatorios/funcionario', [App\Http\Controllers\RelatorioPorFuncionarioController::class, 'index'])->name('relatorios.funcionario');
+        Route::post('/api/relatorio-funcionario', [App\Http\Controllers\RelatorioPorFuncionarioController::class, 'gerarRelatorio']);
+        Route::post('/api/relatorio-funcionario/exportar', [App\Http\Controllers\RelatorioPorFuncionarioController::class, 'exportarExcel']);
     });
 
     // Rotas de Permissões

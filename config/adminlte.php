@@ -314,6 +314,18 @@ return [
                     'icon' => 'fas fa-boxes',
                     'can'  => 'Relatorio Estoque',
                 ],
+                [
+                    'text' => 'Relatório Centro Custo',
+                    'url'  => 'relatorios/centro-custo',
+                    'icon' => 'fas fa-building',
+                    'can'  => 'Relatorio Centro Custo',
+                ],
+                [
+                    'text' => 'Relatório por Funcionário',
+                    'url'  => 'relatorios/funcionario',
+                    'icon' => 'fas fa-user-tie',
+                    'can'  => 'Relatorio por Funcionario',
+                ],
             ],
         ],
         [
