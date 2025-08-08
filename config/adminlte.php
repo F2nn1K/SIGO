@@ -305,6 +305,54 @@ return [
             'icon' => 'fas fa-tachometer-alt',
         ],
         [
+            'text'        => 'Estoque',
+            'icon'        => 'fas fa-boxes',
+            'submenu'     => [
+                [
+                    'text' => 'Controle de Estoque',
+                    'url'  => 'brs/controle-estoque',
+                    'icon' => 'fas fa-boxes',
+                    'can'  => 'controle-estoque',
+                ],
+                [
+                    'text' => 'Documentos RH',
+                    'url'  => 'rh/documentos',
+                    'icon' => 'fas fa-file-alt',
+                    'can'  => 'Documentos RH',
+                ],
+            ],
+        ],
+        [
+            'text'        => 'Pedido de Compras',
+            'icon'        => 'fas fa-shopping-cart',
+            'submenu'     => [
+                [
+                    'text' => 'Solicitação Pedido de Compras',
+                    'url'  => 'pedidos/solicitacao',
+                    'icon' => 'fas fa-plus-circle',
+                    'can'  => 'solicitacao-pedidos',
+                ],
+                [
+                    'text' => 'Autorização Pedido de Compras',
+                    'url'  => 'pedidos/autorizacao',
+                    'icon' => 'fas fa-check-circle',
+                    'can'  => 'autorizacao-pedidos',
+                ],
+                [
+                    'text' => 'Minhas Interações',
+                    'url'  => 'pedidos/minhas-interacoes',
+                    'icon' => 'fas fa-comments',
+                    'can'  => 'Pedidos de Compras',
+                ],
+                [
+                    'text' => 'Acompanhar Pedido',
+                    'url'  => 'pedidos/acompanhar',
+                    'icon' => 'fas fa-eye',
+                    'can'  => 'Acompanhar Pedido',
+                ],
+            ],
+        ],
+        [
             'text'        => 'Relatórios',
             'icon'        => 'fas fa-chart-bar',
             'submenu'     => [
@@ -312,37 +360,19 @@ return [
                     'text' => 'Relatório Estoque',
                     'url'  => 'relatorios/estoque',
                     'icon' => 'fas fa-boxes',
-                    'can'  => 'Relatorio Estoque',
+                    'can'  => 'relatorio-estoque',
                 ],
                 [
                     'text' => 'Relatório Centro Custo',
                     'url'  => 'relatorios/centro-custo',
                     'icon' => 'fas fa-building',
-                    'can'  => 'Relatorio Centro Custo',
+                    'can'  => 'relatorio-centro-custo',
                 ],
                 [
                     'text' => 'Relatório por Funcionário',
                     'url'  => 'relatorios/funcionario',
                     'icon' => 'fas fa-user-tie',
-                    'can'  => 'Relatorio por Funcionario',
-                ],
-            ],
-        ],
-        [
-            'text'        => 'BRS',
-            'icon'        => 'fas fa-users',
-            'submenu'     => [
-                [
-                    'text' => 'Controle de Estoque',
-                    'url'  => 'brs/controle-estoque',
-                    'icon' => 'fas fa-boxes',
-                    'can'  => 'Controle de Estoque',
-                ],
-                [
-                    'text' => 'Documentos RH',
-                    'url'  => 'rh/documentos',
-                    'icon' => 'fas fa-file-alt',
-                    'can'  => 'Documentos RH',
+                    'can'  => 'relatorio-funcionario',
                 ],
             ],
         ],

@@ -41,11 +41,11 @@ class DashboardController extends Controller
         $centrosMaisPedidos = Baixa::with('centroCusto')
             ->whereBetween('data_baixa', [$dataInicio, $dataFim])
             ->select(
-                'cc',
+                'centro_custo_id',
                 DB::raw('COUNT(*) as total_pedidos'),
                 DB::raw('SUM(quantidade) as total_itens')
             )
-            ->groupBy('cc')
+            ->groupBy('centro_custo_id')
             ->orderByDesc('total_pedidos')
             ->limit(8) // Top 8 centros
             ->get()

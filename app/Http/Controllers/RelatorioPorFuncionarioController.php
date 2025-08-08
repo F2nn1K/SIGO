@@ -99,7 +99,7 @@ class RelatorioPorFuncionarioController extends Controller
         $totalItens = $baixas->sum('quantidade');
         $totalEntregas = $baixas->count();
         $funcionariosUnicos = $baixas->pluck('funcionario_id')->unique()->count();
-        $centrosUnicos = $baixas->pluck('cc')->unique()->filter()->count();
+        $centrosUnicos = $baixas->pluck('centro_custo_id')->unique()->filter()->count();
 
         // Calcular detalhamento por funcionário
         $porFuncionario = [];
@@ -111,7 +111,7 @@ class RelatorioPorFuncionarioController extends Controller
                 'funcionario_funcao' => $funcionario ? $funcionario->funcao : 'Não informada',
                 'total_itens' => $baixasFuncionario->sum('quantidade'),
                 'total_entregas' => $baixasFuncionario->count(),
-                'centros_atendidos' => $baixasFuncionario->pluck('cc')->unique()->filter()->count()
+                'centros_atendidos' => $baixasFuncionario->pluck('centro_custo_id')->unique()->filter()->count()
             ];
         }
 

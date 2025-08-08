@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Http\Controllers\PermissoesController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\PedidoComprasController;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -39,8 +40,9 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
         ]);
     });
 
-    // Perfis
-    Route::middleware(['verifica.permissao.api:Configurar Permissões'])->group(function () {
+    // Perfis e Usuários (grupo protegido por permissões administrativas)
+    // Troca para permissões específicas e independentes: "Gerenciar Usuários" e "Gerenciar Permissões"
+    Route::middleware(['verifica.permissao.api:Gerenciar Permissões'])->group(function () {
         Route::get('/perfis', [PermissoesController::class, 'listarPerfis']);
         Route::get('/perfis/{id}', [PermissoesController::class, 'obterPerfil']);
         Route::post('/perfis', [PermissoesController::class, 'criarPerfil']);
@@ -53,8 +55,10 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
         Route::post('/permissoes', [PermissoesController::class, 'store']);
         Route::put('/permissoes/{id}', [PermissoesController::class, 'update']);
         Route::delete('/permissoes/{id}', [PermissoesController::class, 'destroy']);
+    });
 
-        // Usuários (Controller principal)
+    // Usuários: separar em grupo com permissão "Gerenciar Usuários"
+    Route::middleware(['verifica.permissao.api:Gerenciar Usuários'])->group(function () {
         Route::get('/usuarios', [UsuariosController::class, 'listar']);
         Route::post('/usuarios/criar', [UsuariosController::class, 'criar']);
         Route::post('/usuarios/atualizar', [UsuariosController::class, 'atualizar']);
@@ -164,6 +168,11 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
         Route::delete('/users/{id}', [UserController::class, 'destroy']);
     });
     
+    // Rotas para Pedido de Compras
+    Route::get('/produtos/buscar', [PedidoComprasController::class, 'buscarProdutos']);
+    Route::get('/centro-custos/buscar', [PedidoComprasController::class, 'buscarCentrosCustoAutocomplete']);
+    
+    
     // Rota de diagnóstico
     Route::get('/diagnostico', function() {
         return response()->json([
@@ -219,7 +228,13 @@ Route::put('/usuarios/{id}', function (Request $request, $id) {
         $usuario = \App\Models\User::findOrFail($id);
         
         // Apenas o próprio usuário ou usuários com permissão podem atualizar
-        if (Auth::id() != $id && !Auth::user()->temPermissao('Configurar Permissões')) {
+        if (
+            Auth::id() != $id &&
+            !(
+                Auth::user()->temPermissao('Gerenciar Usuários') ||
+                Auth::user()->temPermissao('Configurar Permissões')
+            )
+        ) {
             return response()->json([
                 'success' => false,
                 'message' => 'Você não tem permissão para atualizar este usuário',

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Http\Controllers\CronogramaController;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -34,10 +35,9 @@ Route::get('/diarias/mecejana', function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    // Dashboard
+    // Dashboard - acessível para todos os usuários autenticados
     Route::get('/home', [App\Http\Controllers\DashboardController::class, 'index'])->name('home');
-    
-    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     // Rotas de Diárias - protegidas pela permissão 'Ver Diárias'
     Route::middleware(['can:Ver Diárias'])->group(function () {
@@ -47,7 +47,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Rotas de BRS - Controle de Estoque - protegidas pela permissão 'Controle de Estoque'
-    Route::middleware(['can:Controle de Estoque'])->group(function () {
+    Route::middleware(['can:controle-estoque'])->group(function () {
     Route::get('/brs/controle-estoque', [App\Http\Controllers\ControleEstoqueController::class, 'index'])->name('brs.controle-estoque');
     Route::get('/api/funcionarios', [App\Http\Controllers\ControleEstoqueController::class, 'buscarFuncionarios']);
     Route::get('/api/centro-custos', [App\Http\Controllers\ControleEstoqueController::class, 'buscarCentroCustos']);
@@ -65,22 +65,70 @@ Route::middleware(['auth'])->group(function () {
         return view('relatorios.index');
     })->middleware('auth')->name('relatorios.index');
     
-    Route::middleware(['can:Relatorio Estoque'])->group(function () {
+    Route::middleware(['can:relatorio-estoque'])->group(function () {
         Route::get('/relatorios/estoque', [App\Http\Controllers\RelatorioEstoqueController::class, 'index'])->name('relatorios.estoque');
         Route::post('/api/relatorio-estoque', [App\Http\Controllers\RelatorioEstoqueController::class, 'gerarRelatorio']);
         Route::post('/api/relatorio-estoque/exportar', [App\Http\Controllers\RelatorioEstoqueController::class, 'exportarExcel']);
     });
 
-    Route::middleware(['can:Relatorio Centro Custo'])->group(function () {
+    Route::middleware(['can:relatorio-centro-custo'])->group(function () {
         Route::get('/relatorios/centro-custo', [App\Http\Controllers\RelatorioCentroCustoController::class, 'index'])->name('relatorios.centro-custo');
         Route::post('/api/relatorio-centro-custo', [App\Http\Controllers\RelatorioCentroCustoController::class, 'gerarRelatorio']);
         Route::post('/api/relatorio-centro-custo/exportar', [App\Http\Controllers\RelatorioCentroCustoController::class, 'exportarExcel']);
     });
 
-    Route::middleware(['can:Relatorio por Funcionario'])->group(function () {
+    Route::middleware(['can:relatorio-funcionario'])->group(function () {
         Route::get('/relatorios/funcionario', [App\Http\Controllers\RelatorioPorFuncionarioController::class, 'index'])->name('relatorios.funcionario');
         Route::post('/api/relatorio-funcionario', [App\Http\Controllers\RelatorioPorFuncionarioController::class, 'gerarRelatorio']);
         Route::post('/api/relatorio-funcionario/exportar', [App\Http\Controllers\RelatorioPorFuncionarioController::class, 'exportarExcel']);
+    });
+
+    // Rotas de Pedidos de Compras - protegidas por suas respectivas permissões
+    Route::middleware(['can:solicitacao-pedidos'])->group(function () {
+        Route::get('/pedidos/solicitacao', [App\Http\Controllers\PedidoComprasController::class, 'solicitacao'])->name('pedidos.solicitacao');
+        Route::post('/api/pedidos', [App\Http\Controllers\PedidoComprasController::class, 'store']);
+        Route::get('/api/minhas-solicitacoes', [App\Http\Controllers\PedidoComprasController::class, 'minhasSolicitacoes']);
+        Route::get('/api/produtos/buscar', [App\Http\Controllers\PedidoComprasController::class, 'buscarProdutos']);
+        Route::get('/api/centro-custos', [App\Http\Controllers\PedidoComprasController::class, 'buscarCentrosCusto']);
+        Route::get('/api/centro-custos/buscar', [App\Http\Controllers\PedidoComprasController::class, 'buscarCentrosCustoAutocomplete']);
+    });
+
+    Route::middleware(['can:autorizacao-pedidos'])->group(function () {
+        Route::get('/pedidos/autorizacao', [App\Http\Controllers\PedidoComprasController::class, 'autorizacao'])->name('pedidos.autorizacao');
+        Route::get('/pedidos/autorizacao/pendentes', [App\Http\Controllers\PedidoComprasController::class, 'autorizacoesPendentesView'])->name('pedidos.autorizacao.pendentes');
+        Route::get('/pedidos/autorizacao/aprovadas', [App\Http\Controllers\PedidoComprasController::class, 'autorizacoesAprovadasView'])->name('pedidos.autorizacao.aprovadas');
+        Route::get('/pedidos/autorizacao/rejeitadas', [App\Http\Controllers\PedidoComprasController::class, 'autorizacoesRejeitadasView'])->name('pedidos.autorizacao.rejeitadas');
+
+        Route::get('/api/pedidos-pendentes', [App\Http\Controllers\PedidoComprasController::class, 'pedidosPendentes']);
+        Route::get('/api/pedidos-pendentes-agrupados', [App\Http\Controllers\PedidoComprasController::class, 'pedidosPendentesAgrupados']);
+        Route::get('/api/pedidos-agrupado/{hash}', [App\Http\Controllers\PedidoComprasController::class, 'detalhesPedidoAgrupado']);
+        Route::put('/api/pedidos-agrupado/{hash}/aprovar', [App\Http\Controllers\PedidoComprasController::class, 'aprovarGrupo']);
+        Route::put('/api/pedidos-agrupado/{hash}/rejeitar', [App\Http\Controllers\PedidoComprasController::class, 'rejeitarGrupo']);
+        Route::post('/api/pedidos-agrupado/{hash}/mensagem', [App\Http\Controllers\PedidoComprasController::class, 'mensagemGrupo']);
+        Route::get('/api/pedidos-aprovados', [App\Http\Controllers\PedidoComprasController::class, 'pedidosAprovados']);
+        Route::get('/api/pedidos-aprovados-agrupados', [App\Http\Controllers\PedidoComprasController::class, 'pedidosAprovadosAgrupados']);
+        Route::get('/api/pedidos-rejeitados', [App\Http\Controllers\PedidoComprasController::class, 'pedidosRejeitados']);
+        Route::get('/api/pedidos-rejeitados-agrupados', [App\Http\Controllers\PedidoComprasController::class, 'pedidosRejeitadosAgrupados']);
+        Route::put('/api/pedidos/{id}/aprovar', [App\Http\Controllers\PedidoComprasController::class, 'aprovar']);
+        Route::put('/api/pedidos/{id}/rejeitar', [App\Http\Controllers\PedidoComprasController::class, 'rejeitar']);
+    });
+
+    // Página de histórico e interações dos pedidos do próprio usuário
+    Route::middleware(['can:Pedidos de Compras'])->group(function () {
+        Route::get('/pedidos/minhas-interacoes', [App\Http\Controllers\PedidoComprasController::class, 'minhasInteracoesView'])->name('pedidos.minhas.interacoes');
+        Route::get('/api/pedidos/minhas-interacoes', [App\Http\Controllers\PedidoComprasController::class, 'minhasInteracoesData']);
+        Route::get('/api/pedidos/{id}/interacoes', [App\Http\Controllers\PedidoComprasController::class, 'interacoesPorPedido']);
+        Route::post('/api/pedidos/{id}/interagir', [App\Http\Controllers\PedidoComprasController::class, 'enviarInteracaoSolicitante']);
+    });
+
+    // Acompanhar Pedido (somente leitura) – permissão: Acompanhar Pedido
+    Route::middleware(['can:Acompanhar Pedido'])->group(function () {
+        Route::get('/pedidos/acompanhar', [App\Http\Controllers\PedidoComprasController::class, 'acompanharView'])->name('pedidos.acompanhar');
+        Route::get('/pedidos/acompanhar/pendentes', function(){ return view('pedidos.acompanhar_pendentes'); })->name('pedidos.acompanhar.pendentes');
+        Route::get('/pedidos/acompanhar/aprovadas', function(){ return view('pedidos.acompanhar_aprovadas'); })->name('pedidos.acompanhar.aprovadas');
+        Route::get('/pedidos/acompanhar/rejeitadas', function(){ return view('pedidos.acompanhar_rejeitadas'); })->name('pedidos.acompanhar.rejeitadas');
+        Route::get('/api/pedidos/acompanhar/lista', [App\Http\Controllers\PedidoComprasController::class, 'acompanharLista']);
+        Route::get('/api/pedidos/acompanhar/{hash}', [App\Http\Controllers\PedidoComprasController::class, 'acompanharDetalhes']);
     });
 
     // Rotas de Permissões
@@ -107,7 +155,8 @@ Route::middleware(['auth'])->group(function () {
             return view('admin.gerenciar-perfis', compact('usuarios', 'perfis'));
         })->name('admin.usuarios');
 
-        // TESTE DE CONEXÃO FORÇADA
+        // TESTE DE CONEXÃO FORÇADA (apenas ambiente local)
+        if (app()->environment('local')) {
         Route::get('/perfis', function () {
             // Testar conexão forçada para o banco correto
             try {
@@ -146,8 +195,10 @@ Route::middleware(['auth'])->group(function () {
                 ]);
             }
         });
+        }
         
-        // Rota para exibir um perfil específico - acesso direto ao banco
+        // Rota para exibir um perfil específico - acesso direto ao banco (apenas local)
+        if (app()->environment('local')) {
         Route::get('/perfis/{id}', function ($id) {
             // Buscar perfis, perfil selecionado e permissões diretamente do banco de dados
             $perfis = DB::table('profiles')->get();
@@ -165,8 +216,10 @@ Route::middleware(['auth'])->group(function () {
                 
             return view('admin.perfis', compact('perfis', 'perfilSelecionado', 'permissoes', 'permissoesSelecionadas'));
         });
+        }
         
-        // Rota para criar um novo perfil - acesso direto ao banco
+        // Rota para criar um novo perfil - acesso direto ao banco (apenas local)
+        if (app()->environment('local')) {
         Route::post('/perfis', function (Request $request) {
             $request->validate([
                 'name' => 'required|string|max:255|unique:profiles,name',
@@ -183,8 +236,10 @@ Route::middleware(['auth'])->group(function () {
             
             return redirect('/perfis')->with('success', 'Perfil criado com sucesso');
         });
+        }
         
-        // Rota para atualizar um perfil - acesso direto ao banco
+        // Rota para atualizar um perfil - acesso direto ao banco (apenas local)
+        if (app()->environment('local')) {
         Route::put('/perfis/{id}', function (Request $request, $id) {
             $request->validate([
                 'name' => 'required|string|max:255|unique:profiles,name,' . $id,
@@ -219,8 +274,10 @@ Route::middleware(['auth'])->group(function () {
             
             return redirect('/perfis/' . $id)->with('success', 'Perfil atualizado com sucesso');
         });
+        }
         
-        // Rota para excluir um perfil - acesso direto ao banco
+        // Rota para excluir um perfil - acesso direto ao banco (apenas local)
+        if (app()->environment('local')) {
         Route::delete('/perfis/{id}', function ($id) {
             // Remover relacionamentos primeiro diretamente do banco de dados
             DB::table('profile_permissions')->where('profile_id', $id)->delete();
@@ -230,6 +287,7 @@ Route::middleware(['auth'])->group(function () {
             
             return redirect('/perfis')->with('success', 'Perfil excluído com sucesso');
         });
+        }
         
         // API para gerenciar permissões
         Route::prefix('api')->group(function () {
@@ -719,11 +777,13 @@ Route::get('/perfis', function () {
 
 // Rotas de administração
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    Route::get('/gerenciar-permissoes', function () {
-        $users = \App\Models\User::with('profile')->get();
-        $profiles = \App\Models\Profile::all();
-        return view('admin.gerenciar-permissoes', compact('users', 'profiles'));
-    })->name('gerenciar-permissoes');
+    Route::middleware(['can:gerenciar-permissoes'])->group(function () {
+        Route::get('/gerenciar-permissoes', function () {
+            $users = \App\Models\User::with('profile')->get();
+            $profiles = \App\Models\Profile::all();
+            return view('admin.gerenciar-permissoes', compact('users', 'profiles'));
+        })->name('gerenciar-permissoes');
+    });
     
     // Rotas de conflito removidas
 });

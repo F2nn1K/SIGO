@@ -6,22 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('funcionarios', function (Blueprint $table) {
+        Schema::create('centro_custo', function (Blueprint $table) {
             $table->id();
+            $table->string('nome', 255);
+            $table->boolean('ativo')->default(true);
             $table->timestamps();
+            $table->index(['ativo', 'nome']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('funcionarios');
+        Schema::dropIfExists('centro_custo');
     }
 };

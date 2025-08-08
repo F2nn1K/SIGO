@@ -13,7 +13,7 @@ class Baixa extends Model
     
     protected $fillable = [
         'funcionario_id',
-        'cc',
+        'centro_custo_id',
         'produto_id',
         'quantidade',
         'observacoes',
@@ -43,6 +43,6 @@ class Baixa extends Model
     
     public function centroCusto()
     {
-        return $this->belongsTo(CentroCusto::class, 'cc');
+        return $this->belongsTo(CentroCusto::class, 'centro_custo_id');
     }
 }

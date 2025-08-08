@@ -33,7 +33,7 @@ class RelatorioCentroCustoController extends Controller
 
         // Filtro por centro de custo
         if ($request->centro_custo_id) {
-            $query->where('cc', $request->centro_custo_id);
+            $query->where('centro_custo_id', $request->centro_custo_id);
         }
 
         // Filtro por funcionário
@@ -41,7 +41,7 @@ class RelatorioCentroCustoController extends Controller
             $query->where('funcionario_id', $request->funcionario_id);
         }
 
-        $baixas = $query->orderBy('cc', 'asc')
+        $baixas = $query->orderBy('centro_custo_id', 'asc')
                        ->orderBy('funcionario_id', 'asc')
                        ->orderBy('data_baixa', 'desc')
                        ->get();
@@ -66,7 +66,7 @@ class RelatorioCentroCustoController extends Controller
 
         foreach ($baixas as $baixa) {
             // Criar chave única para cada combinação centro-funcionário-data
-            $chave = $baixa->cc . '_' . $baixa->funcionario_id . '_' . $baixa->data_baixa->format('Y-m-d H:i');
+            $chave = $baixa->centro_custo_id . '_' . $baixa->funcionario_id . '_' . $baixa->data_baixa->format('Y-m-d H:i');
             
             if (!isset($agrupados[$chave])) {
                 $agrupados[$chave] = [
@@ -105,12 +105,12 @@ class RelatorioCentroCustoController extends Controller
     {
         $totalItens = $baixas->sum('quantidade');
         $totalMovimentacoes = $baixas->count();
-        $centrosUnicos = $baixas->pluck('cc')->unique()->filter()->count();
+        $centrosUnicos = $baixas->pluck('centro_custo_id')->unique()->filter()->count();
         $funcionariosUnicos = $baixas->pluck('funcionario_id')->unique()->count();
 
         // Calcular detalhamento por centro de custo
         $porCentro = [];
-        foreach ($baixas->groupBy('cc') as $ccId => $baixasCC) {
+        foreach ($baixas->groupBy('centro_custo_id') as $ccId => $baixasCC) {
             $centroCusto = $baixasCC->first()->centroCusto;
             $porCentro[] = [
                 'centro_id' => $ccId,
@@ -151,14 +151,14 @@ class RelatorioCentroCustoController extends Controller
 
         // Aplicar os mesmos filtros
         if ($request->centro_custo_id) {
-            $query->where('cc', $request->centro_custo_id);
+            $query->where('centro_custo_id', $request->centro_custo_id);
         }
 
         if ($request->funcionario_id) {
             $query->where('funcionario_id', $request->funcionario_id);
         }
 
-        $baixas = $query->orderBy('cc', 'asc')
+        $baixas = $query->orderBy('centro_custo_id', 'asc')
                        ->orderBy('funcionario_id', 'asc')
                        ->orderBy('data_baixa', 'desc')
                        ->get();

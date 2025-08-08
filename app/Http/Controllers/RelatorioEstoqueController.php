@@ -38,7 +38,7 @@ class RelatorioEstoqueController extends Controller
 
         // Filtro por centro de custo
         if ($request->centro_custo_id) {
-            $query->where('cc', $request->centro_custo_id);
+            $query->where('centro_custo_id', $request->centro_custo_id);
         }
 
         $baixas = $query->orderBy('data_baixa', 'desc')->get();
@@ -62,7 +62,7 @@ class RelatorioEstoqueController extends Controller
         $agrupados = [];
 
         foreach ($baixas as $baixa) {
-            $chave = $baixa->funcionario_id . '_' . $baixa->cc . '_' . $baixa->data_baixa->format('Y-m-d H:i');
+            $chave = $baixa->funcionario_id . '_' . $baixa->centro_custo_id . '_' . $baixa->data_baixa->format('Y-m-d H:i');
             
             if (!isset($agrupados[$chave])) {
                 $agrupados[$chave] = [
@@ -102,7 +102,7 @@ class RelatorioEstoqueController extends Controller
         $totalSaidas = $baixas->sum('quantidade');
         $totalMovimentacoes = $baixas->count();
         $produtosUnicos = $baixas->pluck('produto_id')->unique()->count();
-        $centrosUnicos = $baixas->pluck('cc')->unique()->filter()->count();
+        $centrosUnicos = $baixas->pluck('centro_custo_id')->unique()->filter()->count();
         $funcionariosUnicos = $baixas->pluck('funcionario_id')->unique()->count();
 
         // Calcular total de entradas no período (se houver tabela de entradas)

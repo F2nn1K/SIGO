@@ -192,7 +192,7 @@ class ControleEstoqueController extends Controller
     {
         $request->validate([
             'funcionario_id' => 'required|exists:funcionarios,id',
-            'cc' => 'required|exists:centro_custo,id',
+            'centro_custo_id' => 'required|exists:centro_custo,id',
             'baixas' => 'required|array|min:1',
             'baixas.*.produto_id' => 'required|exists:estoque,id',
             'baixas.*.quantidade' => 'required|integer|min:1',
@@ -217,7 +217,7 @@ class ControleEstoqueController extends Controller
                 // Registrar a baixa
                 Baixa::create([
                     'funcionario_id' => $request->funcionario_id,
-                    'cc' => $request->cc,
+                    'centro_custo_id' => $request->centro_custo_id,
                     'produto_id' => $baixaData['produto_id'],
                     'quantidade' => $baixaData['quantidade'],
                     'observacoes' => $request->observacoes,

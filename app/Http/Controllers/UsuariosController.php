@@ -19,7 +19,8 @@ class UsuariosController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('verifica.permissao:Configurar Permissões')
+        // Para gerenciar usuários, exigimos a permissão específica "Gerenciar Usuários" (não mais "Configurar Permissões")
+        $this->middleware('verifica.permissao:Gerenciar Usuários')
              ->only(['listar', 'criar', 'atualizar', 'toggleStatus', 'atualizarPerfil']);
     }
 
@@ -124,12 +125,12 @@ class UsuariosController extends Controller
             // Debug para verificar os dados recebidos
             Log::info('Dados recebidos em criar:', $request->all());
             
-            // Validar dados
+            // Validar dados (empresa agora é opcional para compatibilizar com o formulário)
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'login' => 'required|string|max:50|unique:users',
                 'password' => 'required|string|min:6',
-                'empresa' => 'required|string|max:255',
+                'empresa' => 'nullable|string|max:255',
                 'profile_id' => 'nullable|exists:profiles,id'
             ]);
             
@@ -150,7 +151,8 @@ class UsuariosController extends Controller
             $usuario->name = $request->name;
             $usuario->login = $request->login;
             $usuario->password = Hash::make($request->password);
-            $usuario->empresa = $request->empresa;
+            // Define empresa como vazio ou valor informado (campo não é obrigatório no formulário)
+            $usuario->empresa = $request->empresa ?? '';
             $usuario->profile_id = $request->profile_id;
             $usuario->active = true;
             $usuario->save();

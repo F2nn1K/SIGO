@@ -32,6 +32,7 @@
         });
     </script>
     
+    
     @stack('scripts')
     @yield('js')
 @stop
