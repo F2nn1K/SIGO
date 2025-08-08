@@ -1,164 +1,92 @@
-# 🏢 Sistema Interno de Gestão Empresarial
+# 🏢 Sistema Interno de Gestão
 
 ![Laravel](https://img.shields.io/badge/Laravel-10.x-red?style=for-the-badge&logo=laravel)
 ![PHP](https://img.shields.io/badge/PHP-8.1+-777BB4?style=for-the-badge&logo=php)
 ![AdminLTE](https://img.shields.io/badge/AdminLTE-3.x-blue?style=for-the-badge)
-![Livewire](https://img.shields.io/badge/Livewire-3.x-fb70a9?style=for-the-badge)
 
-Sistema de gestão empresarial desenvolvido em Laravel com interface AdminLTE, projetado para otimizar processos internos de RH, controle de estoque, gestão de diárias e cronogramas corporativos.
+Aplicação em Laravel com AdminLTE focada em Controle de Estoque e Pedido de Compras, com gestão de permissões e relatórios. Fluxo simples de compras: o usuário solicita, um autorizador aprova ou rejeita, e o solicitante acompanha.
 
-## 📋 Funcionalidades Principais
+## 📋 Módulos Ativos
 
-### 🧑‍💼 **Módulo RH (Recursos Humanos)**
-- Gerenciamento de problemas e solicitações de RH
-- Sistema de anotações e acompanhamento
-- Controle de prioridades e status
-- Histórico completo de interações
+- **Pedido de Compras**
+  - Solicitação de itens (com `num_pedido` por envio)
+  - Autorização (pendentes, aprovadas, rejeitadas) com agrupamento e interações
+  - Minhas Interações (solicitante) e Acompanhar Pedido (somente leitura)
+- **Controle de Estoque (BRS)**
+  - Catálogo básico de produtos (`estoque`)
+  - Relatórios e integrações com Centro de Custo
+- **Relatórios**
+  - Estoque, Centro de Custo, Funcionário
+- **Gerenciamento de Usuários/Permissões**
+  - Perfis, permissões por perfil e controle de acesso via Gates
 
-### 📅 **Cronograma Corporativo**
-- Gestão de eventos e atividades
-- Calendário interativo
-- Controle de prazos e marcos
-- Notificações automáticas
+> Observação: módulos de RH, Diárias e Cronograma foram desativados/ocultos neste projeto.
 
-### 💰 **Gestão de Diárias**
-- Cadastro e controle de diárias de funcionários
-- Aprovação de solicitações
-- Relatórios detalhados
-- Integração com centros de custo
+## 🛠️ Tecnologias
 
-### 📦 **Controle de Estoque (BRS)**
-- Gerenciamento completo de produtos
-- Controle de entradas e saídas
-- Alertas de produtos em falta
-- Dashboard com gráficos analíticos
-- Integração com centros de custo
+- Backend: Laravel 10.x
+- Frontend: AdminLTE 3.x + Bootstrap
+- Banco: MySQL
+- Autenticação/Autorização: Laravel Auth + Permissões por Perfil
 
-### 👥 **Gerenciamento de Usuários**
-- Sistema de perfis e permissões granulares
-- Controle de acesso por módulos
-- Gerenciamento de usuários ativos/inativos
-- Interface administrativa completa
+## 🚀 Instalação Rápida
 
-## 🛠️ Tecnologias Utilizadas
-
-- **Backend**: Laravel 10.x
-- **Frontend**: AdminLTE 3.x + Bootstrap
-- **Interatividade**: Livewire 3.x
-- **Banco de Dados**: MySQL
-- **Autenticação**: Laravel Auth + Sistema de Permissões Customizado
-- **UI Components**: DataTables, Chart.js, FontAwesome
-
-## 🚀 Configuração e Instalação
-
-### Pré-requisitos
-- PHP 8.1 ou superior
-- Composer
-- MySQL
-- XAMPP (recomendado para desenvolvimento local)
-
-### Instalação Rápida
-
-1. **Clone o repositório**
-   ```bash
-   git clone [seu-repositorio]
-   cd sistema-interno
-   ```
-
-2. **Configure o ambiente**
-   ```bash
-   # Execute o script de configuração automática
-   ./bat/config_local.bat
-   ```
-
-3. **Execute as migrações**
-   ```bash
-   # Script para criar estrutura do banco
-   ./bat/run_migrations.bat
-   ```
-
-4. **Crie o usuário administrador**
-   ```bash
-   # Opção A: Script automático
-   ./bat/create_admin.bat
-   
-   # Opção B: Via phpMyAdmin
-   # Execute o arquivo criar_admin_apos_migracao.sql
-   ```
-
-5. **Inicie o servidor**
-   ```bash
-   ./bat/start_server.bat
-   ```
-
-### Acesso ao Sistema
-- **URL**: http://localhost:8000
-- **Usuário**: admin
-- **Senha**: 123456
-
-## 📁 Estrutura do Projeto
-
+1. Clone o repositório
+```bash
+git clone https://github.com/F2nn1K/SII.git
+cd SII
 ```
-├── app/
-│   ├── Http/Controllers/     # Controllers principais
-│   ├── Livewire/            # Componentes Livewire
-│   ├── Models/              # Models Eloquent
-│   └── Filters/             # Filtros de permissão
-├── database/
-│   ├── migrations/          # Migrações do banco
-│   └── seeders/             # Seeders de dados iniciais
-├── resources/
-│   └── views/               # Templates Blade
-├── routes/
-│   └── web.php              # Rotas da aplicação
-└── bat/                     # Scripts de automação
+2. Configure o `.env` e gere a key
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+3. (Opcional) Rode as migrações futuras quando quiser iniciar do zero
+```bash
+php artisan migrate
+```
+4. Inicie o servidor
+```bash
+php artisan serve
 ```
 
-## 🔐 Sistema de Permissões
+Acesso padrão: `http://localhost:8000`
 
-O sistema utiliza um controle granular de permissões organizado em grupos:
+## 📁 Estrutura
 
-- **Administrativas**: Controle total do sistema
-- **RH**: Recursos humanos e cronograma
-- **Diárias**: Gestão de diárias
-- **Relatórios**: Acesso a relatórios
-- **Controle de Estoque**: Gestão de produtos e estoque
+```
+app/                    # Controllers, Models
+config/adminlte.php     # Menu e plugins
+resources/views/        # Blades (Pedido de Compras e Estoque)
+routes/web.php          # Rotas principais
+```
 
-## 📊 Dashboard e Relatórios
+## 🔐 Permissões
 
-- Dashboard interativo com gráficos em tempo real
-- Relatórios por centro de custo
-- Análise de produtos mais solicitados
-- Métricas de performance por período
+- Permissões ficam em `permissions` e são ligadas a `profiles` via `profile_permissions`.
+- O menu usa Gates para exibir apenas o que o usuário pode acessar.
 
-## 🔧 Scripts de Automação
+## 🧭 Fluxo de Pedido de Compras
 
-O projeto inclui scripts batch para facilitar tarefas comuns:
+1) Usuário cria a solicitação com itens e prioridade
+2) Sistema gera `num_pedido` e salva itens na tabela `solicitacao`
+3) Autorizador visualiza grupos pendentes, aprova/rejeita e pode enviar mensagens
+4) Solicitante acompanha em “Minhas Interações” ou “Acompanhar Pedido” (read-only)
 
-- `config_local.bat` - Configuração inicial completa
-- `run_migrations.bat` - Execução de migrações
-- `create_admin.bat` - Criação de usuário admin
-- `start_server.bat` - Inicialização do servidor
-- `clear_cache.bat` - Limpeza de cache
+## 🧰 Scripts úteis
+
+- `php artisan route:clear`, `config:clear`, `cache:clear`, `view:clear`
 
 ## 🤝 Contribuição
 
-Para contribuir com o projeto:
-
-1. Faça um fork do repositório
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
-3. Commit suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/nova-funcionalidade`)
-5. Abra um Pull Request
+1. Crie uma branch (`git checkout -b feature/minha-feature`)
+2. Commit (`git commit -m "feat: minha feature"`)
+3. Push (`git push origin feature/minha-feature`)
+4. Abra um PR
 
 ## 📝 Licença
 
-Este projeto é proprietário e desenvolvido para uso interno da empresa.
-
-## 🆘 Suporte
-
-Para suporte técnico ou dúvidas sobre o sistema, consulte a documentação interna ou entre em contato com a equipe de desenvolvimento.
+Projeto proprietário para uso interno.
 
 ---
-
 **Desenvolvido com ❤️ usando Laravel**
