@@ -1,17 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Livewire\CadastroDiarias;
-use App\Http\Controllers\DiariasController;
+// use App\Livewire\CadastroDiarias; // Módulo Diárias removido do menu/rotas
+// use App\Http\Controllers\DiariasController; // Removido
 use App\Http\Controllers\PermissoesController;
 use App\Http\Controllers\UsuariosController;
-use App\Http\Controllers\RHController;
+// use App\Http\Controllers\RHController; // Removido
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Livewire\GerenciarPermissoes;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
-use App\Http\Controllers\CronogramaController;
+// use App\Http\Controllers\CronogramaController; // Removido
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
@@ -30,21 +30,14 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/diarias/mecejana', function () {
-    return view('diarias.mecejana');
-});
+// Removido acesso direto à view/mecejana de Diárias
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard - acessível para todos os usuários autenticados
     Route::get('/home', [App\Http\Controllers\DashboardController::class, 'index'])->name('home');
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
-    // Rotas de Diárias - protegidas pela permissão 'Ver Diárias'
-    Route::middleware(['can:Ver Diárias'])->group(function () {
-        Route::get('/diarias', [App\Http\Controllers\DiariasController::class, 'index'])->name('diarias.index');
-        Route::get('/diarias/cadastro', [App\Http\Controllers\DiariasController::class, 'cadastro'])->name('diarias.cadastro');
-        Route::post('/diarias', [App\Http\Controllers\DiariasController::class, 'store'])->name('diarias.store');
-    });
+    // Rotas de Diárias removidas
 
     // Rotas de BRS - Controle de Estoque - protegidas pela permissão 'Controle de Estoque'
     Route::middleware(['can:controle-estoque'])->group(function () {
@@ -391,26 +384,18 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    // Rotas de Diárias (apenas usuários com permissão)
-    Route::middleware(['can:Ver Diárias'])->group(function () {
-        Route::get('/diarias/relatorio', [DiariasController::class, 'relatorio'])->name('diarias.relatorio');
-        Route::get('/diarias/relatorio-gerente', [DiariasController::class, 'relatorioGerente'])->name('diarias.relatorio-gerente');
-        Route::get('/diarias/exportar', [DiariasController::class, 'exportar'])->name('diarias.exportar');
-    });
+    // Rotas de Diárias desativadas
 
     // Rota principal de relatórios removida - relatórios específicos desabilitados
 
     // Rota para buscar diárias dos gerentes
-    Route::get('/relatorios/buscar-diarias-gerentes', [DiariasController::class, 'buscarDiariasGerentes'])
-        ->name('relatorios.buscar-diarias-gerentes');
+    // Relatórios de diárias desativados
 
     // Rota para buscar lista de gerentes
-    Route::get('/api/gerentes', [DiariasController::class, 'listarGerentes'])
-        ->name('api.gerentes');
+    // API de gerentes/diárias desativadas
 
     // Rota para buscar lista apenas de gerentes que têm diárias registradas
-    Route::get('/api/gerentes-com-diarias', [DiariasController::class, 'listarGerentesComDiarias'])
-        ->name('api.gerentes-com-diarias');
+    // API de gerentes com diárias desativadas
 
     // Rota para listar todos os usuários
     Route::get('/api/usuarios/listar', function() {
@@ -588,8 +573,8 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    // Rotas do RH - com middleware de permissão personalizado
-    Route::middleware(['auth'])->group(function () {
+    // Rotas do RH desativadas
+    /*Route::middleware(['auth'])->group(function () {
         Route::prefix('rh')->group(function () {
             // Rota para Administrador - sem middleware de permissão
             Route::get('/administrador', function() {
@@ -758,7 +743,7 @@ Route::middleware(['auth'])->group(function () {
                 Route::get('/datas/{id}', [CronogramaController::class, 'carregarDatas'])->name('rh.cronograma.datas');
             });
         });
-    });
+    });*/
 });
 
 Auth::routes();
@@ -876,7 +861,7 @@ Route::get('/api/usuarios/{id}', function($id) {
     }
 });
 
-// Rota temporária para corrigir status
+/* Rota temporária para corrigir status
 Route::get('/corrigir-status-rh', function () {
     // Buscar registros com status "Concluída" (antigo)
     $registros = App\Models\RHProblema::where('status', 'Concluída')->get();
@@ -911,10 +896,10 @@ Route::get('/corrigir-status-rh', function () {
     }
     
     return "Processo concluído!";
-})->middleware('auth');
+})->middleware('auth');*/
 
 // Rota para atualizar diretamente o status
-Route::get('/atualizar-status/{id}/{status}', function ($id, $status) {
+/*Route::get('/atualizar-status/{id}/{status}', function ($id, $status) {
     try {
         // Verificar se o status é válido
         if (!in_array($status, ['Pendente', 'Em andamento', 'Concluído', 'No prazo'])) {
@@ -944,7 +929,7 @@ Route::get('/atualizar-status/{id}/{status}', function ($id, $status) {
     } catch (\Exception $e) {
         return "Erro: " . $e->getMessage();
     }
-})->middleware('auth');
+})->middleware('auth');*/
 
 // Rota de emergência para corrigir o registro ID 70
 Route::get('/corrigir-registro-70', function() {

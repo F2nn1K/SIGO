@@ -45,6 +45,6 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Livewire::component('gerenciar-permissoes', GerenciarPermissoes::class);
-        Livewire::component('cadastro-diarias', \App\Livewire\CadastroDiarias::class);
+        // Removido cadastro-diarias do boot para ocultar módulo de Diárias/RH
     }
 }

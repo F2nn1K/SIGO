@@ -314,12 +314,6 @@ return [
                     'icon' => 'fas fa-boxes',
                     'can'  => 'controle-estoque',
                 ],
-                [
-                    'text' => 'Documentos RH',
-                    'url'  => 'rh/documentos',
-                    'icon' => 'fas fa-file-alt',
-                    'can'  => 'Documentos RH',
-                ],
             ],
         ],
         [
