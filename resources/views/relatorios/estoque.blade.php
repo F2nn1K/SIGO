@@ -51,14 +51,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="centro_custo_id" class="font-weight-bold">Centro de Custo</label>
-                                    <select class="form-control" id="centro_custo_id" name="centro_custo_id">
-                                        <option value="">Todos os centros</option>
-                                    </select>
-                                </div>
-                            </div>
+                            
                         </div>
                         <div class="row">
                             <div class="col-md-12">
@@ -232,9 +225,14 @@
 @section('js')
 <script>
 $(document).ready(function() {
+    // Sanitização básica para evitar XSS em HTML injetado via template strings
+    function escapeHtml(str) {
+        return String(str || '').replace(/[&<>"']/g, function(c){
+            return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]);
+        });
+    }
     // Carregar dados iniciais
     carregarProdutos();
-    carregarCentrosCusto();
     
     // Configurar data padrão (último mês)
     const hoje = new Date();
@@ -270,22 +268,13 @@ function carregarProdutos() {
         .done(function(produtos) {
             let options = '<option value="">Todos os produtos</option>';
             produtos.forEach(function(produto) {
-                options += `<option value="${produto.id}">${produto.nome}</option>`;
+                options += `<option value="${produto.id}">${escapeHtml(produto.nome)}</option>`;
             });
             $('#produto_id').html(options);
         });
 }
 
-function carregarCentrosCusto() {
-    $.get('/api/centro-custos')
-        .done(function(centros) {
-            let options = '<option value="">Todos os centros</option>';
-            centros.forEach(function(centro) {
-                options += `<option value="${centro.id}">${centro.nome}</option>`;
-            });
-            $('#centro_custo_id').html(options);
-        });
-}
+// filtro de Centro de Custo removido
 
 function gerarRelatorio() {
     const formData = new FormData($('#formFiltros')[0]);
@@ -356,7 +345,7 @@ function preencherTabela(dados) {
         let produtosHtml = '';
         item.produtos.forEach(function(produto, index) {
             if (index > 0) produtosHtml += '<br>';
-            produtosHtml += `<span class="badge badge-secondary mr-1">${produto.nome} (${produto.quantidade})</span>`;
+            produtosHtml += `<span class="badge badge-secondary mr-1">${escapeHtml(produto.nome)} (${produto.quantidade})</span>`;
         });
         
         html += `
@@ -366,11 +355,11 @@ function preencherTabela(dados) {
                     <small class="text-muted">${item.hora}</small>
                 </td>
                 <td>
-                    <div class="font-weight-bold">${item.funcionario.nome}</div>
-                    <small class="text-muted">${item.funcionario.funcao}</small>
+                    <div class="font-weight-bold">${escapeHtml(item.funcionario.nome)}</div>
+                    <small class="text-muted">${escapeHtml(item.funcionario.funcao)}</small>
                 </td>
                 <td>
-                    <span class="badge badge-info">${item.centro_custo.nome}</span>
+                    <span class="badge badge-info">${escapeHtml(item.centro_custo.nome)}</span>
                 </td>
                 <td>
                     ${produtosHtml}
@@ -394,7 +383,7 @@ function mostrarErro(mensagem) {
             <td colspan="6" class="text-center py-4">
                 <i class="fas fa-exclamation-triangle text-danger fa-2x mb-2"></i>
                 <br>
-                <span class="text-danger">${mensagem}</span>
+                    <span class="text-danger">${escapeHtml(mensagem)}</span>
             </td>
         </tr>
     `);
@@ -417,7 +406,6 @@ function imprimirRelatorio() {
     const dataInicio = $('#data_inicio').val();
     const dataFim = $('#data_fim').val();
     const produtoSelecionado = $('#produto_id option:selected').text();
-    const centroSelecionado = $('#centro_custo_id option:selected').text();
     
     // Criar HTML da impressão
     let htmlImpressao = `

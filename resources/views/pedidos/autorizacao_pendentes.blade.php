@@ -55,12 +55,17 @@ function carregarPendentes(){
       <i class=\"fas fa-check-circle fa-2x mb-2 text-success\"></i><br>
       Nenhuma solicitação pendente de autorização
     </td></tr>`); return; }
+    const esc = s=>String(s||'').replace(/[&<>\"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const prioBadge = p=>{ const k=String(p||'').toLowerCase(); return k==='alta'?'danger':(k==='media'?'warning':'secondary'); };
+    const prioRow = p=>{ const k=String(p||'').toLowerCase(); return k==='alta'?'tr-prio-alta':(k==='media'?'tr-prio-media':'tr-prio-baixa'); };
     grupos.forEach(function(g){
+      const rowCls = prioRow(g.prioridade);
+      const badgeCls = prioBadge(g.prioridade);
       const tr = `
-        <tr>
+        <tr class="${rowCls}">
           <td><span class="badge badge-dark">${g.num_pedido||'—'}</span></td>
           <td>${(g.data_solicitacao||'').replace('T',' ').substring(0,16)}</td>
-          <td>${g.solicitante||'—'}</td>
+          <td>${esc(g.solicitante||'—')}</td>
           <td>
             <div class="d-flex align-items-center">
               <div class="rounded bg-light mr-2 d-flex align-items-center justify-content-center" style="width:34px;height:34px;">
@@ -73,8 +78,8 @@ function carregarPendentes(){
             </div>
           </td>
           <td>${g.quantidade_total||'—'}</td>
-          <td><span class="badge badge-${g.prioridade}">${(g.prioridade||'').toUpperCase()}</span></td>
-          <td>${g.centro_custo_nome||'—'}</td>
+           <td><span class="badge badge-${badgeCls}">${(g.prioridade||'').toUpperCase()}</span></td>
+          <td>${esc(g.centro_custo_nome||'—')}</td>
           <td class="text-nowrap">
             <button class="btn btn-outline-primary btn-sm" onclick="abrirGrupo('${g.grupo_hash}')" title="Detalhar"><i class="fas fa-search"></i></button>
           </td>
@@ -251,6 +256,11 @@ function rejeitarGrupo(hash){
   });
 }
 </script>
+<style>
+.tr-prio-alta { border-left: 4px solid #dc3545; }
+.tr-prio-media { border-left: 4px solid #ffc107; }
+.tr-prio-baixa { border-left: 4px solid #6c757d; }
+</style>
 @stop
 
 

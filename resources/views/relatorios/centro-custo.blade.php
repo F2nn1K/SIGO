@@ -51,14 +51,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="funcionario_id" class="font-weight-bold">Funcionário</label>
-                                    <select class="form-control" id="funcionario_id" name="funcionario_id">
-                                        <option value="">Todos os funcionários</option>
-                                    </select>
-                                </div>
-                            </div>
+                            
                         </div>
                         <div class="row">
                             <div class="col-md-12">
@@ -276,10 +269,12 @@
 
 @section('js')
 <script>
+// Função global para escapar HTML (usada em funções fora do ready)
+function escapeHtml(str){ return String(str||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
+
 $(document).ready(function() {
     // Carregar dados iniciais
     carregarCentrosCusto();
-    carregarFuncionarios();
     
     // Configurar data padrão (último mês)
     const hoje = new Date();
@@ -312,26 +307,28 @@ $(document).ready(function() {
 });
 
 function carregarCentrosCusto() {
-    $.get('/api/centro-custos')
-        .done(function(centros) {
+    $.get('/api/centros-custo')
+        .done(function(resp) {
+            const centros = (resp && resp.data) ? resp.data : (resp || []);
             let options = '<option value="">Todos os centros</option>';
             centros.forEach(function(centro) {
-                options += `<option value="${centro.id}">${centro.nome}</option>`;
+                options += `<option value="${centro.id}">${escapeHtml(centro.nome)}</option>`;
             });
             $('#centro_custo_id').html(options);
+        })
+        .fail(function(){
+            // fallback para endpoint antigo
+            $.get('/api/centro-custos').done(function(centros){
+                let options = '<option value="">Todos os centros</option>';
+                (centros||[]).forEach(function(centro){
+                    options += `<option value="${centro.id}">${escapeHtml(centro.nome)}</option>`;
+                });
+                $('#centro_custo_id').html(options);
+            });
         });
 }
 
-function carregarFuncionarios() {
-    $.get('/api/funcionarios')
-        .done(function(funcionarios) {
-            let options = '<option value="">Todos os funcionários</option>';
-            funcionarios.forEach(function(funcionario) {
-                options += `<option value="${funcionario.id}">${funcionario.nome}</option>`;
-            });
-            $('#funcionario_id').html(options);
-        });
-}
+// Removido filtro de funcionário
 
 function gerarRelatorio() {
     const formData = new FormData($('#formFiltros')[0]);
@@ -411,17 +408,17 @@ function preencherTabela(dados) {
         let produtosHtml = '';
         item.produtos.forEach(function(produto, index) {
             if (index > 0) produtosHtml += '<br>';
-            produtosHtml += `<span class="badge badge-secondary mr-1">${produto.nome} (${produto.quantidade})</span>`;
+            produtosHtml += `<span class="badge badge-secondary mr-1">${escapeHtml(produto.nome)} (${produto.quantidade})</span>`;
         });
         
         html += `
             <tr>
                 <td>
-                    <span class="badge badge-center">${item.centro_custo.nome}</span>
+                    <span class="badge badge-center">${escapeHtml(item.centro_custo.nome)}</span>
                 </td>
                 <td>
-                    <div class="font-weight-bold">${item.funcionario.nome}</div>
-                    <small class="text-muted">${item.funcionario.funcao || 'Não informada'}</small>
+                    <div class="font-weight-bold">${escapeHtml(item.funcionario.nome)}</div>
+                    <small class="text-muted">${escapeHtml(item.funcionario.funcao || 'Não informada')}</small>
                 </td>
                 <td>
                     <div class="font-weight-bold">${item.data}</div>
@@ -473,7 +470,6 @@ function imprimirRelatorio() {
     const dataInicio = $('#data_inicio').val();
     const dataFim = $('#data_fim').val();
     const centroSelecionado = $('#centro_custo_id option:selected').text();
-    const funcionarioSelecionado = $('#funcionario_id option:selected').text();
     
     // Criar HTML da impressão
     let htmlImpressao = `

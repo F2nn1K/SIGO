@@ -9,6 +9,7 @@ use App\Models\Baixa;
 use App\Models\CentroCusto;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class ControleEstoqueController extends Controller
 {
@@ -77,25 +78,34 @@ class ControleEstoqueController extends Controller
     
     public function buscarProdutosPorNome(Request $request)
     {
-        $nome = $request->get('nome');
-        
-        if (!$nome || strlen($nome) < 3) {
+        // Aceita tanto 'nome' quanto 'termo' para evitar conflitos de chamadas
+        $termo = $request->get('nome') ?: $request->get('termo');
+
+        if (!$termo || mb_strlen($termo) < 3) {
             return response()->json([]);
         }
-        
-        $produtos = Estoque::where('nome', 'like', '%' . $nome . '%')
-                          ->select('id', 'nome', 'descricao', 'quantidade', 'created_at', 'updated_at')
-                          ->orderBy('nome')
-                          ->limit(20)
-                          ->get();
-        
+
+        $produtos = Estoque::query()
+            ->where(function($q) use ($termo){
+                $q->where('nome', 'like', '%' . $termo . '%')
+                  ->orWhere('descricao', 'like', '%' . $termo . '%');
+            })
+            ->select('id', 'nome', 'descricao', 'quantidade', 'created_at', 'updated_at')
+            ->orderBy('nome')
+            ->limit(50)
+            ->get();
+
         return response()->json($produtos);
     }
     
     public function criarProduto(Request $request)
     {
         $request->validate([
-            'nome' => 'required|string|max:255|unique:estoque,nome',
+            'nome' => ['required','string','max:255',
+                Rule::unique('estoque', 'nome')->where(function($q) use ($request){
+                    return $q->where('descricao', $request->descricao);
+                })
+            ],
             'descricao' => 'nullable|string|max:1000',
             'quantidade' => 'required|integer|min:0'
         ]);
@@ -124,7 +134,11 @@ class ControleEstoqueController extends Controller
     public function atualizarProduto(Request $request, $id)
     {
         $request->validate([
-            'nome' => 'required|string|max:255',
+            'nome' => ['required','string','max:255',
+                Rule::unique('estoque', 'nome')->ignore($id)->where(function($q) use ($request){
+                    return $q->where('descricao', $request->descricao);
+                })
+            ],
             'descricao' => 'nullable|string|max:1000',
             'quantidade' => 'required|integer|min:0'
         ]);

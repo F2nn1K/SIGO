@@ -368,17 +368,32 @@ return [
                     'icon' => 'fas fa-user-tie',
                     'can'  => 'relatorio-funcionario',
                 ],
+                [
+                    'text' => 'Relatório Pedido de Compras',
+                    'url'  => 'relatorios/pedidos-compra',
+                    'icon' => 'fas fa-file-invoice-dollar',
+                    'can'  => 'rel_pc',
+                ],
             ],
         ],
         [
             'text' => 'Gerenciamento',
             'icon' => 'fas fa-users-cog',
             'url'  => '#',
+            // Só mostra se o usuário tiver pelo menos uma dessas permissões
+            'can_any' => ['gerenciar-usuarios', 'gerenciar-permissoes'],
             'submenu' => [
+                [
+                    'text' => 'Gerenciar Usuários',
+                    'url'  => 'usuarios',
+                    'icon' => 'fas fa-user-cog',
+                    'can'  => 'gerenciar-usuarios',
+                ],
                 [
                     'text' => 'Gerenciar Permissões',
                     'url'  => 'permissoes',
                     'icon' => 'fas fa-key',
+                    'can'  => 'gerenciar-permissoes',
                 ],
             ],
         ],

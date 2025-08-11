@@ -1037,13 +1037,23 @@
     
     // Função para carregar centro de custos
     function carregarCentroCustos() {
-        $.get('/api/centro-custos')
-            .done(function(data) {
-                centroCustos = data;
+        // Novo endpoint livre para telas autenticadas
+        $.get('/api/centros-custo')
+            .done(function(resp) {
+                // aceita tanto array direto quanto {success, data}
+                centroCustos = (resp && resp.data) ? resp.data : (resp || []);
                 $('#centro-custo').attr('placeholder', 'Digite pelo menos 3 letras para buscar...');
             })
             .fail(function() {
-                $('#centro-custo').attr('placeholder', 'Erro ao carregar centros de custo');
+                // fallback para endpoint antigo (caso exista)
+                $.get('/api/centro-custos')
+                    .done(function(respAntigo){
+                        centroCustos = (respAntigo && respAntigo.data) ? respAntigo.data : (respAntigo || []);
+                        $('#centro-custo').attr('placeholder', 'Digite pelo menos 3 letras para buscar...');
+                    })
+                    .fail(function(){
+                        $('#centro-custo').attr('placeholder', 'Erro ao carregar centros de custo');
+                    });
             });
     }
     
@@ -1136,7 +1146,7 @@
         }
         
         // Filtrar centro de custos
-        const filteredCentroCustos = centroCustos.filter(function(centro) {
+        const filteredCentroCustos = (centroCustos || []).filter(function(centro) {
             return centro.nome.toLowerCase().includes(query.toLowerCase());
         }).slice(0, 20);
         
@@ -1144,14 +1154,30 @@
             let resultsHtml = '';
             for (let i = 0; i < filteredCentroCustos.length; i++) {
                 const centro = filteredCentroCustos[i];
-                resultsHtml += `<div class="centro-custo-item" data-id="${centro.id}" data-nome="${centro.nome}">
-                                   ${centro.nome}
+                resultsHtml += `<div class="centro-custo-item" data-id="${centro.id}" data-nome="${escapeHtml(centro.nome)}">
+                                   ${escapeHtml(centro.nome)}
                                </div>`;
             }
             
             resultsContainer.html(resultsHtml).show();
         } else {
-            resultsContainer.html('<div class="centro-custo-item">Nenhum centro de custo encontrado</div>').show();
+            // fallback consulta direta ao backend
+            $.get('/api/centros-custo/buscar', { termo: query })
+                .done(function(resp){
+                    const lista = (resp && resp.data) ? resp.data : [];
+                    if (lista.length === 0) {
+                        resultsContainer.html('<div class="centro-custo-item">Nenhum centro de custo encontrado</div>').show();
+                        return;
+                    }
+                    let html = '';
+                    lista.forEach(function(centro){
+                        html += `<div class="centro-custo-item" data-id="${centro.id}" data-nome="${escapeHtml(centro.nome)}">${escapeHtml(centro.nome)}</div>`;
+                    });
+                    resultsContainer.html(html).show();
+                })
+                .fail(function(){
+                    resultsContainer.html('<div class="centro-custo-item">Erro ao buscar centros de custo</div>').show();
+                });
         }
     });
     
@@ -1181,6 +1207,9 @@
     }
     
     // Autocomplete de produtos
+    // escape simples para conteúdo controlado pelo usuário
+    function escapeHtml(str){ return String(str||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
+
     $(document).on('input', '.produto-search', function() {
         const query = $(this).val().trim();
         const resultsContainer = $(this).siblings('.produto-results');
@@ -1193,8 +1222,9 @@
         }
         
         // Filtrar produtos que começam com a consulta
-        const filteredProdutos = produtos.filter(produto => 
-            produto.nome.toLowerCase().startsWith(query.toLowerCase())
+        let filteredProdutos = (produtos || []).filter(produto => 
+            (produto.nome||'').toLowerCase().startsWith(query.toLowerCase()) ||
+            (produto.descricao||'').toLowerCase().startsWith(query.toLowerCase())
         );
         
         if (filteredProdutos.length > 0) {
@@ -1207,11 +1237,11 @@
                 const produto = filteredProdutos[i];
                 resultsHtml += `
                     <div class="produto-result-item" data-id="${produto.id}" 
-                         data-nome="${produto.nome}" 
+                         data-nome="${escapeHtml(produto.nome)}" 
                          data-estoque="${produto.quantidade}"
-                         data-descricao="${produto.descricao || ''}">
-                        <div class="produto-result-name">${produto.nome}</div>
-                        <div class="produto-result-info">Estoque: ${produto.quantidade} unidades${produto.descricao ? ' - ' + produto.descricao : ''}</div>
+                         data-descricao="${escapeHtml(produto.descricao || '')}">
+                        <div class="produto-result-name">${escapeHtml(produto.nome)}</div>
+                        <div class="produto-result-info">Estoque: ${produto.quantidade} unidades${produto.descricao ? ' - ' + escapeHtml(produto.descricao) : ''}</div>
                     </div>
                 `;
             }
@@ -1225,7 +1255,37 @@
             
             resultsContainer.html(resultsHtml).show();
         } else {
-            resultsContainer.html('<div class="no-results">Nenhum produto encontrado</div>').show();
+            // Fallback: buscar no backend se local não encontrou (endpoint exclusivo do estoque)
+            $.get('/api/estoque/produtos/buscar', { nome: query })
+                .done(function(remotos){
+                    if (!remotos || remotos.length === 0) {
+                        resultsContainer.html('<div class="no-results">Nenhum produto encontrado</div>').show();
+                        return;
+                    }
+                    // Atualiza cache local mesclando pelo id
+                    const byId = new Map((produtos||[]).map(p=>[p.id,p]));
+                    remotos.forEach(p=>{ byId.set(p.id, p); });
+                    produtos = Array.from(byId.values());
+
+                    let resultsHtml = '';
+                    const maxResults = Math.min(remotos.length, 20);
+                    for (let i = 0; i < maxResults; i++) {
+                        const produto = remotos[i];
+                        resultsHtml += `
+                            <div class="produto-result-item" data-id="${produto.id}" 
+                                 data-nome="${escapeHtml(produto.nome)}" 
+                                 data-estoque="${produto.quantidade}"
+                                 data-descricao="${escapeHtml(produto.descricao || '')}">
+                                <div class="produto-result-name">${escapeHtml(produto.nome)}</div>
+                                <div class="produto-result-info">Estoque: ${produto.quantidade} unidades${produto.descricao ? ' - ' + escapeHtml(produto.descricao) : ''}</div>
+                            </div>
+                        `;
+                    }
+                    resultsContainer.html(resultsHtml).show();
+                })
+                .fail(function(){
+                    resultsContainer.html('<div class="no-results">Erro ao buscar produtos</div>').show();
+                });
         }
     });
     
@@ -1783,7 +1843,7 @@
             return;
         }
         
-        $.get('/api/produtos/buscar', { nome: nome })
+        $.get('/api/estoque/produtos/buscar', { nome: nome })
             .done(function(produtos) {
                 if (produtos.length > 0) {
                     let listHtml = '';
@@ -2010,7 +2070,7 @@
             return;
         }
         
-        $.get('/api/produtos/buscar', { nome: nome })
+        $.get('/api/estoque/produtos/buscar', { nome: nome })
             .done(function(produtos) {
                 if (produtos.length > 0) {
                     let listHtml = '';

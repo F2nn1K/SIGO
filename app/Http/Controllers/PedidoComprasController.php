@@ -562,14 +562,23 @@ class PedidoComprasController extends Controller
     /**
      * Lista pedidos aprovados (última interação = aprovacao)
      */
-    public function pedidosAprovados()
+    public function pedidosAprovados(Request $request)
     {
-        $aprovados = \DB::table('solicitacao as s')
+        $aprovadosQuery = \DB::table('solicitacao as s')
             ->leftJoin('users as u', 'u.id', '=', 's.usuario_id')
             ->leftJoin('centro_custo as cc', 'cc.id', '=', 's.centro_custo_id')
             ->where('s.aprovacao', '=', 'aprovado')
-            ->orderByDesc('s.data_solicitacao')
-            ->get([
+            ->orderByDesc('s.data_solicitacao');
+
+        // filtros de data (data_solicitacao)
+        if ($request->filled('data_ini')) {
+            $aprovadosQuery->whereDate('s.data_solicitacao', '>=', $request->input('data_ini'));
+        }
+        if ($request->filled('data_fim')) {
+            $aprovadosQuery->whereDate('s.data_solicitacao', '<=', $request->input('data_fim'));
+        }
+
+        $aprovados = $aprovadosQuery->get([
                 's.*',
                 \DB::raw("COALESCE(u.name, '—') as solicitante"),
                 \DB::raw("COALESCE(cc.nome, '—') as centro_custo_nome"),
@@ -582,14 +591,22 @@ class PedidoComprasController extends Controller
     /**
      * Lista pedidos rejeitados (última interação = rejeicao)
      */
-    public function pedidosRejeitados()
+    public function pedidosRejeitados(Request $request)
     {
-        $rejeitados = \DB::table('solicitacao as s')
+        $rejeitadosQuery = \DB::table('solicitacao as s')
             ->leftJoin('users as u', 'u.id', '=', 's.usuario_id')
             ->leftJoin('centro_custo as cc', 'cc.id', '=', 's.centro_custo_id')
             ->where('s.aprovacao', '=', 'rejeitado')
-            ->orderByDesc('s.data_solicitacao')
-            ->get([
+            ->orderByDesc('s.data_solicitacao');
+
+        if ($request->filled('data_ini')) {
+            $rejeitadosQuery->whereDate('s.data_solicitacao', '>=', $request->input('data_ini'));
+        }
+        if ($request->filled('data_fim')) {
+            $rejeitadosQuery->whereDate('s.data_solicitacao', '<=', $request->input('data_fim'));
+        }
+
+        $rejeitados = $rejeitadosQuery->get([
                 's.*',
                 \DB::raw("COALESCE(u.name, '—') as solicitante"),
                 \DB::raw("COALESCE(cc.nome, '—') as centro_custo_nome"),
@@ -602,17 +619,26 @@ class PedidoComprasController extends Controller
     /**
      * Aprovados agrupados por envio
      */
-    public function pedidosAprovadosAgrupados()
+    public function pedidosAprovadosAgrupados(Request $request)
     {
         $hashExpr = "SHA1(CONCAT(s.usuario_id,'|',s.centro_custo_id,'|',s.prioridade,'|',COALESCE(s.observacao,''),'|', DATE_FORMAT(s.data_solicitacao,'%Y-%m-%d %H:%i:%s')))";
 
-        $grupos = \DB::table('solicitacao as s')
+        $query = \DB::table('solicitacao as s')
             ->leftJoin('users as u', 'u.id', '=', 's.usuario_id')
             ->leftJoin('centro_custo as cc', 'cc.id', '=', 's.centro_custo_id')
             ->where('s.aprovacao', '=', 'aprovado')
             ->groupByRaw("$hashExpr, s.usuario_id, s.centro_custo_id, s.prioridade, COALESCE(s.observacao,''), DATE_FORMAT(s.data_solicitacao,'%Y-%m-%d %H:%i:%s'), u.name, cc.nome")
             ->orderByDesc('data_solicitacao')
-            ->get([
+            ;
+
+        if ($request->filled('data_ini')) {
+            $query->whereDate('s.data_solicitacao', '>=', $request->input('data_ini'));
+        }
+        if ($request->filled('data_fim')) {
+            $query->whereDate('s.data_solicitacao', '<=', $request->input('data_fim'));
+        }
+
+        $grupos = $query->get([
                 \DB::raw("$hashExpr as grupo_hash"),
                 \DB::raw("DATE_FORMAT(s.data_solicitacao,'%Y-%m-%d %H:%i:%s') as data_solicitacao"),
                 's.usuario_id',
@@ -632,17 +658,26 @@ class PedidoComprasController extends Controller
     /**
      * Rejeitados agrupados por envio
      */
-    public function pedidosRejeitadosAgrupados()
+    public function pedidosRejeitadosAgrupados(Request $request)
     {
         $hashExpr = "SHA1(CONCAT(s.usuario_id,'|',s.centro_custo_id,'|',s.prioridade,'|',COALESCE(s.observacao,''),'|', DATE_FORMAT(s.data_solicitacao,'%Y-%m-%d %H:%i:%s')))";
 
-        $grupos = \DB::table('solicitacao as s')
+        $query = \DB::table('solicitacao as s')
             ->leftJoin('users as u', 'u.id', '=', 's.usuario_id')
             ->leftJoin('centro_custo as cc', 'cc.id', '=', 's.centro_custo_id')
             ->where('s.aprovacao', '=', 'rejeitado')
             ->groupByRaw("$hashExpr, s.usuario_id, s.centro_custo_id, s.prioridade, COALESCE(s.observacao,''), DATE_FORMAT(s.data_solicitacao,'%Y-%m-%d %H:%i:%s'), u.name, cc.nome")
             ->orderByDesc('data_solicitacao')
-            ->get([
+            ;
+
+        if ($request->filled('data_ini')) {
+            $query->whereDate('s.data_solicitacao', '>=', $request->input('data_ini'));
+        }
+        if ($request->filled('data_fim')) {
+            $query->whereDate('s.data_solicitacao', '<=', $request->input('data_fim'));
+        }
+
+        $grupos = $query->get([
                 \DB::raw("$hashExpr as grupo_hash"),
                 \DB::raw("DATE_FORMAT(s.data_solicitacao,'%Y-%m-%d %H:%i:%s') as data_solicitacao"),
                 's.usuario_id',

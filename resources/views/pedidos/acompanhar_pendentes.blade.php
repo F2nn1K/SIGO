@@ -48,7 +48,7 @@ function row(p){
   return `<tr>
     <td><span class="badge badge-dark">${p.num_pedido}</span></td>
     <td>${(p.data_solicitacao||'').replace('T',' ').substring(0,16)}</td>
-    <td>${p.centro_custo_nome||'—'}</td>
+    <td>${(p.centro_custo_nome||'—').replace(/[&<>\"]/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]))}</td>
     <td>${p.itens} itens</td>
     <td>${p.quantidade_total||0}</td>
     <td><span class="badge badge-${p.prioridade}">${(p.prioridade||'').toUpperCase()}</span></td>
@@ -59,8 +59,9 @@ function abrir(hash){
   $.get(`/api/pedidos/acompanhar/${hash}`, function(resp){
     if(!resp.success) return; const h=resp.data.cabecalho, itens=resp.data.itens||[], ints=resp.data.interacoes||[];
     $('#num').text(h.num_pedido); $('#cc').text(h.centro_custo_nome||'—'); $('#pri').text((h.prioridade||'').toUpperCase());
-    $('#itens').html(itens.map(i=>`<li class="list-group-item d-flex justify-content-between"><span>${i.produto_nome}</span><span class="badge badge-secondary">${i.quantidade}</span></li>`).join(''));
-    $('#ints').html(ints.map(it=>`<li class="list-group-item"><strong>${it.usuario}</strong> — <span class="text-muted">${(it.created_at||'').replace('T',' ').substring(0,16)}</span><br>${it.tipo.toUpperCase()}${it.mensagem?': '+it.mensagem:''}</li>`).join('')||'<li class="list-group-item text-muted">Sem interações</li>');
+    const esc = s=>String(s||'').replace(/[&<>\"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    $('#itens').html(itens.map(i=>`<li class="list-group-item d-flex justify-content-between"><span>${esc(i.produto_nome)}</span><span class="badge badge-secondary">${i.quantidade}</span></li>`).join(''));
+    $('#ints').html(ints.map(it=>`<li class="list-group-item"><strong>${esc(it.usuario)}</strong> — <span class="text-muted">${(it.created_at||'').replace('T',' ').substring(0,16)}</span><br>${(it.tipo||'').toUpperCase()}${it.mensagem?': '+esc(it.mensagem):''}</li>`).join('')||'<li class="list-group-item text-muted">Sem interações</li>');
     $('#modal').modal('show');
   });
 }

@@ -40,13 +40,14 @@ Route::middleware(['auth'])->group(function () {
     // Rotas de Diárias removidas
 
     // Rotas de BRS - Controle de Estoque - protegidas pela permissão 'Controle de Estoque'
-    Route::middleware(['can:controle-estoque'])->group(function () {
+    Route::middleware(['can:controle-estoque','throttle:120,1'])->group(function () {
     Route::get('/brs/controle-estoque', [App\Http\Controllers\ControleEstoqueController::class, 'index'])->name('brs.controle-estoque');
     Route::get('/api/funcionarios', [App\Http\Controllers\ControleEstoqueController::class, 'buscarFuncionarios']);
     Route::get('/api/centro-custos', [App\Http\Controllers\ControleEstoqueController::class, 'buscarCentroCustos']);
     Route::get('/api/produtos', [App\Http\Controllers\ControleEstoqueController::class, 'buscarProdutos']);
     Route::get('/api/produtos-em-falta', [App\Http\Controllers\ControleEstoqueController::class, 'produtosEmFalta']);
-    Route::get('/api/produtos/buscar', [App\Http\Controllers\ControleEstoqueController::class, 'buscarProdutosPorNome']);
+    // Endpoint específico do módulo de estoque para evitar conflito com pedidos de compras
+    Route::get('/api/estoque/produtos/buscar', [App\Http\Controllers\ControleEstoqueController::class, 'buscarProdutosPorNome']);
     Route::post('/api/produtos', [App\Http\Controllers\ControleEstoqueController::class, 'criarProduto']);
     Route::put('/api/produtos/{id}', [App\Http\Controllers\ControleEstoqueController::class, 'atualizarProduto']);
     Route::post('/api/entradas', [App\Http\Controllers\ControleEstoqueController::class, 'registrarEntrada']);
@@ -58,26 +59,39 @@ Route::middleware(['auth'])->group(function () {
         return view('relatorios.index');
     })->middleware('auth')->name('relatorios.index');
     
-    Route::middleware(['can:relatorio-estoque'])->group(function () {
+    Route::middleware(['can:relatorio-estoque','throttle:60,1'])->group(function () {
         Route::get('/relatorios/estoque', [App\Http\Controllers\RelatorioEstoqueController::class, 'index'])->name('relatorios.estoque');
         Route::post('/api/relatorio-estoque', [App\Http\Controllers\RelatorioEstoqueController::class, 'gerarRelatorio']);
         Route::post('/api/relatorio-estoque/exportar', [App\Http\Controllers\RelatorioEstoqueController::class, 'exportarExcel']);
     });
 
-    Route::middleware(['can:relatorio-centro-custo'])->group(function () {
+    Route::middleware(['can:relatorio-centro-custo','throttle:60,1'])->group(function () {
         Route::get('/relatorios/centro-custo', [App\Http\Controllers\RelatorioCentroCustoController::class, 'index'])->name('relatorios.centro-custo');
         Route::post('/api/relatorio-centro-custo', [App\Http\Controllers\RelatorioCentroCustoController::class, 'gerarRelatorio']);
         Route::post('/api/relatorio-centro-custo/exportar', [App\Http\Controllers\RelatorioCentroCustoController::class, 'exportarExcel']);
     });
 
-    Route::middleware(['can:relatorio-funcionario'])->group(function () {
+    Route::middleware(['can:relatorio-funcionario','throttle:60,1'])->group(function () {
         Route::get('/relatorios/funcionario', [App\Http\Controllers\RelatorioPorFuncionarioController::class, 'index'])->name('relatorios.funcionario');
         Route::post('/api/relatorio-funcionario', [App\Http\Controllers\RelatorioPorFuncionarioController::class, 'gerarRelatorio']);
         Route::post('/api/relatorio-funcionario/exportar', [App\Http\Controllers\RelatorioPorFuncionarioController::class, 'exportarExcel']);
     });
 
+    // Relatório: Pedido de Compras (somente para quem tem a permissão específica criada pelo usuário)
+    Route::middleware(['can:rel_pc','throttle:60,1'])->group(function () {
+        // Página do relatório
+        Route::get('/relatorios/pedidos-compra', function () {
+            return view('relatorios.relatorio-pedido-compras');
+        })->name('relatorios.pedidos-compra');
+
+        // Endpoints de leitura usados pela página do relatório
+        Route::get('/api/relatorio-pc/aprovados', [App\Http\Controllers\PedidoComprasController::class, 'pedidosAprovadosAgrupados']);
+        Route::get('/api/relatorio-pc/rejeitados', [App\Http\Controllers\PedidoComprasController::class, 'pedidosRejeitadosAgrupados']);
+        Route::get('/api/relatorio-pc/detalhes/{hash}', [App\Http\Controllers\PedidoComprasController::class, 'detalhesPedidoAgrupado']);
+    });
+
     // Rotas de Pedidos de Compras - protegidas por suas respectivas permissões
-    Route::middleware(['can:solicitacao-pedidos'])->group(function () {
+    Route::middleware(['can:solicitacao-pedidos','throttle:120,1'])->group(function () {
         Route::get('/pedidos/solicitacao', [App\Http\Controllers\PedidoComprasController::class, 'solicitacao'])->name('pedidos.solicitacao');
         Route::post('/api/pedidos', [App\Http\Controllers\PedidoComprasController::class, 'store']);
         Route::get('/api/minhas-solicitacoes', [App\Http\Controllers\PedidoComprasController::class, 'minhasSolicitacoes']);
@@ -86,7 +100,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/api/centro-custos/buscar', [App\Http\Controllers\PedidoComprasController::class, 'buscarCentrosCustoAutocomplete']);
     });
 
-    Route::middleware(['can:autorizacao-pedidos'])->group(function () {
+    Route::middleware(['can:autorizacao-pedidos','throttle:120,1'])->group(function () {
         Route::get('/pedidos/autorizacao', [App\Http\Controllers\PedidoComprasController::class, 'autorizacao'])->name('pedidos.autorizacao');
         Route::get('/pedidos/autorizacao/pendentes', [App\Http\Controllers\PedidoComprasController::class, 'autorizacoesPendentesView'])->name('pedidos.autorizacao.pendentes');
         Route::get('/pedidos/autorizacao/aprovadas', [App\Http\Controllers\PedidoComprasController::class, 'autorizacoesAprovadasView'])->name('pedidos.autorizacao.aprovadas');
@@ -106,6 +120,12 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/api/pedidos/{id}/rejeitar', [App\Http\Controllers\PedidoComprasController::class, 'rejeitar']);
     });
 
+    // Endpoints utilitários disponíveis para telas autenticadas (ex.: Controle de Estoque)
+    Route::middleware(['auth','throttle:120,1'])->group(function () {
+        Route::get('/api/centros-custo', [App\Http\Controllers\PedidoComprasController::class, 'buscarCentrosCusto']);
+        Route::get('/api/centros-custo/buscar', [App\Http\Controllers\PedidoComprasController::class, 'buscarCentrosCustoAutocomplete']);
+    });
+
     // Página de histórico e interações dos pedidos do próprio usuário
     Route::middleware(['can:Pedidos de Compras'])->group(function () {
         Route::get('/pedidos/minhas-interacoes', [App\Http\Controllers\PedidoComprasController::class, 'minhasInteracoesView'])->name('pedidos.minhas.interacoes');
@@ -115,7 +135,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Acompanhar Pedido (somente leitura) – permissão: Acompanhar Pedido
-    Route::middleware(['can:Acompanhar Pedido'])->group(function () {
+    Route::middleware(['can:Acompanhar Pedido','throttle:60,1'])->group(function () {
         Route::get('/pedidos/acompanhar', [App\Http\Controllers\PedidoComprasController::class, 'acompanharView'])->name('pedidos.acompanhar');
         Route::get('/pedidos/acompanhar/pendentes', function(){ return view('pedidos.acompanhar_pendentes'); })->name('pedidos.acompanhar.pendentes');
         Route::get('/pedidos/acompanhar/aprovadas', function(){ return view('pedidos.acompanhar_aprovadas'); })->name('pedidos.acompanhar.aprovadas');
@@ -404,9 +424,9 @@ Route::middleware(['auth'])->group(function () {
             'success' => true,
             'data' => $usuarios
         ]);
-    });
+    })->middleware(['can:gerenciar-usuarios','throttle:60,1']);
     // Rota para obter dados de usuários via API
-    Route::get('/api/usuarios/{id}', [UsuariosController::class, 'show']);
+    Route::get('/api/usuarios/{id}', [UsuariosController::class, 'show'])->middleware(['can:gerenciar-usuarios','throttle:60,1']);
     // API para atualizar usuário
     Route::put('/api/usuarios/{id}', function(\Illuminate\Http\Request $request, $id) {
         try {
@@ -774,7 +794,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 });
 
 // APIs para gerenciamento de permissões
-Route::middleware(['auth'])->prefix('api')->group(function () {
+Route::middleware(['auth','throttle:60,1'])->prefix('api')->group(function () {
     // Obter todas as permissões
     Route::get('/permissoes/listar', function() {
         $permissoes = \App\Models\Permission::all();
@@ -839,12 +859,12 @@ Route::middleware(['auth'])->prefix('api')->group(function () {
     });
 });
 
-// API para usuários (usado no select do formulário)
+// API para usuários (usado no select do formulário) — protegido
 Route::get('/api/usuarios', function() {
     return App\Models\User::select('id', 'name')->get();
-})->name('api.usuarios');
+})->middleware(['auth','can:gerenciar-usuarios','throttle:60,1'])->name('api.usuarios');
 
-// API para obter dados de usuário
+// API para obter dados de usuário — protegido
 Route::get('/api/usuarios/{id}', function($id) {
     try {
         $usuario = \App\Models\User::with('profile')->findOrFail($id);
@@ -859,7 +879,7 @@ Route::get('/api/usuarios/{id}', function($id) {
             'message' => 'Erro ao obter dados do usuário: ' . $e->getMessage()
         ], 500);
     }
-});
+})->middleware(['auth','can:gerenciar-usuarios','throttle:60,1']);
 
 /* Rota temporária para corrigir status
 Route::get('/corrigir-status-rh', function () {
@@ -955,7 +975,7 @@ Route::get('/corrigir-registro-70', function() {
     } catch (\Exception $e) {
         return "Erro: " . $e->getMessage();
     }
-});
+})->middleware(['auth']);
 
 // Nova rota para atualização de status via AJAX
 Route::post('/rh/problemas/{id}/status', [App\Http\Controllers\RHController::class, 'updateStatus'])->name('rh.problema.status');
@@ -965,7 +985,7 @@ Route::get('/debug/enable-sql-log', function() {
     \DB::enableQueryLog();
     \Log::info('Logging SQL ativado via AJAX');
     return response()->json(['status' => 'success', 'message' => 'SQL logging enabled']);
-});
+})->middleware(['auth','throttle:30,1']);
 
 // Rota de teste específica para diagnóstico de problemas com datas
 Route::get('/debug/teste-data/{data?}', function($data = null) {
@@ -1107,7 +1127,7 @@ Route::get('/debug/teste-data/{data?}', function($data = null) {
             'resultados' => $resultados ?? []
         ], 500);
     }
-});
+})->middleware(['auth','throttle:30,1']);
 
 // Rotas de debug de tarefas removidas
 

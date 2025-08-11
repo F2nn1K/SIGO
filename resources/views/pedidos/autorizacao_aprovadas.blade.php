@@ -51,16 +51,17 @@ function carregarAprovados(){
     $('#badge-aprovadas').text(`${grupos.length} aprovadas`);
     const tbody = $('#tabela-aprovadas tbody'); tbody.empty();
       if(grupos.length===0){ tbody.append(`<tr><td colspan="7" class="text-center text-muted" id="empty-row">Nenhum registro encontrado</td></tr>`); return; }
+    const esc = s=>String(s||'').replace(/[&<>\"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     grupos.forEach(function(g){
       const tr = `
         <tr>
             <td><span class="badge badge-dark">${g.num_pedido||'—'}</span></td>
           <td>${(g.data_solicitacao||'').replace('T',' ').substring(0,16)}</td>
-          <td>${g.solicitante||'—'}</td>
+          <td>${esc(g.solicitante||'—')}</td>
           <td>${g.itens} itens</td>
           <td>${g.quantidade_total||0}</td>
           <td><span class="badge badge-${g.prioridade}">${(g.prioridade||'').toUpperCase()}</span></td>
-          <td>${g.centro_custo_nome||'—'}</td>
+          <td>${esc(g.centro_custo_nome||'—')}</td>
         </tr>`; tbody.append(tr);
     });
   });

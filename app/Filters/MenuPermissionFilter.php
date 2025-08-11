@@ -75,11 +75,15 @@ class MenuPermissionFilter implements FilterInterface
         }
 
         $user = Auth::user();
-        \Log::debug('MenuPermissionFilter: Verificando permissão ' . $permission . ' para o usuário ' . $user->id);
+        if (config('app.debug')) {
+            \Log::debug('MenuPermissionFilter: Verificando permissão ' . $permission . ' para o usuário ' . $user->id);
+        }
         
         // Se o usuário tem perfil 'Admin', concede acesso a tudo
         if ($user->profile && $user->profile->name === 'Admin') {
-            \Log::debug('MenuPermissionFilter: Usuário é Admin, concedendo acesso para: ' . $permission);
+            if (config('app.debug')) {
+                \Log::debug('MenuPermissionFilter: Usuário é Admin, concedendo acesso para: ' . $permission);
+            }
             return true;
         }
         
@@ -94,13 +98,17 @@ class MenuPermissionFilter implements FilterInterface
                 })
                 ->exists();
                 
-            \Log::debug('MenuPermissionFilter: Resultado da verificação para ' . $permission . ': ' . ($temPermissao ? 'true' : 'false'));
+            if (config('app.debug')) {
+                \Log::debug('MenuPermissionFilter: Resultado da verificação para ' . $permission . ': ' . ($temPermissao ? 'true' : 'false'));
+            }
             
             if ($temPermissao) {
                 return true;
             }
         } else {
-            \Log::debug('MenuPermissionFilter: Usuário sem perfil definido');
+            if (config('app.debug')) {
+                \Log::debug('MenuPermissionFilter: Usuário sem perfil definido');
+            }
         }
         
         return false;

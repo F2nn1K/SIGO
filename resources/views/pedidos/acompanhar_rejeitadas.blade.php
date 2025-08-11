@@ -46,9 +46,10 @@ function row(p){
 function abrir(hash){
   $.get(`/api/pedidos/acompanhar/${hash}`, function(resp){
     if(!resp.success) return; const h=resp.data.cabecalho, itens=resp.data.itens||[], ints=resp.data.interacoes||[];
-    $('#num').text(h.num_pedido); $('#cc').text(h.centro_custo_nome||'—'); $('#pri').text((h.prioridade||'').toUpperCase());
-    $('#itens').html(itens.map(i=>`<li class=\"list-group-item d-flex justify-content-between\"><span>${i.produto_nome}</span><span class=\"badge badge-secondary\">${i.quantidade}</span></li>`).join(''));
-    $('#ints').html(ints.map(it=>`<li class=\"list-group-item\"><strong>${it.usuario}</strong> — <span class=\"text-muted\">${(it.created_at||'').replace('T',' ').substring(0,16)}</span><br>${it.tipo.toUpperCase()}${it.mensagem?': '+it.mensagem:''}</li>`).join('')||'<li class=\"list-group-item text-muted\">Sem interações</li>');
+    const esc = s=>String(s||'').replace(/[&<>\"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    $('#num').text(h.num_pedido); $('#cc').text(esc(h.centro_custo_nome||'—')); $('#pri').text((h.prioridade||'').toUpperCase());
+    $('#itens').html(itens.map(i=>`<li class=\"list-group-item d-flex justify-content-between\"><span>${esc(i.produto_nome)}</span><span class=\"badge badge-secondary\">${i.quantidade}</span></li>`).join(''));
+    $('#ints').html(ints.map(it=>`<li class=\"list-group-item\"><strong>${esc(it.usuario)}</strong> — <span class=\"text-muted\">${(it.created_at||'').replace('T',' ').substring(0,16)}</span><br>${(it.tipo||'').toUpperCase()}${it.mensagem?': '+esc(it.mensagem):''}</li>`).join('')||'<li class=\"list-group-item text-muted\">Sem interações</li>');
     $('#modal').modal('show');
   });
 }
