@@ -99,14 +99,23 @@ class PedidoComprasController extends Controller
 
             // Salvar cada produto como uma linha na tabela solicitacao (mesmo num_pedido)
             foreach ($produtos as $produto) {
+                // Sanitização básica para prevenir SQL injection
+                $produtoNome = strip_tags(trim($produto['nome'] ?? ''));
+                $quantidade = (int) ($produto['quantidade'] ?? 0);
+                
+                // Pula produtos inválidos
+                if (empty($produtoNome) || $quantidade <= 0) {
+                    continue;
+                }
+                
                 \DB::table('solicitacao')->insert([
                     'num_pedido' => $numPedido,
                     'usuario_id' => $usuarioId,
                     'centro_custo_id' => $centroCustoId,
-                    'produto_nome' => $produto['nome'],
-                    'quantidade' => $produto['quantidade'],
+                    'produto_nome' => $produtoNome,
+                    'quantidade' => $quantidade,
                     'prioridade' => $prioridade,
-                    'observacao' => $observacao,
+                    'observacao' => strip_tags(trim($observacao ?? '')),
                     'data_solicitacao' => now()
                 ]);
             }
@@ -388,6 +397,11 @@ class PedidoComprasController extends Controller
      */
     public function detalhesPedidoAgrupado(string $hash)
     {
+        // Validação do hash para prevenir SQL injection
+        if (!preg_match('/^[a-f0-9]{40}$/', $hash)) {
+            return response()->json(['success' => false, 'message' => 'Hash inválido'], 400);
+        }
+        
         $hashExpr = "SHA1(CONCAT(s.usuario_id,'|',s.centro_custo_id,'|',s.prioridade,'|',COALESCE(s.observacao,''),'|', DATE_FORMAT(s.data_solicitacao,'%Y-%m-%d %H:%i:%s')))";
 
         $cabecalho = \DB::table('solicitacao as s')
@@ -443,6 +457,11 @@ class PedidoComprasController extends Controller
     /** Aprova todas as solicitações do grupo */
     public function aprovarGrupo(Request $request, string $hash)
     {
+        // Validação do hash para prevenir SQL injection
+        if (!preg_match('/^[a-f0-9]{40}$/', $hash)) {
+            return response()->json(['success' => false, 'message' => 'Hash inválido'], 400);
+        }
+        
         $hashExpr = "SHA1(CONCAT(s.usuario_id,'|',s.centro_custo_id,'|',s.prioridade,'|',COALESCE(s.observacao,''),'|', DATE_FORMAT(s.data_solicitacao,'%Y-%m-%d %H:%i:%s')))";
 
         $ids = \DB::table('solicitacao as s')
@@ -486,6 +505,11 @@ class PedidoComprasController extends Controller
     /** Rejeita todas as solicitações do grupo */
     public function rejeitarGrupo(Request $request, string $hash)
     {
+        // Validação do hash para prevenir SQL injection
+        if (!preg_match('/^[a-f0-9]{40}$/', $hash)) {
+            return response()->json(['success' => false, 'message' => 'Hash inválido'], 400);
+        }
+        
         $hashExpr = "SHA1(CONCAT(s.usuario_id,'|',s.centro_custo_id,'|',s.prioridade,'|',COALESCE(s.observacao,''),'|', DATE_FORMAT(s.data_solicitacao,'%Y-%m-%d %H:%i:%s')))";
 
         $ids = \DB::table('solicitacao as s')
@@ -529,6 +553,11 @@ class PedidoComprasController extends Controller
     /** Enviar mensagem do autorizador para o solicitante em um grupo */
     public function mensagemGrupo(Request $request, string $hash)
     {
+        // Validação do hash para prevenir SQL injection
+        if (!preg_match('/^[a-f0-9]{40}$/', $hash)) {
+            return response()->json(['success' => false, 'message' => 'Hash inválido'], 400);
+        }
+        
         $request->validate(['mensagem' => 'required|string|min:2|max:2000']);
 
         $hashExpr = "SHA1(CONCAT(s.usuario_id,'|',s.centro_custo_id,'|',s.prioridade,'|',COALESCE(s.observacao,''),'|', DATE_FORMAT(s.data_solicitacao,'%Y-%m-%d %H:%i:%s')))";
@@ -704,6 +733,9 @@ class PedidoComprasController extends Controller
     public function buscarProdutos(Request $request)
     {
         $termo = $request->get('termo');
+        
+        // Sanitização para prevenir SQL injection
+        $termo = preg_replace('/[^a-zA-Z0-9\sÀ-ÿ\-]/', '', $termo);
         
         if (strlen($termo) < 3) {
             return response()->json([
@@ -892,6 +924,64 @@ class PedidoComprasController extends Controller
             ->get(['i.id','i.tipo','i.mensagem','i.created_at', \DB::raw("COALESCE(u.name,'—') as usuario")]);
 
         return response()->json(['success' => true, 'data' => compact('cabecalho','itens','interacoes')]);
+    }
+
+    /**
+     * Gera layout de impressão para um pedido específico
+     */
+    public function imprimirPedido(string $hash)
+    {
+        // Validação do hash para prevenir SQL injection
+        if (!preg_match('/^[a-f0-9]{40}$/', $hash)) {
+            abort(404, 'Hash inválido');
+        }
+        
+        $hashExpr = "SHA1(CONCAT(s.usuario_id,'|',s.centro_custo_id,'|',s.prioridade,'|',COALESCE(s.observacao,''),'|', DATE_FORMAT(s.data_solicitacao,'%Y-%m-%d %H:%i:%s')))";
+
+        $cabecalho = \DB::table('solicitacao as s')
+            ->leftJoin('users as u', 'u.id', '=', 's.usuario_id')
+            ->leftJoin('centro_custo as cc', 'cc.id', '=', 's.centro_custo_id')
+            ->whereRaw("$hashExpr = ?", [$hash])
+            ->orderByDesc('s.data_solicitacao')
+            ->first([
+                \DB::raw("DATE_FORMAT(s.data_solicitacao,'%Y-%m-%d %H:%i:%s') as data_solicitacao"),
+                's.usuario_id',
+                's.centro_custo_id',
+                's.num_pedido',
+                's.prioridade',
+                's.observacao',
+                \DB::raw("COALESCE(u.name,'—') as solicitante"),
+                \DB::raw("COALESCE(cc.nome,'—') as centro_custo_nome"),
+            ]);
+
+        if (!$cabecalho) {
+            abort(404, 'Pedido não encontrado');
+        }
+
+        $itens = \DB::table('solicitacao as s')
+            ->whereRaw("$hashExpr = ?", [$hash])
+            ->orderBy('s.id')
+            ->get([
+                's.id',
+                's.produto_nome',
+                's.quantidade',
+            ]);
+
+        // Interações de todos os itens do grupo
+        $idsGrupo = $itens->pluck('id')->all();
+        $interacoes = [];
+        if (!empty($idsGrupo)) {
+            $interacoes = \DB::table('interacao as i')
+                ->leftJoin('users as u', 'u.id', '=', 'i.usuario_id')
+                ->whereIn('i.solicitacao_id', $idsGrupo)
+                ->orderByDesc('i.created_at')
+                ->get([
+                    'i.id', 'i.solicitacao_id', 'i.tipo', 'i.mensagem', 'i.created_at',
+                    \DB::raw("COALESCE(u.name,'—') as usuario")
+                ]);
+        }
+
+        return view('relatorios.imprimir-pedido', compact('cabecalho', 'itens', 'interacoes'));
     }
 
     

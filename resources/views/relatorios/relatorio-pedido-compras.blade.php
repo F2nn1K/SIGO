@@ -129,6 +129,7 @@
 @section('js')
 <script>
 let dadosAtual = [];
+let hashAtual = null; // Para armazenar o hash do pedido atual no modal
 const esc = s => String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 function carregar() {
@@ -170,6 +171,7 @@ function preencherTabela(dados) {
 }
 
 function abrirDetalhes(hash) {
+  hashAtual = hash; // Armazena o hash para usar na impressão
   fetch(`/api/relatorio-pc/detalhes/${hash}`)
     .then(r => r.json())
     .then(j => {
@@ -223,15 +225,44 @@ function imprimirLista() {
 document.getElementById('btnFiltrar').addEventListener('click', carregar);
 document.getElementById('btnImprimir').addEventListener('click', imprimirLista);
 document.getElementById('btnImprimirModal').addEventListener('click', function(){
-  const area = document.querySelector('#modalDetalhes .modal-content').cloneNode(true);
-  area.querySelector('.modal-footer').remove();
-  const win = window.open('', '_blank');
-  win.document.write('<html><head><title>Detalhes do Pedido</title>');
-  win.document.write('<link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">');
-  win.document.write('</head><body>');
-  win.document.body.appendChild(area);
-  win.document.write('</body></html>');
-  win.document.close(); win.focus(); win.print(); win.close();
+  if (!hashAtual) {
+    alert('Erro: Não foi possível identificar o pedido para impressão');
+    return;
+  }
+  
+  // Cria um iframe invisível para carregar o conteúdo de impressão
+  const iframe = document.createElement('iframe');
+  iframe.style.position = 'absolute';
+  iframe.style.top = '-9999px';
+  iframe.style.left = '-9999px';
+  iframe.style.width = '1px';
+  iframe.style.height = '1px';
+  iframe.style.border = 'none';
+  
+  // Adiciona o iframe ao DOM
+  document.body.appendChild(iframe);
+  
+  // Carrega o conteúdo e imprime quando estiver pronto
+  iframe.onload = function() {
+    // Aguarda um pouco para garantir que o conteúdo foi totalmente carregado
+    setTimeout(function() {
+      try {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      } catch (e) {
+        console.log('Erro ao imprimir:', e);
+        alert('Erro ao abrir impressão. Tente novamente.');
+      }
+      
+      // Remove o iframe após a impressão
+      setTimeout(function() {
+        document.body.removeChild(iframe);
+      }, 1000);
+    }, 500);
+  };
+  
+  // Define a URL para carregar
+  iframe.src = `/relatorio-pc/imprimir/${hashAtual}`;
 });
 
 // Auto-carregar ao abrir

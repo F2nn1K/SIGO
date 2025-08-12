@@ -242,7 +242,7 @@
                         <div class="centro-custo-search-container">
                             <input type="text" class="form-control" id="centro-custo" name="centro_custo_search" 
                                    placeholder="Digite pelo menos 3 letras para buscar..." autocomplete="off" required>
-                            <input type="hidden" id="cc" name="cc">
+                            <input type="hidden" id="cc" name="centro_custo_id">
                             <div id="centroCustoResults" class="centro-custo-results"></div>
                         </div>
                         <small class="text-muted">Digite o nome do centro de custo</small>
@@ -1433,7 +1433,7 @@
             },
             data: JSON.stringify({
                 funcionario_id: funcionarioId,
-                cc: centroCustoId,
+                centro_custo_id: centroCustoId,
                 baixas: baixas,
                 observacoes: observacoes
             }),

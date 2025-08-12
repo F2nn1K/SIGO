@@ -224,13 +224,14 @@
 
 @section('js')
 <script>
+// Sanitização básica para evitar XSS em HTML injetado via template strings (função global)
+function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, function(c){
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]);
+    });
+}
+
 $(document).ready(function() {
-    // Sanitização básica para evitar XSS em HTML injetado via template strings
-    function escapeHtml(str) {
-        return String(str || '').replace(/[&<>"']/g, function(c){
-            return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]);
-        });
-    }
     // Carregar dados iniciais
     carregarProdutos();
     
@@ -266,11 +267,16 @@ $(document).ready(function() {
 function carregarProdutos() {
     $.get('/api/produtos')
         .done(function(produtos) {
+            console.log('Produtos carregados:', produtos); // Debug
             let options = '<option value="">Todos os produtos</option>';
             produtos.forEach(function(produto) {
                 options += `<option value="${produto.id}">${escapeHtml(produto.nome)}</option>`;
             });
             $('#produto_id').html(options);
+        })
+        .fail(function(xhr, status, error) {
+            console.error('Erro ao carregar produtos:', error, xhr.responseText); // Debug
+            $('#produto_id').html('<option value="">Erro ao carregar produtos</option>');
         });
 }
 
@@ -578,7 +584,6 @@ function imprimirRelatorio() {
             <h3>Filtros Aplicados:</h3>
             <p><strong>Período:</strong> ${formatarData(dataInicio)} até ${formatarData(dataFim)}</p>
             <p><strong>Produto:</strong> ${produtoSelecionado}</p>
-            <p><strong>Centro de Custo:</strong> ${centroSelecionado}</p>
             <p><strong>Data de Impressão:</strong> ${new Date().toLocaleString('pt-BR')}</p>
         </div>
         

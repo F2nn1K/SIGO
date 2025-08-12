@@ -63,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/relatorios/estoque', [App\Http\Controllers\RelatorioEstoqueController::class, 'index'])->name('relatorios.estoque');
         Route::post('/api/relatorio-estoque', [App\Http\Controllers\RelatorioEstoqueController::class, 'gerarRelatorio']);
         Route::post('/api/relatorio-estoque/exportar', [App\Http\Controllers\RelatorioEstoqueController::class, 'exportarExcel']);
+        Route::get('/api/produtos', [App\Http\Controllers\ControleEstoqueController::class, 'buscarProdutos']);
     });
 
     Route::middleware(['can:relatorio-centro-custo','throttle:60,1'])->group(function () {
@@ -88,6 +89,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/api/relatorio-pc/aprovados', [App\Http\Controllers\PedidoComprasController::class, 'pedidosAprovadosAgrupados']);
         Route::get('/api/relatorio-pc/rejeitados', [App\Http\Controllers\PedidoComprasController::class, 'pedidosRejeitadosAgrupados']);
         Route::get('/api/relatorio-pc/detalhes/{hash}', [App\Http\Controllers\PedidoComprasController::class, 'detalhesPedidoAgrupado']);
+        Route::get('/relatorio-pc/imprimir/{hash}', [App\Http\Controllers\PedidoComprasController::class, 'imprimirPedido']);
     });
 
     // Rotas de Pedidos de Compras - protegidas por suas respectivas permissões
