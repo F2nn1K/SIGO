@@ -41,7 +41,7 @@ cd SII
 cp .env.example .env
 php artisan key:generate
 ```
-3. (Opcional) Rode as migrações futuras quando quiser iniciar do zero
+3. (Opcional) Rode as migrações quando quiser iniciar do zero
 ```bash
 php artisan migrate
 ```
@@ -68,24 +68,30 @@ routes/web.php          # Rotas principais
 
 ## 🧭 Fluxo de Pedido de Compras
 
-1) Usuário cria a solicitação com itens e prioridade
-2) Sistema gera `num_pedido` e salva itens na tabela `solicitacao`
-3) Autorizador visualiza grupos pendentes, aprova/rejeita e pode enviar mensagens
+1) Usuário cria a solicitação com itens e prioridade  
+2) Sistema gera `num_pedido` e salva itens na tabela `solicitacao`  
+3) Autorizador visualiza grupos pendentes, aprova/rejeita e pode enviar mensagens  
 4) Solicitante acompanha em “Minhas Interações” ou “Acompanhar Pedido” (read-only)
 
-## 🧰 Scripts úteis
+## 🆕 Destaques recentes
+- Layout de impressão dedicado para Pedido de Compras (sem abrir nova aba, via iframe)
+- Relatório de Estoque com filtro por produto e impressão otimizada
+- Correções de segurança pontuais (sanitização mínima de inputs e validação de hash)
 
+## 🧰 Scripts úteis
 - `php artisan route:clear`, `config:clear`, `cache:clear`, `view:clear`
 
-## 🤝 Contribuição
+## 🔗 Links
+- Repositório: https://github.com/F2nn1K/SII
+- Contato: leo.vdf3@gmail.com
 
+## 🤝 Contribuição
 1. Crie uma branch (`git checkout -b feature/minha-feature`)
 2. Commit (`git commit -m "feat: minha feature"`)
 3. Push (`git push origin feature/minha-feature`)
 4. Abra um PR
 
 ## 📝 Licença
-
 Projeto proprietário para uso interno.
 
 ---
