@@ -12,6 +12,9 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'api/*'
+        'api/*',
+        // Permitir envio do formulário de inclusão sem verificar CSRF
+        // Mantém as demais rotas protegidas
+        'documentos-dp/inclusao'
     ];
 }

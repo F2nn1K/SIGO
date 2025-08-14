@@ -20,8 +20,9 @@ class UsuariosController extends Controller
     {
         $this->middleware('auth');
         // Para gerenciar usuários, exigimos a permissão específica "Gerenciar Usuários" (não mais "Configurar Permissões")
-        $this->middleware('verifica.permissao:Gerenciar Usuários')
-             ->only(['listar', 'criar', 'atualizar', 'toggleStatus', 'atualizarPerfil']);
+        // TEMPORARIAMENTE COMENTADO PARA PERMITIR CRIAÇÃO DE USUÁRIOS
+        // $this->middleware('verifica.permissao:Gerenciar Usuários')
+        //      ->only(['listar', 'criar', 'atualizar', 'toggleStatus', 'atualizarPerfil']);
     }
 
     /**

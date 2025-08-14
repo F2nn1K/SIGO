@@ -13,10 +13,13 @@ class Funcionario extends Model
     
     protected $fillable = [
         'nome',
-        'departamento',
+        'cpf',
+        'sexo',
         'funcao',
+        'status',
+        'observacoes',
+        'departamento',
         'valor',
-        'observacao',
         'empresa',
     ];
     
@@ -24,5 +27,26 @@ class Funcionario extends Model
     public function diarias()
     {
         return $this->hasMany(Diaria::class, 'nome', 'nome');
+    }
+    
+    // Relacionamentos com módulo de documentos DP
+    public function documentos()
+    {
+        return $this->hasMany(FuncionarioDocumento::class, 'funcionario_id');
+    }
+    
+    public function atestados()
+    {
+        return $this->hasMany(FuncionarioAtestado::class, 'funcionario_id');
+    }
+    
+    public function advertencias()
+    {
+        return $this->hasMany(FuncionarioAdvertencia::class, 'funcionario_id');
+    }
+    
+    public function logs()
+    {
+        return $this->hasMany(FuncionarioLog::class, 'funcionario_id');
     }
 }

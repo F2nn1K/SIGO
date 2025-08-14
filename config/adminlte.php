@@ -64,7 +64,7 @@ return [
     */
 
     'logo' => 'Sistema BRS',
-    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+    'logo_img' => 'img/brs-logo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
@@ -86,11 +86,11 @@ return [
     'auth_logo' => [
         'enabled' => true,
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-            'alt' => 'Auth Logo',
+            'path' => 'img/brs-logo.png',
+            'alt' => 'Sistema BRS',
             'class' => '',
-            'width' => 50,
-            'height' => 50,
+            'width' => 60,
+            'height' => null,
         ],
     ],
 
@@ -113,8 +113,8 @@ return [
         'enabled' => true,
         'mode' => 'fullscreen',
         'img' => [
-            'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-            'alt' => 'AdminLTE Preloader Image',
+            'path' => 'img/brs-logo.png',
+            'alt' => 'Sistema BRS',
             'effect' => 'animation__shake',
             'width' => 60,
             'height' => 60,
@@ -303,6 +303,24 @@ return [
             'text' => 'Dashboard',
             'url'  => 'dashboard',
             'icon' => 'fas fa-tachometer-alt',
+        ],
+        [
+            'text'        => 'Documentos DP',
+            'icon'        => 'fas fa-file-alt',
+            'submenu'     => [
+                [
+                    'text' => 'Inclusão de documento',
+                    'url'  => 'documentos-dp/inclusao',
+                    'icon' => 'fas fa-plus-circle',
+                    'can'  => 'doc_dp',
+                ],
+                [
+                    'text' => 'Funcionários',
+                    'url'  => 'documentos-dp/funcionarios',
+                    'icon' => 'fas fa-users',
+                    'can'  => 'vis_func',
+                ],
+            ],
         ],
         [
             'text'        => 'Estoque',

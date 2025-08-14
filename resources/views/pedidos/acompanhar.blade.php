@@ -76,6 +76,21 @@
 
 @section('js')
 <script>
+// Função para formatar data no padrão brasileiro (DD/MM/AAAA HH:MM)
+function formatarDataBR(dataISO) {
+    if (!dataISO) return '—';
+    const data = new Date(dataISO);
+    if (isNaN(data.getTime())) return '—';
+    
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const ano = data.getFullYear();
+    const hora = String(data.getHours()).padStart(2, '0');
+    const minuto = String(data.getMinutes()).padStart(2, '0');
+    
+    return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+}
+
 $(function(){ carregar(); });
 
 function carregar(){
@@ -89,7 +104,7 @@ function carregar(){
       const tr = `
         <tr>
           <td><span class="badge badge-dark">${p.num_pedido}</span></td>
-          <td>${(p.data_solicitacao||'').replace('T',' ').substring(0,16)}</td>
+          <td>${formatarDataBR(p.data_solicitacao)}</td>
           <td>${p.centro_custo_nome||'—'}</td>
           <td>${p.itens} itens</td>
           <td>${p.quantidade_total||0}</td>
@@ -114,7 +129,7 @@ function abrir(hash){
     $('#ac-prioridade').text((h.prioridade||'').toUpperCase());
     $('#ac-status').text((h.aprovacao||'pendente').toUpperCase());
     $('#ac-itens').html(itens.map(i=>`<li class="list-group-item d-flex justify-content-between"><span>${i.produto_nome}</span><span class="badge badge-secondary">${i.quantidade}</span></li>`).join(''));
-    $('#ac-interacoes').html(ints.map(it=>`<li class="list-group-item"><strong>${it.usuario}</strong> — <span class="text-muted">${(it.created_at||'').replace('T',' ').substring(0,16)}</span><br>${formatTipo(it.tipo)}${it.mensagem ? ': '+escapeHtml(it.mensagem) : ''}</li>`).join('') || '<li class="list-group-item text-muted">Sem interações</li>');
+    $('#ac-interacoes').html(ints.map(it=>`<li class="list-group-item"><strong>${it.usuario}</strong> — <span class="text-muted">${formatarDataBR(it.created_at)}</span><br>${formatTipo(it.tipo)}${it.mensagem ? ': '+escapeHtml(it.mensagem) : ''}</li>`).join('') || '<li class="list-group-item text-muted">Sem interações</li>');
     $('#modalAcompanhar').modal('show');
   });
 }

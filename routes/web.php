@@ -39,6 +39,36 @@ Route::middleware(['auth'])->group(function () {
 
     // Rotas de Diárias removidas
 
+    // Rotas de Documentos DP - protegidas pela permissão 'doc_dp'
+    Route::middleware(['can:doc_dp','throttle:60,1'])->group(function () {
+        Route::get('/documentos-dp/inclusao', [App\Http\Controllers\DocumentosDPController::class, 'inclusao'])->name('documentos-dp.inclusao');
+        Route::post('/documentos-dp/inclusao', [App\Http\Controllers\DocumentosDPController::class, 'store'])->name('documentos-dp.store');
+        Route::get('/documentos-dp/arquivo/{id}', [App\Http\Controllers\DocumentosDPController::class, 'downloadBLOB'])->name('documentos-dp.arquivo');
+        Route::get('/documentos-dp/buscar', [App\Http\Controllers\DocumentosDPController::class, 'buscarFuncionario'])->name('documentos-dp.buscar');
+        Route::get('/documentos-dp/funcionario/{id}/documentos', [App\Http\Controllers\DocumentosDPController::class, 'listarDocumentos'])->name('documentos-dp.documentos');
+    });
+
+    // Página de visualização de funcionários (somente quem tem a permissão específica)
+    Route::middleware(['can:vis_func','throttle:60,1'])->group(function () {
+        Route::view('/documentos-dp/funcionarios', 'documentos-dp.funcionarios')->name('documentos-dp.funcionarios');
+        // Endpoint para anexar documentos faltantes na página de funcionários
+        Route::post('/documentos-dp/funcionario/{id}/anexar', [App\Http\Controllers\DocumentosDPController::class, 'anexarFaltantes'])->name('documentos-dp.anexar');
+                    // Endpoint para demitir funcionário
+            Route::post('/documentos-dp/funcionario/{id}/demitir', [App\Http\Controllers\DocumentosDPController::class, 'demitirFuncionario'])->name('documentos-dp.demitir');
+            // Endpoint para alterar status do funcionário
+            Route::post('/documentos-dp/funcionario/{id}/alterar-status', [App\Http\Controllers\DocumentosDPController::class, 'alterarStatusFuncionario'])->name('documentos-dp.alterar-status');
+        
+        // Endpoints para atestados
+        Route::get('/documentos-dp/funcionario/{id}/atestados', [App\Http\Controllers\DocumentosDPController::class, 'listarAtestados'])->name('documentos-dp.atestados');
+        Route::post('/documentos-dp/funcionario/{id}/atestados', [App\Http\Controllers\DocumentosDPController::class, 'anexarAtestado'])->name('documentos-dp.anexar-atestado');
+        Route::get('/documentos-dp/atestado/{id}', [App\Http\Controllers\DocumentosDPController::class, 'downloadAtestado'])->name('documentos-dp.atestado');
+        
+        // Endpoints para advertências
+        Route::get('/documentos-dp/funcionario/{id}/advertencias', [App\Http\Controllers\DocumentosDPController::class, 'listarAdvertencias'])->name('documentos-dp.advertencias');
+        Route::post('/documentos-dp/funcionario/{id}/advertencias', [App\Http\Controllers\DocumentosDPController::class, 'aplicarAdvertencia'])->name('documentos-dp.aplicar-advertencia');
+        Route::get('/documentos-dp/advertencia/{id}', [App\Http\Controllers\DocumentosDPController::class, 'downloadAdvertencia'])->name('documentos-dp.advertencia');
+    });
+
     // Rotas de BRS - Controle de Estoque - protegidas pela permissão 'Controle de Estoque'
     Route::middleware(['can:controle-estoque','throttle:120,1'])->group(function () {
     Route::get('/brs/controle-estoque', [App\Http\Controllers\ControleEstoqueController::class, 'index'])->name('brs.controle-estoque');

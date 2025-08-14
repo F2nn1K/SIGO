@@ -47,6 +47,21 @@
 
 @section('js')
 <script>
+// Função para formatar data no padrão brasileiro (DD/MM/AAAA HH:MM)
+function formatarDataBR(dataISO) {
+    if (!dataISO) return '—';
+    const data = new Date(dataISO);
+    if (isNaN(data.getTime())) return '—';
+    
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const ano = data.getFullYear();
+    const hora = String(data.getHours()).padStart(2, '0');
+    const minuto = String(data.getMinutes()).padStart(2, '0');
+    
+    return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+}
+
 $(function(){ carregarRejeitados(); });
 function carregarRejeitados(){
   $.get('/api/pedidos-rejeitados-agrupados', function(resp){
@@ -58,7 +73,7 @@ function carregarRejeitados(){
       const tr = `
         <tr>
           <td><span class="badge badge-dark">${g.num_pedido||'—'}</span></td>
-          <td>${(g.data_solicitacao||'').replace('T',' ').substring(0,16)}</td>
+          <td>${formatarDataBR(g.data_solicitacao)}</td>
           <td>${g.solicitante||'—'}</td>
           <td>${g.itens} itens</td>
           <td>${g.quantidade_total||0}</td>

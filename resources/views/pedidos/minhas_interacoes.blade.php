@@ -83,6 +83,21 @@
 
 @section('js')
 <script>
+// Função para formatar data no padrão brasileiro (DD/MM/AAAA HH:MM)
+function formatarDataBR(dataISO) {
+    if (!dataISO) return '—';
+    const data = new Date(dataISO);
+    if (isNaN(data.getTime())) return '—';
+    
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const ano = data.getFullYear();
+    const hora = String(data.getHours()).padStart(2, '0');
+    const minuto = String(data.getMinutes()).padStart(2, '0');
+    
+    return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+}
+
 $(function(){ carregarPedidos(); });
 
 function carregarPedidos(){
@@ -98,7 +113,7 @@ function carregarPedidos(){
       const tr = `
         <tr>
           <td><span class="badge badge-dark">${p.num_pedido}</span></td>
-          <td>${(p.data_solicitacao||'').replace('T',' ').substring(0,16)}</td>
+          <td>${formatarDataBR(p.data_solicitacao)}</td>
           <td>${p.centro_custo_nome||'—'}</td>
           <td><span class="badge badge-${p.prioridade}">${(p.prioridade||'').toUpperCase()}</span></td>
           <td>${(p.aprovacao||'pendente').toUpperCase()}</td>
@@ -116,7 +131,7 @@ function carregarPedidos(){
 
 function abrirInteracoes(p){
   $('#md-numero').text(p.num_pedido);
-  $('#md-data').text((p.data_solicitacao||'').replace('T',' ').substring(0,16));
+  $('#md-data').text(formatarDataBR(p.data_solicitacao));
   $('#md-cc').text(p.centro_custo_nome||'—');
   $('#md-prioridade').text((p.prioridade||'').toUpperCase());
   $('#md-status').text((p.aprovacao||'pendente').toUpperCase());
@@ -126,7 +141,7 @@ function abrirInteracoes(p){
   if(p.itens && p.itens.length){
     $.get(`/api/pedidos/${p.itens[0].id}/interacoes`, function(resp){
       if(resp.success){
-        const lis = resp.data.map(it => `<li class="list-group-item"><strong>${it.usuario}</strong> — <span class="text-muted">${(it.created_at||'').replace('T',' ').substring(0,16)}</span><br>${formatTipo(it.tipo)}${it.mensagem ? ': '+escapeHtml(it.mensagem) : ''}</li>`).join('');
+        const lis = resp.data.map(it => `<li class="list-group-item"><strong>${it.usuario}</strong> — <span class="text-muted">${formatarDataBR(it.created_at)}</span><br>${formatTipo(it.tipo)}${it.mensagem ? ': '+escapeHtml(it.mensagem) : ''}</li>`).join('');
         $('#md-interacoes').html(lis || '<li class="list-group-item text-muted">Sem interações</li>');
       } else {
         $('#md-interacoes').html('<li class="list-group-item text-muted">Sem interações</li>');
@@ -155,7 +170,7 @@ function enviarMensagem(){
       // recarregar interações
       $.get(`/api/pedidos/${itemId}/interacoes`, function(r){
         if(r.success){
-          const lis = r.data.map(it => `<li class="list-group-item"><strong>${it.usuario}</strong> — <span class="text-muted">${(it.created_at||'').replace('T',' ').substring(0,16)}</span><br>${formatTipo(it.tipo)}${it.mensagem ? ': '+escapeHtml(it.mensagem) : ''}</li>`).join('');
+          const lis = r.data.map(it => `<li class="list-group-item"><strong>${it.usuario}</strong> — <span class="text-muted">${formatarDataBR(it.created_at)}</span><br>${formatTipo(it.tipo)}${it.mensagem ? ': '+escapeHtml(it.mensagem) : ''}</li>`).join('');
           $('#md-interacoes').html(lis || '<li class="list-group-item text-muted">Sem interações</li>');
         }
       });
