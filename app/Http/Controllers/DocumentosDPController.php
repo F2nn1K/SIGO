@@ -21,7 +21,7 @@ class DocumentosDPController extends Controller
     {
         $this->middleware('auth');
         $this->middleware('can:doc_dp')->only(['inclusao', 'store', 'downloadBLOB']);
-        $this->middleware('can:vis_func')->only(['funcionarios', 'buscarFuncionario', 'listarDocumentos', 'anexarFaltantes', 'demitirFuncionario', 'listarAtestados', 'anexarAtestado', 'downloadAtestado', 'listarAdvertencias', 'aplicarAdvertencia', 'downloadAdvertencia']);
+        $this->middleware('can:vis_func')->only(['funcionarios', 'buscarFuncionario', 'listarDocumentos', 'anexarFaltantes', 'demitirFuncionario', 'listarAtestados', 'anexarAtestado', 'downloadAtestado', 'listarAdvertencias', 'aplicarAdvertencia', 'downloadAdvertencia', 'listarEpis']);
     }
 
     /**
@@ -793,6 +793,83 @@ class DocumentosDPController extends Controller
             abort(500, 'Erro ao carregar arquivo');
         }
     }
+
+    // ========================================
+    // MÉTODOS PARA EPIs
+    // ========================================
+
+    /**
+     * Listar materiais retirados pelo funcionário (EPI/Equipamentos)
+     */
+    public function listarEpis($funcionarioId)
+    {
+        try {
+            // Verificar se o funcionário existe
+            $funcionario = DB::table('funcionarios')->where('id', $funcionarioId)->first();
+            if (!$funcionario) {
+                return response()->json(['error' => 'Funcionário não encontrado'], 404);
+            }
+
+            // Buscar todas as baixas do funcionário
+            $todasBaixas = DB::table('baixas as b')
+                ->leftJoin('estoque as e', 'b.produto_id', '=', 'e.id')
+                ->leftJoin('centro_custo as cc', 'b.centro_custo_id', '=', 'cc.id')
+                ->leftJoin('users as u', 'b.usuario_id', '=', 'u.id')
+                ->where('b.funcionario_id', $funcionarioId)
+                ->select(
+                    'b.id',
+                    'b.data_baixa',
+                    'b.quantidade',
+                    'b.observacoes',
+                    'b.centro_custo_id',
+                    'b.usuario_id',
+                    'e.nome as produto_nome',
+                    'cc.nome as centro_custo_nome',
+                    'u.name as usuario_entrega'
+                )
+                ->orderBy('b.data_baixa', 'desc')
+                ->get();
+
+            // Agrupar por lançamento (mesmo datetime + centro_custo + usuario + observacoes)
+            $lancamentosAgrupados = [];
+            foreach ($todasBaixas as $baixa) {
+                $chave = $baixa->data_baixa . '_' . $baixa->centro_custo_id . '_' . $baixa->usuario_id . '_' . md5($baixa->observacoes ?? '');
+                
+                if (!isset($lancamentosAgrupados[$chave])) {
+                    $lancamentosAgrupados[$chave] = [
+                        'id' => $baixa->id,
+                        'data_baixa' => $baixa->data_baixa,
+                        'observacoes' => $baixa->observacoes,
+                        'centro_custo_nome' => $baixa->centro_custo_nome,
+                        'usuario_entrega' => $baixa->usuario_entrega,
+                        'produtos' => [],
+                        'total_quantidade' => 0
+                    ];
+                }
+                
+                $lancamentosAgrupados[$chave]['produtos'][] = [
+                    'produto_nome' => $baixa->produto_nome,
+                    'quantidade' => $baixa->quantidade
+                ];
+                $lancamentosAgrupados[$chave]['total_quantidade'] += $baixa->quantidade;
+            }
+
+            // Converter para array indexado e ordenar por data
+            $materiaisAgrupados = array_values($lancamentosAgrupados);
+            usort($materiaisAgrupados, function($a, $b) {
+                return strtotime($b['data_baixa']) - strtotime($a['data_baixa']);
+            });
+
+            return response()->json($materiaisAgrupados);
+        } catch (\Exception $e) {
+            Log::error('Erro ao listar materiais do funcionário: ' . $e->getMessage());
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
+        }
+    }
+
+
+
+
 
     // ========================================
     // MÉTODO AUXILIAR PARA LOGS

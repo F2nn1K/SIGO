@@ -304,6 +304,26 @@ $(document).ready(function() {
     
     $('#data_inicio').val(mesPassado.toISOString().split('T')[0]);
     $('#data_fim').val(hoje.toISOString().split('T')[0]);
+
+    // Controle de toque para sincronizar datas quando o usuário selecionar apenas uma
+    let tocouInicio = false;
+    let tocouFim = false;
+
+    $('#data_inicio').on('change', function() {
+        tocouInicio = true;
+        // Se o usuário ainda não tocou na data fim, igualar para filtrar um único dia
+        if (!tocouFim) {
+            $('#data_fim').val($(this).val());
+        }
+    });
+
+    $('#data_fim').on('change', function() {
+        tocouFim = true;
+        // Se o usuário ainda não tocou na data início, igualar para filtrar um único dia
+        if (!tocouInicio) {
+            $('#data_inicio').val($(this).val());
+        }
+    });
     
     // Submissão do formulário
     $('#formFiltros').submit(function(e) {
@@ -316,6 +336,8 @@ $(document).ready(function() {
         $('#formFiltros')[0].reset();
         $('#data_inicio').val(mesPassado.toISOString().split('T')[0]);
         $('#data_fim').val(hoje.toISOString().split('T')[0]);
+        tocouInicio = false;
+        tocouFim = false;
         $('#funcionario_busca').val('');
         $('#funcionario_id').val('');
         $('#funcionarios_lista').hide();
@@ -339,7 +361,7 @@ function carregarFuncionarios() {
             funcionariosData = funcionarios;
         })
         .fail(function() {
-            console.error('Erro ao carregar funcionários');
+            // Silenciar logs no navegador
         });
 }
 
@@ -509,7 +531,6 @@ function gerarRelatorio() {
             }
         },
         error: function(xhr) {
-            console.error('Erro:', xhr);
             let message = 'Erro interno do servidor';
             if (xhr.responseJSON && xhr.responseJSON.message) {
                 message = xhr.responseJSON.message;

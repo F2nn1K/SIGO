@@ -267,7 +267,7 @@ $(document).ready(function() {
 function carregarProdutos() {
     $.get('/api/produtos')
         .done(function(produtos) {
-            console.log('Produtos carregados:', produtos); // Debug
+            // Debug removido
             let options = '<option value="">Todos os produtos</option>';
             produtos.forEach(function(produto) {
                 options += `<option value="${produto.id}">${escapeHtml(produto.nome)}</option>`;
@@ -275,7 +275,7 @@ function carregarProdutos() {
             $('#produto_id').html(options);
         })
         .fail(function(xhr, status, error) {
-            console.error('Erro ao carregar produtos:', error, xhr.responseText); // Debug
+            // Silenciar logs no navegador
             $('#produto_id').html('<option value="">Erro ao carregar produtos</option>');
         });
 }
@@ -322,7 +322,7 @@ function gerarRelatorio() {
             }
         },
         error: function(xhr) {
-            console.error('Erro:', xhr);
+            // Silenciar logs no navegador
             let message = 'Erro interno do servidor';
             if (xhr.responseJSON && xhr.responseJSON.message) {
                 message = xhr.responseJSON.message;

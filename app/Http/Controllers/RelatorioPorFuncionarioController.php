@@ -24,11 +24,19 @@ class RelatorioPorFuncionarioController extends Controller
             'funcionario_id' => 'nullable|exists:funcionarios,id'
         ]);
 
-        $query = Baixa::with(['funcionario', 'produto', 'centroCusto', 'usuario'])
-            ->whereBetween('data_baixa', [
-                $request->data_inicio . ' 00:00:00',
-                $request->data_fim . ' 23:59:59'
-            ]);
+        // Montar query base
+        $query = Baixa::with(['funcionario', 'produto', 'centroCusto', 'usuario']);
+
+        // Aplicar filtro de datas com precisão:
+        // - Se início == fim, filtra exatamente aquele dia
+        // - Caso contrário, aplica intervalo completo incluindo os horários extremos
+        if ($request->data_inicio === $request->data_fim) {
+            $query->whereDate('data_baixa', '=', $request->data_inicio);
+        } else {
+            $dataInicio = $request->data_inicio . ' 00:00:00';
+            $dataFim = $request->data_fim . ' 23:59:59';
+            $query->whereBetween('data_baixa', [$dataInicio, $dataFim]);
+        }
 
         // Filtro por funcionário
         if ($request->funcionario_id) {
@@ -142,11 +150,15 @@ class RelatorioPorFuncionarioController extends Controller
             'funcionario_id' => 'nullable|exists:funcionarios,id'
         ]);
 
-        $query = Baixa::with(['funcionario', 'produto', 'centroCusto', 'usuario'])
-            ->whereBetween('data_baixa', [
-                $request->data_inicio . ' 00:00:00',
-                $request->data_fim . ' 23:59:59'
-            ]);
+        $query = Baixa::with(['funcionario', 'produto', 'centroCusto', 'usuario']);
+
+        if ($request->data_inicio === $request->data_fim) {
+            $query->whereDate('data_baixa', '=', $request->data_inicio);
+        } else {
+            $dataInicio = $request->data_inicio . ' 00:00:00';
+            $dataFim = $request->data_fim . ' 23:59:59';
+            $query->whereBetween('data_baixa', [$dataInicio, $dataFim]);
+        }
 
         // Aplicar os mesmos filtros
         if ($request->funcionario_id) {

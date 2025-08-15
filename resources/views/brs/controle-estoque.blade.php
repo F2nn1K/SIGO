@@ -970,7 +970,7 @@
 @section('js')
 <script>
     $(document).ready(function() {
-        console.log('Página de Controle de Estoque carregada com sucesso!');
+        // Debug removido
         
         // Animação dos cards de estatísticas
         $('.stat-card').each(function(index) {
@@ -1199,10 +1199,10 @@
         $.get('/api/produtos')
             .done(function(data) {
                 produtos = data;
-                console.log('Produtos carregados:', produtos.length);
+                // Debug removido
             })
             .fail(function() {
-                console.error('Erro ao carregar produtos');
+                // Silenciar logs no navegador
             });
     }
     

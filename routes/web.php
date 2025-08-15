@@ -67,6 +67,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/documentos-dp/funcionario/{id}/advertencias', [App\Http\Controllers\DocumentosDPController::class, 'listarAdvertencias'])->name('documentos-dp.advertencias');
         Route::post('/documentos-dp/funcionario/{id}/advertencias', [App\Http\Controllers\DocumentosDPController::class, 'aplicarAdvertencia'])->name('documentos-dp.aplicar-advertencia');
         Route::get('/documentos-dp/advertencia/{id}', [App\Http\Controllers\DocumentosDPController::class, 'downloadAdvertencia'])->name('documentos-dp.advertencia');
+        
+        // Endpoints para EPIs (materiais retirados)
+        Route::get('/documentos-dp/funcionario/{id}/epis', [App\Http\Controllers\DocumentosDPController::class, 'listarEpis'])->name('documentos-dp.epis');
     });
 
     // Rotas de BRS - Controle de Estoque - protegidas pela permissão 'Controle de Estoque'

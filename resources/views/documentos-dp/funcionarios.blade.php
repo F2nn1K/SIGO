@@ -96,6 +96,12 @@
                             Advertências
                         </a>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="epi-tab" data-toggle="tab" href="#epi-content" role="tab">
+                            <i class="fas fa-hard-hat mr-2"></i>
+                            EPI
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="tab-content p-4" id="funcionario-tab-content">
@@ -404,7 +410,105 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Aba EPI -->
+                    <div class="tab-pane fade" id="epi-content" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">
+                                <i class="fas fa-boxes mr-2 text-primary"></i>
+                                Materiais Retirados
+                            </h5>
+                            <button class="btn btn-primary btn-sm" onclick="abrirModalCompleto()">
+                                <i class="fas fa-table mr-2"></i>
+                                Ver Histórico Completo
+                            </button>
+                        </div>
+                        <div id="lista_epis"></div>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Detalhes dos Materiais Retirados -->
+<div class="modal fade" id="modalDetalhesMaterial" tabindex="-1" role="dialog" aria-labelledby="modalDetalhesMaterialLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalDetalhesMaterialLabel">
+                    <i class="fas fa-boxes mr-2"></i>
+                    <span id="modal_titulo">Histórico de Materiais Retirados</span> - <span id="modal_funcionario_nome"></span>
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th width="25%">
+                                    <i class="fas fa-box mr-1"></i>
+                                    Produto
+                                </th>
+                                <th width="10%" class="text-center">
+                                    <i class="fas fa-sort-numeric-up mr-1"></i>
+                                    Quantidade
+                                </th>
+                                <th width="18%">
+                                    <i class="fas fa-calendar mr-1"></i>
+                                    Data/Hora
+                                </th>
+                                <th width="20%">
+                                    <i class="fas fa-building mr-1"></i>
+                                    Centro de Custo
+                                </th>
+                                <th width="15%">
+                                    <i class="fas fa-user mr-1"></i>
+                                    Entregue por
+                                </th>
+                                <th width="12%">
+                                    <i class="fas fa-comment mr-1"></i>
+                                    Observações
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal_tabela_materiais">
+                            <!-- Dados serão inseridos via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0">
+                            <div class="card-body py-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Total de retiradas: <span class="font-weight-bold" id="modal_total_retiradas">0</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0">
+                            <div class="card-body py-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar-alt mr-1"></i>
+                                    Período: <span class="font-weight-bold" id="modal_periodo"></span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-2"></i>
+                    Fechar
+                </button>
             </div>
         </div>
     </div>
@@ -643,10 +747,11 @@
         }[f.status] || f.status;
         document.getElementById('status-atual-funcionario').textContent = statusTexto;
         
-        // Carregar documentos, atestados e advertências
+        // Carregar documentos, atestados, advertências e EPIs
         carregarDocumentos(f.id);
         carregarAtestados(f.id);
         carregarAdvertencias(f.id);
+        carregarEpis(f.id);
     }
 
     function voltarParaBusca(){
@@ -1163,6 +1268,228 @@
             });
             btnDropdown.innerHTML = originalText;
             btnDropdown.disabled = false;
+        }
+    };
+
+    // Função para carregar materiais retirados pelo funcionário
+    window.carregarEpis = async function(funcionarioId) {
+        try {
+            const response = await fetch(`/documentos-dp/funcionario/${funcionarioId}/epis`);
+            const data = await response.json();
+            
+            const listaEpis = document.getElementById('lista_epis');
+            
+            if (data.length === 0) {
+                listaEpis.innerHTML = '<div class="empty-state"><i class="fas fa-boxes fa-3x text-muted mb-3"></i><p class="text-muted">Nenhum material retirado ainda</p></div>';
+                return;
+            }
+            
+            let html = '';
+            data.forEach(function(lancamento) {
+                const dataRetirada = formatarDataBR(lancamento.data_baixa);
+                
+                // Criar lista de produtos do lançamento
+                let produtosList = '';
+                lancamento.produtos.forEach(function(produto, index) {
+                    if (index > 0) produtosList += ', ';
+                    produtosList += `${produto.produto_nome} (${produto.quantidade})`;
+                });
+                
+                html += `
+                    <div class="document-item-modern mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-boxes mr-2 text-primary"></i>
+                                    Lançamento - ${lancamento.produtos.length} produto(s)
+                                </h6>
+                                <div class="small text-muted mb-2">
+                                    <div><i class="fas fa-calendar mr-1"></i>Data: ${dataRetirada}</div>
+                                    <div><i class="fas fa-box mr-1"></i>Produtos: ${produtosList}</div>
+                                    <div><i class="fas fa-sort-numeric-up mr-1"></i>Total: ${lancamento.total_quantidade} item(s)</div>
+                                    <div><i class="fas fa-building mr-1"></i>Centro de Custo: ${lancamento.centro_custo_nome || 'Não informado'}</div>
+                                    <div><i class="fas fa-user mr-1"></i>Entregue por: ${lancamento.usuario_entrega || 'Não informado'}</div>
+                                    ${lancamento.observacoes ? `<div><i class="fas fa-comment mr-1"></i>Obs: ${lancamento.observacoes}</div>` : ''}
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="mb-2">
+                                    <span class="badge badge-success">${lancamento.produtos.length}</span>
+                                    <br><small class="text-muted">produtos</small>
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm" onclick="abrirModalLancamento(${lancamento.id})">
+                                    <i class="fas fa-eye mr-1"></i>Ver Lançamento
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            listaEpis.innerHTML = html;
+        } catch (error) {
+            document.getElementById('lista_epis').innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle mr-2"></i>Erro ao carregar materiais</div>';
+        }
+    };
+
+    // Função para abrir modal completo com todos os materiais
+    window.abrirModalCompleto = async function() {
+        if (!funcionarioSelecionado) {
+            return;
+        }
+        
+        try {
+            // Buscar todos os materiais do funcionário
+            const response = await fetch(`/documentos-dp/funcionario/${funcionarioSelecionado.id}/epis`);
+            const materiais = await response.json();
+            
+                    // Preencher nome do funcionário no título
+        document.getElementById('modal_titulo').textContent = 'Histórico de Materiais Retirados';
+        document.getElementById('modal_funcionario_nome').textContent = funcionarioSelecionado.nome;
+            
+            // Preencher tabela
+            const tbody = document.getElementById('modal_tabela_materiais');
+            
+            if (materiais.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            <i class="fas fa-inbox fa-2x mb-2"></i>
+                            <br>
+                            Nenhum material retirado
+                        </td>
+                    </tr>
+                `;
+            } else {
+                let html = '';
+                materiais.forEach(function(lancamento) {
+                    const dataRetirada = formatarDataBR(lancamento.data_baixa);
+                    
+                    // Primeira linha do lançamento
+                    const primeiroproduto = lancamento.produtos[0];
+                    const rowspan = lancamento.produtos.length;
+                    
+                    html += `
+                        <tr>
+                            <td>${primeiroproduto.produto_nome || 'Produto não identificado'}</td>
+                            <td class="text-center">
+                                <span class="badge badge-primary">${primeiroproduto.quantidade}</span>
+                            </td>
+                            <td rowspan="${rowspan}" class="align-middle">
+                                <small class="text-muted">${dataRetirada}</small>
+                            </td>
+                            <td rowspan="${rowspan}" class="align-middle">
+                                <small>${lancamento.centro_custo_nome || 'Não informado'}</small>
+                            </td>
+                            <td rowspan="${rowspan}" class="align-middle">
+                                <small>${lancamento.usuario_entrega || 'Não informado'}</small>
+                            </td>
+                            <td rowspan="${rowspan}" class="align-middle">
+                                ${lancamento.observacoes ? `<small class="text-info">${lancamento.observacoes}</small>` : '<small class="text-muted">-</small>'}
+                            </td>
+                        </tr>
+                    `;
+                    
+                    // Linhas adicionais para outros produtos do mesmo lançamento
+                    for (let i = 1; i < lancamento.produtos.length; i++) {
+                        const produto = lancamento.produtos[i];
+                        html += `
+                            <tr>
+                                <td>${produto.produto_nome || 'Produto não identificado'}</td>
+                                <td class="text-center">
+                                    <span class="badge badge-primary">${produto.quantidade}</span>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+                tbody.innerHTML = html;
+            }
+            
+            // Atualizar estatísticas
+            document.getElementById('modal_total_retiradas').textContent = materiais.length;
+            
+            // Calcular período
+            if (materiais.length > 0) {
+                const datas = materiais.map(m => new Date(m.data_baixa)).sort();
+                const primeira = formatarDataBR(datas[0].toISOString());
+                const ultima = formatarDataBR(datas[datas.length - 1].toISOString());
+                document.getElementById('modal_periodo').textContent = primeira === ultima ? primeira : `${primeira} a ${ultima}`;
+            } else {
+                document.getElementById('modal_periodo').textContent = 'Nenhuma retirada';
+            }
+            
+            // Abrir modal
+            $('#modalDetalhesMaterial').modal('show');
+            
+        } catch (error) {
+            console.error('Erro ao carregar dados para modal:', error);
+        }
+    };
+
+    // Função para abrir modal com lançamento específico
+    window.abrirModalLancamento = async function(lancamentoId) {
+        if (!funcionarioSelecionado) {
+            return;
+        }
+        
+        try {
+            // Buscar todos os materiais e filtrar pelo lançamento
+            const response = await fetch(`/documentos-dp/funcionario/${funcionarioSelecionado.id}/epis`);
+            const todosLancamentos = await response.json();
+            
+            // Encontrar o lançamento específico
+            const lancamentoSelecionado = todosLancamentos.find(l => l.id == lancamentoId);
+            
+            if (!lancamentoSelecionado) {
+                return;
+            }
+            
+            // Preencher nome do funcionário no título
+            document.getElementById('modal_titulo').textContent = 'Detalhes do Lançamento';
+            document.getElementById('modal_funcionario_nome').textContent = funcionarioSelecionado.nome;
+            
+            // Preencher tabela com apenas os produtos do lançamento selecionado
+            const tbody = document.getElementById('modal_tabela_materiais');
+            const dataRetirada = formatarDataBR(lancamentoSelecionado.data_baixa);
+            
+            let html = '';
+            lancamentoSelecionado.produtos.forEach(function(produto) {
+                html += `
+                    <tr>
+                        <td>
+                            <strong>${produto.produto_nome || 'Produto não identificado'}</strong>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge badge-primary">${produto.quantidade}</span>
+                        </td>
+                        <td>
+                            <small class="text-muted">${dataRetirada}</small>
+                        </td>
+                        <td>
+                            <small>${lancamentoSelecionado.centro_custo_nome || 'Não informado'}</small>
+                        </td>
+                        <td>
+                            <small>${lancamentoSelecionado.usuario_entrega || 'Não informado'}</small>
+                        </td>
+                        <td>
+                            ${lancamentoSelecionado.observacoes ? `<small class="text-info">${lancamentoSelecionado.observacoes}</small>` : '<small class="text-muted">-</small>'}
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+            
+            // Atualizar estatísticas para este lançamento específico
+            document.getElementById('modal_total_retiradas').textContent = `1 lançamento (${lancamentoSelecionado.produtos.length} produtos)`;
+            document.getElementById('modal_periodo').textContent = dataRetirada;
+            
+            // Abrir modal
+            $('#modalDetalhesMaterial').modal('show');
+            
+        } catch (error) {
+            console.error('Erro ao carregar dados do lançamento:', error);
         }
     };
 
