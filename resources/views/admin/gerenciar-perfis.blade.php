@@ -314,7 +314,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Erro ao criar usuário:', error);
+                    // Erro ao criar usuário
                     
                     Swal.fire({
                         icon: 'error',
@@ -323,7 +323,7 @@
                     });
                 });
         } catch (error) {
-            console.error('Erro ao criar usuário:', error);
+            // Erro ao criar usuário
             
             Swal.fire({
                 icon: 'error',
@@ -365,7 +365,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Erro ao editar usuário:', error);
+                    // Erro ao editar usuário
                     
                     Swal.fire({
                         icon: 'error',
@@ -374,7 +374,7 @@
                     });
                 });
         } catch (error) {
-            console.error('Erro ao editar usuário:', error);
+            // Erro ao editar usuário
             
             Swal.fire({
                 icon: 'error',
@@ -442,7 +442,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Erro ao alterar status:', error);
+                    // Erro ao alterar status
                     
                     Swal.fire({
                         icon: 'error',
@@ -523,7 +523,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Erro ao salvar usuário:', error);
+                    // Erro ao salvar usuário
                     
                     Swal.fire({
                         icon: 'error',
@@ -532,7 +532,7 @@
                     });
                 });
         } catch (error) {
-            console.error('Erro ao salvar usuário:', error);
+            // Erro ao salvar usuário
             
             Swal.fire({
                 icon: 'error',

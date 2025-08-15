@@ -372,7 +372,7 @@ function gerarRelatorio() {
             }
         },
         error: function(xhr) {
-            console.error('Erro:', xhr);
+            // Erro na requisição
             let message = 'Erro interno do servidor';
             if (xhr.responseJSON && xhr.responseJSON.message) {
                 message = xhr.responseJSON.message;

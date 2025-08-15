@@ -1,17 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-// use App\Livewire\CadastroDiarias; // Módulo Diárias removido do menu/rotas
-// use App\Http\Controllers\DiariasController; // Removido
+
 use App\Http\Controllers\PermissoesController;
 use App\Http\Controllers\UsuariosController;
-// use App\Http\Controllers\RHController; // Removido
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Livewire\GerenciarPermissoes;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
-// use App\Http\Controllers\CronogramaController; // Removido
+
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
@@ -628,177 +627,7 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    // Rotas do RH desativadas
-    /*Route::middleware(['auth'])->group(function () {
-        Route::prefix('rh')->group(function () {
-            // Rota para Administrador - sem middleware de permissão
-            Route::get('/administrador', function() {
-                try {
-                    // Verificar se a coluna existe na tabela
-                    if (!Schema::hasColumn('rh_problemas', 'prioridade')) {
-                        // Adicionar a coluna se não existir
-                        Schema::table('rh_problemas', function ($table) {
-                            $table->enum('prioridade', ['baixa', 'media', 'alta'])->default('media');
-                        });
-                        DB::statement('UPDATE rh_problemas SET prioridade = "media" WHERE prioridade IS NULL');
-                    }
 
-                    // VERIFICAÇÃO CRÍTICA: Buscar TODOS os registros diretamente
-                    $problemasBrutos = DB::select('SELECT * FROM rh_problemas ORDER BY created_at DESC');
-                    
-                    // Verificar status encontrados
-                    $statusEncontrados = [];
-                    foreach ($problemasBrutos as $p) {
-                        $status = $p->status ?? 'null';
-                        if (!isset($statusEncontrados[$status])) {
-                            $statusEncontrados[$status] = 0;
-                        }
-                        $statusEncontrados[$status]++;
-                    }
-                    
-                    // Corrigir todos os registros com status inválido
-                    foreach ($statusEncontrados as $status => $count) {
-                        if (!in_array($status, ['Pendente', 'Em andamento', 'Concluído', 'Concluida'])) {
-                            DB::table('rh_problemas')
-                                ->where('status', $status)
-                                ->update(['status' => 'Pendente']);
-                            \Log::info("Corrigido status inválido: '{$status}' para 'Pendente'");
-                        }
-                    }
-                    
-                    // Corrigir valores de status específicos
-                    DB::statement("UPDATE rh_problemas SET status = 'Concluído' WHERE status = 'Concluida'");
-                    
-                    // Recarregar todos com join
-                    $problemas = DB::select('
-                        SELECT 
-                            rp.*,
-                            COALESCE(u.name, "Não atribuído") as usuario_nome
-                        FROM 
-                            rh_problemas rp
-                        LEFT JOIN 
-                            users u ON rp.usuario_id = u.id
-                        ORDER BY 
-                            rp.created_at DESC
-                    ');
-                    
-                    // Converter para coleção
-                    $problemas = collect($problemas);
-                    
-                    \Log::info("Consulta SQL direta encontrou: " . count($problemas) . " problemas");
-                    \Log::info("Status encontrados: " . json_encode($statusEncontrados));
-                    
-                    return view('rh.administrador', compact('problemas'));
-                } catch (\Exception $e) {
-                    \Log::error("Erro ao carregar administrador RH: " . $e->getMessage());
-                    \Log::error("Arquivo: " . $e->getFile() . " (Linha " . $e->getLine() . ")");
-                    // Em caso de erro, ainda tentamos retornar a view
-                    $problemas = collect([]);
-                    return view('rh.administrador', compact('problemas'));
-                }
-            })->name('rh.administrador');
-            
-            Route::middleware(['can:RH'])->group(function () {
-                Route::get('/create', [RHController::class, 'create'])->name('rh.create');
-                Route::post('/store', [RHController::class, 'store'])->name('rh.store');
-                Route::put('/update-status/{problema}', [RHController::class, 'updateStatus'])->name('rh.update-status');
-                Route::delete('/destroy/{problema}', [RHController::class, 'destroy'])->name('rh.destroy');
-                Route::get('/problemas/{problema}/anotacoes', [RHController::class, 'getAnotacoes'])->name('rh.anotacoes');
-                Route::get('/get-anotacoes/{problema}', [RHController::class, 'getAnotacoes'])->name('rh.get-anotacoes');
-            });
-            
-            // Rotas acessíveis a todos usuários autenticados
-            Route::middleware(['auth'])->group(function () {
-                Route::get('/edit/{problema}', [RHController::class, 'edit'])->name('rh.edit');
-                Route::put('/update/{problema}', [RHController::class, 'update'])->name('rh.update');
-            });
-            
-            // Rotas de Tarefas removidas
-            
-            // Rota para Documentos RH - requer permissão 'Documentos RH'
-            Route::middleware(['can:Documentos RH'])->group(function () {
-                Route::get('/documentos', function() {
-                    return view('rh.documentos');
-                })->name('rh.documentos');
-                
-                // Nova rota para processar o envio de documentos
-                Route::post('/documentos/store', function(Request $request) {
-                    try {
-                        // Validar os dados
-                        $request->validate([
-                            'nome' => 'required|string|max:255',
-                            'foto' => 'nullable|image|max:2048', // Máximo 2MB
-                            'doc_fotos' => 'nullable|mimes:pdf|max:5120', // Máximo 5MB
-                            'doc_carteira_saude' => 'nullable|mimes:pdf|max:5120',
-                            'doc_exame' => 'required|mimes:pdf|max:5120',
-                            'doc_antecedente' => 'required|mimes:pdf|max:5120',
-                        ]);
-                        
-                        // Criar diretório para armazenar os arquivos se não existir
-                        $diretorio = 'documentos_rh/' . date('Y-m');
-                        if (!Storage::exists($diretorio)) {
-                            Storage::makeDirectory($diretorio);
-                        }
-                        
-                        // Gerar um código único para este conjunto de documentos
-                        $codigo = 'DOC-' . date('YmdHis') . '-' . rand(1000, 9999);
-                        
-                        // Armazenar os arquivos
-                        $caminhos = [];
-                        
-                        // Processar a foto
-                        if ($request->hasFile('foto') && $request->file('foto')->isValid()) {
-                            $caminho = $request->file('foto')->store($diretorio);
-                            $caminhos['foto'] = $caminho;
-                        }
-                        
-                        // Processar os documentos em PDF
-                        $campos_pdf = ['doc_fotos', 'doc_carteira_saude', 'doc_exame', 'doc_antecedente'];
-                        foreach ($campos_pdf as $campo) {
-                            if ($request->hasFile($campo) && $request->file($campo)->isValid()) {
-                                $caminho = $request->file($campo)->store($diretorio);
-                                $caminhos[$campo] = $caminho;
-                            }
-                        }
-                        
-                        // Salvar os dados no banco
-                        $documento = DB::table('documentos_rh')->insert([
-                            'nome' => $request->nome,
-                            'codigo' => $codigo,
-                            'foto' => $caminhos['foto'] ?? null,
-                            'doc_fotos' => $caminhos['doc_fotos'] ?? null,
-                            'doc_carteira_saude' => $caminhos['doc_carteira_saude'] ?? null,
-                            'doc_exame' => $caminhos['doc_exame'] ?? null,
-                            'doc_antecedente' => $caminhos['doc_antecedente'] ?? null,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-                        
-                        return redirect()->route('rh.documentos')
-                            ->with('success', 'Documentos enviados com sucesso! Código: ' . $codigo);
-                            
-                    } catch (\Exception $e) {
-                        \Log::error('Erro ao salvar documentos: ' . $e->getMessage());
-                        return redirect()->route('rh.documentos')
-                            ->with('error', 'Erro ao enviar documentos: ' . $e->getMessage());
-                    }
-                })->name('rh.documentos.store');
-            });
-            
-            // Rotas de Tarefas por Usuários removidas
-
-            // Rotas do Cronograma
-            Route::prefix('cronograma')->middleware(['can:Cronograma'])->group(function () {
-                Route::get('/', [CronogramaController::class, 'index'])->name('rh.cronograma.index');
-                Route::get('/eventos', [CronogramaController::class, 'eventos'])->name('rh.cronograma.eventos');
-                Route::post('/sincronizar', [CronogramaController::class, 'sincronizar'])->name('rh.cronograma.sincronizar');
-                Route::post('/store', [CronogramaController::class, 'store'])->name('rh.cronograma.store');
-                Route::put('/update/{id}', [CronogramaController::class, 'update'])->name('rh.cronograma.update');
-                Route::delete('/destroy/{id}', [CronogramaController::class, 'destroy'])->name('rh.cronograma.destroy');
-                Route::get('/datas/{id}', [CronogramaController::class, 'carregarDatas'])->name('rh.cronograma.datas');
-            });
-        });
-    });*/
 });
 
 Auth::routes();
@@ -1012,8 +841,7 @@ Route::get('/corrigir-registro-70', function() {
     }
 })->middleware(['auth']);
 
-// Nova rota para atualização de status via AJAX
-Route::post('/rh/problemas/{id}/status', [App\Http\Controllers\RHController::class, 'updateStatus'])->name('rh.problema.status');
+
 
 // Rotas de Debug para depuração
 Route::get('/debug/enable-sql-log', function() {
@@ -1164,7 +992,7 @@ Route::get('/debug/teste-data/{data?}', function($data = null) {
     }
 })->middleware(['auth','throttle:30,1']);
 
-// Rotas de debug de tarefas removidas
+
 
 // APIs para gerenciamento de perfis
 Route::middleware(['auth'])->prefix('api')->group(function () {

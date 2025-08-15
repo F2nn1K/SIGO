@@ -20,7 +20,7 @@ class ControleEstoqueController extends Controller
         
         // Entradas e saídas do mês atual
         $mesAtual = now()->format('Y-m');
-        $entradasMes = 0; // TODO: Implementar quando houver tabela de entradas
+        $entradasMes = 0; // Implementar quando houver tabela de entradas
         $saidasMes = Baixa::whereRaw('DATE_FORMAT(data_baixa, "%Y-%m") = ?', [$mesAtual])
                           ->sum('quantidade');
         

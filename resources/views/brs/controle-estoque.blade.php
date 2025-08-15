@@ -1,20 +1,4 @@
-{{--
-    CONTROLE DE ESTOQUE - BRS SISTEMA
-    
-    TODO: Implementações necessárias no Controller:
-    1. Criar ControleEstoqueController
-    2. Implementar métodos para:
-       - Contagem de produtos em estoque ($totalProdutos)
-       - Entradas do mês ($entradasMes) 
-       - Saídas do mês ($saidasMes)
-       - Produtos em falta ($produtosFalta)
-       - Cálculos de tendência ($tendenciaProdutos, $tendenciaEntradas, etc.)
-    
-    TODO: Banco de dados necessário:
-    - Tabela 'produtos' (id, nome, codigo, categoria, estoque_atual, estoque_minimo)
-    - Tabela 'movimentacoes' (id, produto_id, tipo [entrada/saida], quantidade, data)
-    - Relacionamentos apropriados
---}}
+{{-- CONTROLE DE ESTOQUE - BRS SISTEMA --}}
 
 @extends('adminlte::page')
 
@@ -32,13 +16,7 @@
         <p class="text-muted mt-1 mb-0">Gerencie seu inventário de forma inteligente</p>
     </div>
     <div>
-        <!-- Botão Novo Produto comentado temporariamente -->
-        <!--
-        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalCadastrarProduto">
-            <i class="fas fa-plus mr-1"></i>
-            Novo Produto
-        </button>
-        -->
+
 </div>
 @stop
 
@@ -74,12 +52,12 @@
                     <i class="fas fa-cubes"></i>
                 </div>
                 <div class="stat-content">
-                    {{-- TODO: Implementar contagem real de produtos em estoque --}}
+
                     <div class="stat-number">{{ $totalProdutos ?? '--' }}</div>
                     <div class="stat-label">Produtos em Estoque</div>
                 </div>
                 <div class="stat-trend">
-                    {{-- TODO: Implementar cálculo de tendência --}}
+
                     <i class="fas fa-circle text-muted"></i>
                     <span class="text-muted">{{ $tendenciaProdutos ?? '--' }}</span>
                 </div>
@@ -92,12 +70,12 @@
                     <i class="fas fa-arrow-up"></i>
                 </div>
                 <div class="stat-content">
-                    {{-- TODO: Implementar contagem de entradas do mês atual --}}
+
                     <div class="stat-number">{{ $entradasMes ?? '--' }}</div>
                     <div class="stat-label">Entradas do Mês</div>
                 </div>
                 <div class="stat-trend">
-                    {{-- TODO: Implementar comparação com mês anterior --}}
+                    
                     <i class="fas fa-circle text-muted"></i>
                     <span class="text-muted">{{ $tendenciaEntradas ?? '--' }}</span>
                 </div>
@@ -110,12 +88,12 @@
                     <i class="fas fa-arrow-down"></i>
                 </div>
                 <div class="stat-content">
-                    {{-- TODO: Implementar contagem de saídas do mês atual --}}
+
                     <div class="stat-number">{{ $saidasMes ?? '--' }}</div>
                     <div class="stat-label">Saídas do Mês</div>
                 </div>
                 <div class="stat-trend">
-                    {{-- TODO: Implementar comparação com mês anterior --}}
+                    
                     <i class="fas fa-circle text-muted"></i>
                     <span class="text-muted">{{ $tendenciaSaidas ?? '--' }}</span>
                 </div>
@@ -970,7 +948,7 @@
 @section('js')
 <script>
     $(document).ready(function() {
-        // Debug removido
+        
         
         // Animação dos cards de estatísticas
         $('.stat-card').each(function(index) {
@@ -1199,7 +1177,7 @@
         $.get('/api/produtos')
             .done(function(data) {
                 produtos = data;
-                // Debug removido
+                
             })
             .fail(function() {
                 // Silenciar logs no navegador
@@ -2219,7 +2197,7 @@
         }
     }
     
-    /* Estilos removidos - notificações agora usam SweetAlert2 */
+
     
     /* Autocomplete de funcionários */
     .funcionario-search-container {

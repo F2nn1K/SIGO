@@ -416,7 +416,7 @@
                 var empresa = $('#empresa').val();
                 var password = $('#password').val();
                 
-                console.log('Salvando usuário:', userId);
+                // Salvando usuário
                 
                 // Verificar campos obrigatórios
                 if (!name || !empresa) {
@@ -472,7 +472,7 @@
                 
                 // Obter CSRF token
                 var token = $('meta[name="csrf-token"]').attr('content');
-                console.log('CSRF Token:', token ? 'Presente' : 'Ausente');
+                // CSRF Token verificado
                 
                 // Enviar requisição usando jQuery
                 $.ajax({
@@ -484,7 +484,7 @@
                         'X-CSRF-TOKEN': token
                     },
                     success: function(response) {
-                        console.log('Resposta de sucesso:', response);
+                        // Resposta de sucesso
                         
                         // Fechar o modal
                         $('#modalEditarUsuario').modal('hide');
@@ -511,7 +511,7 @@
                         Livewire.dispatch('refresh');
                     },
                     error: function(xhr, status, error) {
-                        console.error('Erro na atualização:', xhr.responseText, status, error);
+                        // Erro na atualização
                         
                         let mensagemErro = 'Erro ao atualizar usuário';
                         
@@ -738,7 +738,7 @@
                         try {
                 $('#modalEditarUsuario').modal('hide');
                         } catch (modalError) {
-                            console.error('Erro ao fechar modal:', modalError);
+                            // Erro ao fechar modal
                         }
                     }
                 
@@ -974,7 +974,7 @@
                     if (userNameElement) {
                         userNameElement.textContent = userName;
                     } else {
-                        console.error('Elemento user-name não encontrado');
+                        // Elemento user-name não encontrado
                     }
                     
                     // Obter o login do usuário da tabela
@@ -1002,24 +1002,24 @@
                                 }
                             }
                         } catch (e) {
-                            console.error('Erro ao obter perfil da tabela:', e);
+                            // Erro ao obter perfil da tabela
                         }
                     } else {
-                        console.error('Linha da tabela não encontrada para o usuário:', userId);
+                        // Linha da tabela não encontrada para o usuário
                     }
                     
                     // Atualizar inicial do avatar
                     if (avatarTextElement && userName) {
                         avatarTextElement.textContent = userName.charAt(0).toUpperCase();
                     } else if (!avatarTextElement) {
-                        console.error('Elemento user-initial não encontrado');
+                        // Elemento user-initial não encontrado
                     }
                     
                     // Guardar ID do usuário selecionado para uso posterior
                     if (userIdHidden) {
                         userIdHidden.value = userId;
                     } else {
-                        console.error('Elemento user-id-hidden não encontrado');
+                        // Elemento user-id-hidden não encontrado
                     }
                     
                     // Chamar o componente Livewire usando o método correto para Livewire v3
@@ -1048,7 +1048,7 @@
                 try {
                     const selectPerfil = document.getElementById('perfil-select-js');
                     if (!selectPerfil) {
-                        console.error('Elemento perfil-select-js não encontrado');
+                        // console.error('Elemento perfil-select-js não encontrado');
                         return;
                     }
                     
@@ -1061,7 +1061,7 @@
                     
                     if (!response.ok) {
                         const errorText = await response.text();
-                        console.error('Erro na resposta da API:', response.status, errorText);
+                        // console.error('Erro na resposta da API:', response.status, errorText);
                         throw new Error('Erro ao carregar perfis');
                     }
                     
@@ -1108,7 +1108,7 @@
                                 }
                             }
                         } else {
-                            console.error('Erro ao buscar dados do usuário:', await userResponse.text());
+                            // console.error('Erro ao buscar dados do usuário:', await userResponse.text());
                             
                             // Tentar obter perfil da tabela como fallback
                             const row = document.querySelector(`tr[data-user-id="${userId}"]`);
@@ -1140,7 +1140,7 @@
                             perfilAtualElement.innerHTML = `<i class="fas fa-user-tag mr-1"></i> ${perfilAtualNome}`;
                             perfilAtualElement.style.display = 'inline-block';
                         } else {
-                            console.error('Elemento perfil-atual não encontrado');
+                            // console.error('Elemento perfil-atual não encontrado');
                         }
                         
                         // Atualizar também o título da seção com o nome do usuário
@@ -1168,7 +1168,7 @@
                             cardTitleElement.innerHTML = `<i class="fas fa-user-cog mr-2"></i> Alterar Perfil: <strong>${finalUserName}</strong>`;
                         }
                     } else {
-                        console.error('Formato de dados inválido retornado pela API:', data);
+                        // console.error('Formato de dados inválido retornado pela API:', data);
                     }
                     
                     // Habilitar select
@@ -1181,11 +1181,11 @@
                             salvarPerfil(userId);
                         };
                     } else {
-                        console.error('Botão btn-salvar-perfil não encontrado');
+                        // console.error('Botão btn-salvar-perfil não encontrado');
                     }
                     
                 } catch (error) {
-                    console.error('Erro ao carregar perfis do usuário:', error);
+                    // console.error('Erro ao carregar perfis do usuário:', error);
                     
                     // Mostrar erro no select
                     const selectPerfil = document.getElementById('perfil-select-js');
@@ -1209,7 +1209,7 @@
                             }
                         }
                     } catch (e) {
-                        console.error('Erro ao obter perfil da tabela como último recurso:', e);
+                        // console.error('Erro ao obter perfil da tabela como último recurso:', e);
                     }
                 }
             }
@@ -1219,7 +1219,7 @@
                 try {
                     const selectPerfil = document.getElementById('perfil-select-js');
                     if (!selectPerfil) {
-                        console.error('Elemento perfil-select-js não encontrado');
+                        // console.error('Elemento perfil-select-js não encontrado');
                         return;
                     }
                     
@@ -1248,7 +1248,7 @@
                     // Verificar token CSRF
                     const csrfToken = document.querySelector('meta[name="csrf-token"]');
                     if (!csrfToken) {
-                        console.error('Meta tag csrf-token não encontrada');
+                        // console.error('Meta tag csrf-token não encontrada');
                     }
                     
                     // Preparar dados para envio
@@ -1276,7 +1276,7 @@
                     try {
                         data = JSON.parse(responseText);
                     } catch (parseError) {
-                        console.error('Erro ao fazer parse da resposta JSON:', parseError);
+                        // console.error('Erro ao fazer parse da resposta JSON:', parseError);
                         data = { success: false, mensagem: 'Erro ao processar resposta do servidor' };
                     }
                     
@@ -1304,7 +1304,7 @@
                     Livewire.dispatch('refresh');
                     
                 } catch (error) {
-                    console.error('Erro ao salvar perfil:', error);
+                    // console.error('Erro ao salvar perfil:', error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Erro',
@@ -1533,7 +1533,7 @@
                         }
                     }
                     
-                    console.log('Salvando usuário ID:', userId);
+                    // console.log('Salvando usuário ID:', userId);
                     
                     // Obter valores do formulário com jQuery para evitar problemas com elementos null
                     const name = $('#name').val();
@@ -1572,7 +1572,7 @@
                         dados.password = password;
                     }
                     
-                    console.log('Dados para atualização:', dados);
+                    // console.log('Dados para atualização:', dados);
                     
                     // Mostrar loading
                     Swal.fire({
@@ -1605,7 +1605,7 @@
                         try {
                             result = responseText ? JSON.parse(responseText) : { success: response.ok };
                         } catch (e) {
-                            console.error('Erro ao fazer parse da resposta JSON:', e);
+                            // console.error('Erro ao fazer parse da resposta JSON:', e);
                             result = { success: response.ok };
                         }
                         
@@ -1635,7 +1635,7 @@
                             timer: 3000
                         });
                     } catch (requestError) {
-                        console.error('Erro na requisição:', requestError);
+                        // console.error('Erro na requisição:', requestError);
                         
                         Swal.fire({
                             icon: 'error',
@@ -1648,7 +1648,7 @@
                         Swal.close();
                     }
                 } catch (generalError) {
-                    console.error('Erro geral ao salvar usuário:', generalError);
+                    // console.error('Erro geral ao salvar usuário:', generalError);
                     
                     Swal.fire({
                         icon: 'error',

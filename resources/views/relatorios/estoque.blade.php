@@ -267,7 +267,7 @@ $(document).ready(function() {
 function carregarProdutos() {
     $.get('/api/produtos')
         .done(function(produtos) {
-            // Debug removido
+
             let options = '<option value="">Todos os produtos</option>';
             produtos.forEach(function(produto) {
                 options += `<option value="${produto.id}">${escapeHtml(produto.nome)}</option>`;
@@ -280,7 +280,7 @@ function carregarProdutos() {
         });
 }
 
-// filtro de Centro de Custo removido
+
 
 function gerarRelatorio() {
     const formData = new FormData($('#formFiltros')[0]);

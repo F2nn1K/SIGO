@@ -319,7 +319,7 @@
             }
         });
         
-        console.log('Página de Solicitação de Pedido de Compras carregada!');
+        // Página de Solicitação de Pedido de Compras carregada
     });
     
     function adicionarProduto() {

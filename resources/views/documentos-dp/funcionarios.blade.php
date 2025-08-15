@@ -533,7 +533,7 @@
     animation: fadeInUp 0.3s ease-out;
 }
 
-/* Hover removido conforme solicitado */
+
 
 .search-result-content {
     flex-grow: 1;
@@ -562,7 +562,7 @@
     text-align: center;
 }
 
-/* Status badges removidos */
+
 
 /* Estilo para lista de documentos */
 .document-item-modern {
@@ -577,7 +577,7 @@
     display: block;
 }
 
-/* Hover removido conforme solicitado */
+
 
 .document-title {
     font-size: 15px;
@@ -1423,7 +1423,7 @@
             $('#modalDetalhesMaterial').modal('show');
             
         } catch (error) {
-            console.error('Erro ao carregar dados para modal:', error);
+            // Erro ao carregar dados para modal
         }
     };
 
@@ -1489,7 +1489,7 @@
             $('#modalDetalhesMaterial').modal('show');
             
         } catch (error) {
-            console.error('Erro ao carregar dados do lançamento:', error);
+            // Erro ao carregar dados do lançamento
         }
     };
 

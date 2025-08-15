@@ -276,6 +276,3 @@ php verificar_tabelas_perfis.php            # Verificar estrutura
 
 ## 📝 Licença
 Projeto proprietário para uso interno.
-
----
-**Desenvolvido com ❤️ usando Laravel**

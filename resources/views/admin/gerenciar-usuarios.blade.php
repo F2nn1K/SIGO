@@ -346,7 +346,7 @@ async function fetchWithAuth(url, options = {}) {
         
         return await response.json();
     } catch (error) {
-        console.error('Erro na requisição:', error);
+        // Erro na requisição
         throw error;
     }
 }
@@ -403,7 +403,7 @@ async function criarUsuario(event) {
             throw new Error(response.message || 'Erro ao criar usuário');
         }
     } catch (error) {
-        console.error('Erro ao criar usuário:', error);
+        // Erro ao criar usuário
         
         Swal.fire({
             icon: 'error',
@@ -441,7 +441,7 @@ async function editarUsuario(id) {
             throw new Error(response.message || 'Erro ao obter dados do usuário');
         }
     } catch (error) {
-        console.error('Erro ao editar usuário:', error);
+        // Erro ao editar usuário
         
         Swal.fire({
             icon: 'error',
@@ -495,7 +495,7 @@ async function salvarUsuario(event) {
             throw new Error(response.message || 'Erro ao atualizar usuário');
         }
     } catch (error) {
-        console.error('Erro ao salvar usuário:', error);
+        // Erro ao salvar usuário
         
         Swal.fire({
             icon: 'error',
@@ -557,7 +557,7 @@ async function alterarStatus(id, ativar) {
             throw new Error(response.message || 'Erro ao alterar status do usuário');
         }
     } catch (error) {
-        console.error('Erro ao alterar status:', error);
+        // Erro ao alterar status
         
         Swal.fire({
             icon: 'error',

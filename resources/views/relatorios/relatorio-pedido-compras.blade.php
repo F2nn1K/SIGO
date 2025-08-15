@@ -250,7 +250,7 @@ document.getElementById('btnImprimirModal').addEventListener('click', function()
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
       } catch (e) {
-        console.log('Erro ao imprimir:', e);
+        // Erro ao imprimir
         alert('Erro ao abrir impressão. Tente novamente.');
       }
       
