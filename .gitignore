@@ -1,5 +1,63 @@
-/vendor
-/node_modules
+# Dependências
+/vendor/
+/node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ambiente e configuração
 .env
+.env.backup
+.env.production
+.phpunit.result.cache
+
+# IDE e Editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Laravel
+/storage/*.key
 /storage/logs/*
+!/storage/logs/.gitkeep
+/storage/framework/cache/*
+!/storage/framework/cache/.gitkeep
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitkeep
+/storage/framework/views/*
+!/storage/framework/views/.gitkeep
 /bootstrap/cache/*
+!/bootstrap/cache/.gitkeep
+/public/storage
+/public/hot
+
+# Arquivos de licença (contém dados sensíveis)
+/storage/app/license/*
+!/storage/app/license/.gitkeep
+
+# Banco de dados local
+/database/database.sqlite
+/database/*.sqlite
+
+# Arquivos temporários
+*.log
+*.tmp
+*.cache
+
+# Build e assets compilados (podem ser gerados)
+/public/build/
+/public/mix-manifest.json
+
+# Arquivos de backup e debug
+*.bak
+*.backup
+clear_cache.bat
+start_server.bat
+mostrar_perfis_permissoes.php
+verificar_tabelas_perfis.php
+
+# Pasta public (usar public_html como webroot)
+/public/

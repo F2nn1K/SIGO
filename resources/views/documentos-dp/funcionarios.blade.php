@@ -99,7 +99,61 @@
                     <li class="nav-item" role="presentation">
                         <a class="nav-link" id="epi-tab" data-toggle="tab" href="#epi-content" role="tab">
                             <i class="fas fa-hard-hat mr-2"></i>
-                            EPI
+                            EPI's
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="contra-cheques-tab" data-toggle="tab" href="#contra-cheques-content" role="tab">
+                            <i class="fas fa-money-check mr-2"></i>
+                            Contra cheques
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="ferias-tab" data-toggle="tab" href="#ferias-content" role="tab">
+                            <i class="fas fa-umbrella-beach mr-2"></i>
+                            Férias
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="decimo-tab" data-toggle="tab" href="#decimo-content" role="tab">
+                            <i class="fas fa-gift mr-2"></i>
+                            Décimos
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="rescisao-tab" data-toggle="tab" href="#rescisao-content" role="tab">
+                            <i class="fas fa-handshake mr-2"></i>
+                            Rescisões
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="frequencia-tab" data-toggle="tab" href="#frequencia-content" role="tab">
+                            <i class="fas fa-calendar-check mr-2"></i>
+                            Frequências
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="certificado-tab" data-toggle="tab" href="#certificado-content" role="tab">
+                            <i class="fas fa-certificate mr-2"></i>
+                            Certificados
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="asos-tab" data-toggle="tab" href="#asos-content" role="tab">
+                            <i class="fas fa-heartbeat mr-2"></i>
+                            ASOS
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="os-tab" data-toggle="tab" href="#os-content" role="tab">
+                            <i class="fas fa-file-signature mr-2"></i>
+                            O.S.
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="termo-aditivo-tab" data-toggle="tab" href="#termo-aditivo-content" role="tab">
+                            <i class="fas fa-file-contract mr-2"></i>
+                            Termo Aditivo
                         </a>
                     </li>
                 </ul>
@@ -190,6 +244,8 @@
                             </div>
                         </div>
 
+
+
                         <!-- Documentos -->
                         <h5 class="mb-3">
                             <i class="fas fa-file-alt mr-2 text-primary"></i>
@@ -198,61 +254,42 @@
                         <div id="lista_documentos" class="mb-4"></div>
 
                         <!-- Anexar Documentos -->
-                        <h5 class="mb-3">
-                            <i class="fas fa-plus-circle mr-2 text-success"></i>
-                            Anexar Documento Faltante
-                        </h5>
-                        <form id="form-anexar" enctype="multipart/form-data">
-                            @csrf
-                            <div class="row">
-                                <div class="col-lg-6 mb-3">
-                                    <label for="tipo_documento" class="font-weight-bold text-muted mb-2">
-                                        <i class="fas fa-list mr-1"></i>
-                                        Tipo de Documento
-                                    </label>
-                                    <select id="tipo_documento" name="tipo_documento" class="form-control">
-                                        @php
-                                        $docs = [
-                                            '02 fotos 3x4',
-                                            'Carteira de saúde atualizada com foto 3x4',
-                                            'Encaminhamento para exame admissional',
-                                            'Antecedente cível e criminal',
-                                            'R.G. (identidade)',
-                                            'CPF',
-                                            'CNH (carteira nacional de habilitação)',
-                                            'Título Eleitoral',
-                                            'Comprovante de endereço (com CEP)',
-                                            'Carteira de trabalho, frente e verso',
-                                            'Certidão de nascimento',
-                                            'CPF filho',
-                                            'Carteira de vacinação (menor 07 anos)',
-                                            'Comprovante de frequência escolar (maior 07 anos)'
-                                        ];
-                                        @endphp
-                                        @foreach($docs as $d)
-                                            <option value="{{ $d }}">{{ $d }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-lg-6 mb-3">
-                                    <label for="arquivo" class="font-weight-bold text-muted mb-2">
-                                        <i class="fas fa-file-upload mr-1"></i>
-                                        Arquivo (PDF/JPG/PNG)
-                                    </label>
-                                    <input type="file" id="arquivo" name="arquivo" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
-                                    <small class="text-muted mt-1">
-                                        <i class="fas fa-info-circle mr-1"></i>
-                                        Tamanho máximo: 15MB
-                                    </small>
-                                </div>
+                        <div class="modern-card-anexo mb-4">
+                            <div class="card-header-anexo">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-plus-circle mr-2 text-success"></i>
+                                    Anexar Documento (PDF)
+                                </h5>
                             </div>
-                            <div class="text-center mt-3">
-                                <button type="submit" class="btn btn-success btn-lg px-4">
-                                    <i class="fas fa-paperclip mr-2"></i>
-                                    Anexar Documento
-                                </button>
+                            <div class="card-body-anexo">
+                                <form id="form-anexar" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="upload-area">
+                                        <label for="arquivo-nome" class="font-weight-bold text-muted mb-3">
+                                            <i class="fas fa-file-pdf mr-2 text-danger"></i>
+                                            Arquivo (PDF)
+                                        </label>
+                                        <div class="file-input-wrapper">
+                                            <input type="text" id="arquivo-nome" class="form-control file-display" placeholder="Nenhum arquivo escolhido" readonly>
+                                            <button type="button" id="btn-escolher-arquivo" class="btn btn-outline-primary">
+                                                <i class="fas fa-folder-open mr-1"></i> Escolher arquivo
+                                            </button>
+                                            <input type="file" id="arquivo" name="arquivo" class="d-none" accept=".pdf" required>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Formatos aceitos: PDF. Tamanho máximo: 70MB
+                                        </small>
+                                    </div>
+                                    <div class="text-center mt-4">
+                                        <button type="submit" class="btn btn-success btn-lg px-5">
+                                            <i class="fas fa-paperclip mr-2"></i>
+                                            Anexar Documento
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
+                        </div>
                     </div>
 
                     <!-- Aba Atestados -->
@@ -317,7 +354,7 @@
                                         <input type="file" id="arquivo_atestado" name="arquivo" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
                                         <small class="text-muted mt-1">
                                             <i class="fas fa-info-circle mr-1"></i>
-                                            PDF, JPG ou PNG - Máx: 15MB
+                                            PDF, JPG ou PNG - Máx: 70MB
                                         </small>
                                     </div>
                                     <div class="text-center">
@@ -359,6 +396,7 @@
                                             <option value="verbal">Verbal</option>
                                             <option value="escrita">Escrita</option>
                                             <option value="suspensao">Suspensão</option>
+                                            <option value="ocorrencia">Ocorrência</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
@@ -397,7 +435,7 @@
                                         <input type="file" id="arquivo_advertencia" name="arquivo" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
                                         <small class="text-muted mt-1">
                                             <i class="fas fa-info-circle mr-1"></i>
-                                            PDF, JPG ou PNG - Máx: 15MB
+                                            PDF, JPG ou PNG - Máx: 70MB
                                         </small>
                                     </div>
                                     <div class="text-center">
@@ -413,17 +451,602 @@
 
                     <!-- Aba EPI -->
                     <div class="tab-pane fade" id="epi-content" role="tabpanel">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0">
-                                <i class="fas fa-boxes mr-2 text-primary"></i>
-                                Materiais Retirados
-                            </h5>
-                            <button class="btn btn-primary btn-sm" onclick="abrirModalCompleto()">
-                                <i class="fas fa-table mr-2"></i>
-                                Ver Histórico Completo
-                            </button>
+                        <div class="row mb-4">
+                            <div class="col-lg-8">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-boxes mr-2 text-primary"></i>
+                                        Materiais Retirados (Sistema)
+                                    </h5>
+                                    <button class="btn btn-primary btn-sm" onclick="abrirModalCompleto()">
+                                        <i class="fas fa-table mr-2"></i>
+                                        Ver Histórico Completo
+                                    </button>
+                                </div>
+                                <div id="lista_epis"></div>
+                                
+                                <hr class="my-4">
+                                
+                                <h5 class="mb-3">
+                                    <i class="fas fa-file-pdf mr-2 text-primary"></i>
+                                    EPIs Retroativos (PDFs)
+                                </h5>
+                                <div id="lista_epis_retroativos"></div>
+                            </div>
+                            <div class="col-lg-4">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-plus-circle mr-2 text-success"></i>
+                                    Adicionar EPI Retroativo
+                                </h5>
+                                <form id="form-epi-retroativo" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="data_epi" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            Data do EPI
+                                        </label>
+                                        <input type="date" id="data_epi" name="data" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="arquivo_epi" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-file-pdf mr-1"></i>
+                                            Arquivo PDF
+                                        </label>
+                                        <input type="file" id="arquivo_epi" name="arquivo" class="form-control" accept=".pdf" required>
+                                        <small class="text-muted">Apenas arquivos PDF (máx. 50MB)</small>
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        Anexar EPI Retroativo
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                        <div id="lista_epis"></div>
+                    </div>
+
+                    <!-- Aba Contra Cheques -->
+                    <div class="tab-pane fade" id="contra-cheques-content" role="tabpanel">
+                        <div class="row mb-4">
+                            <div class="col-lg-8">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-money-check mr-2 text-primary"></i>
+                                    Contra Cheques Anexados
+                                </h5>
+                                <div id="lista_contra_cheques"></div>
+                            </div>
+                            <div class="col-lg-4">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-plus-circle mr-2 text-success"></i>
+                                    Adicionar Contra Cheque
+                                </h5>
+                                <form id="form-contra-cheque" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="mes_referencia" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            Mês de Referência
+                                        </label>
+                                        <input type="month" id="mes_referencia" name="mes_referencia" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="observacoes_contra_cheque" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-comment mr-1"></i>
+                                            Observações
+                                        </label>
+                                        <textarea id="observacoes_contra_cheque" name="observacoes" class="form-control" rows="3" placeholder="Observações adicionais (opcional)"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="arquivo_contra_cheque" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-file-pdf mr-1"></i>
+                                            Arquivo PDF
+                                        </label>
+                                        <input type="file" id="arquivo_contra_cheque" name="arquivo" class="form-control" accept=".pdf" required>
+                                        <small class="text-muted">Apenas arquivos PDF (máx. 10MB)</small>
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        Anexar Contra Cheque
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba Férias -->
+                    <div class="tab-pane fade" id="ferias-content" role="tabpanel">
+                        <div class="row mb-4">
+                            <div class="col-lg-8">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-umbrella-beach mr-2 text-primary"></i>
+                                    Férias Anexadas
+                                </h5>
+                                <div id="lista_ferias"></div>
+                            </div>
+                            <div class="col-lg-4">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-plus-circle mr-2 text-success"></i>
+                                    Adicionar Férias
+                                </h5>
+                                <form id="form-ferias" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="periodo_inicio" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-calendar-check mr-1"></i>
+                                            Período de Início
+                                        </label>
+                                        <input type="date" id="periodo_inicio" name="periodo_inicio" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="periodo_fim" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-calendar-times mr-1"></i>
+                                            Período de Fim
+                                        </label>
+                                        <input type="date" id="periodo_fim" name="periodo_fim" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="ano_exercicio" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-calendar-alt mr-1"></i>
+                                            Ano de Exercício
+                                        </label>
+                                        <input type="number" id="ano_exercicio" name="ano_exercicio" class="form-control" min="1996" max="2030" value="{{ date('Y') }}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="observacoes_ferias" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-comment mr-1"></i>
+                                            Observações
+                                        </label>
+                                        <textarea id="observacoes_ferias" name="observacoes" class="form-control" rows="3" placeholder="Observações adicionais (opcional)"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="arquivo_ferias" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-file-pdf mr-1"></i>
+                                            Arquivo PDF
+                                        </label>
+                                        <input type="file" id="arquivo_ferias" name="arquivo" class="form-control" accept=".pdf" required>
+                                        <small class="text-muted">Apenas arquivos PDF (máx. 10MB)</small>
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        Anexar Férias
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba Décimo -->
+                    <div class="tab-pane fade" id="decimo-content" role="tabpanel">
+                        <div class="row mb-4">
+                            <div class="col-lg-8">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-gift mr-2 text-primary"></i>
+                                    Décimo Terceiro Anexado
+                                </h5>
+                                <div id="lista_decimo"></div>
+                            </div>
+                            <div class="col-lg-4">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-plus-circle mr-2 text-success"></i>
+                                    Adicionar Décimo Terceiro
+                                </h5>
+                                <form id="form-decimo" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="ano_referencia" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            Ano de Referência
+                                        </label>
+                                        <input type="number" id="ano_referencia" name="ano_referencia" class="form-control" min="1996" max="2030" value="{{ date('Y') }}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="parcela" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-list mr-1"></i>
+                                            Parcela
+                                        </label>
+                                        <select id="parcela" name="parcela" class="form-control" required>
+                                            <option value="">Selecione...</option>
+                                            <option value="1">1ª Parcela</option>
+                                            <option value="2">2ª Parcela</option>
+                                            <option value="unica">Parcela Única</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="valor_bruto" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-dollar-sign mr-1"></i>
+                                            Valor Bruto (opcional)
+                                        </label>
+                                        <input type="text" id="valor_bruto" name="valor_bruto" class="form-control" placeholder="Ex: 1.300,00">
+                                        <small class="text-muted">Digite apenas números. A formatação será aplicada automaticamente.</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="observacoes_decimo" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-comment mr-1"></i>
+                                            Observações
+                                        </label>
+                                        <textarea id="observacoes_decimo" name="observacoes" class="form-control" rows="3" placeholder="Observações adicionais (opcional)"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="arquivo_decimo" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-file-pdf mr-1"></i>
+                                            Arquivo PDF
+                                        </label>
+                                        <input type="file" id="arquivo_decimo" name="arquivo" class="form-control" accept=".pdf" required>
+                                        <small class="text-muted">Apenas arquivos PDF (máx. 10MB)</small>
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        Anexar Décimo Terceiro
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba Rescisão -->
+                    <div class="tab-pane fade" id="rescisao-content" role="tabpanel">
+                        <div class="row mb-4">
+                            <div class="col-lg-8">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-handshake mr-2 text-primary"></i>
+                                    Rescisão Anexada
+                                </h5>
+                                <div id="lista_rescisao"></div>
+                            </div>
+                            <div class="col-lg-4">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-plus-circle mr-2 text-success"></i>
+                                    Adicionar Rescisão
+                                </h5>
+                                <form id="form-rescisao" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="data_rescisao" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            Data da Rescisão
+                                        </label>
+                                        <input type="date" id="data_rescisao" name="data_rescisao" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="tipo_rescisao" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-list mr-1"></i>
+                                            Tipo de Rescisão
+                                        </label>
+                                        <select id="tipo_rescisao" name="tipo_rescisao" class="form-control" required>
+                                            <option value="">Selecione...</option>
+                                            <option value="demissao_sem_justa_causa">Demissão sem Justa Causa</option>
+                                            <option value="demissao_justa_causa">Demissão com Justa Causa</option>
+                                            <option value="pedido_demissao">Pedido de Demissão</option>
+                                            <option value="acordo_mutuo">Acordo Mútuo</option>
+                                            <option value="aposentadoria">Aposentadoria</option>
+                                            <option value="fim_contrato">Fim de Contrato</option>
+                                            <option value="outros">Outros</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="valor_total" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-dollar-sign mr-1"></i>
+                                            Valor Total (opcional)
+                                        </label>
+                                        <input type="text" id="valor_total" name="valor_total" class="form-control" placeholder="Ex: 5.250,75">
+                                        <small class="text-muted">Digite apenas números. A formatação será aplicada automaticamente.</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="observacoes_rescisao" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-comment mr-1"></i>
+                                            Observações
+                                        </label>
+                                        <textarea id="observacoes_rescisao" name="observacoes" class="form-control" rows="3" placeholder="Observações adicionais (opcional)"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="arquivo_rescisao" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-file-pdf mr-1"></i>
+                                            Arquivo PDF
+                                        </label>
+                                        <input type="file" id="arquivo_rescisao" name="arquivo" class="form-control" accept=".pdf" required>
+                                        <small class="text-muted">Apenas arquivos PDF (máx. 10MB)</small>
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        Anexar Rescisão
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba Frequência -->
+                    <div class="tab-pane fade" id="frequencia-content" role="tabpanel">
+                        <div class="row mb-4">
+                            <div class="col-lg-8">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-calendar-check mr-2 text-primary"></i>
+                                    Frequência Anexada
+                                </h5>
+                                <div id="lista_frequencia"></div>
+                            </div>
+                            <div class="col-lg-4">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-plus-circle mr-2 text-success"></i>
+                                    Adicionar Frequência
+                                </h5>
+                                <form id="form-frequencia" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="mes_ano_frequencia" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            Mês/Ano de Referência
+                                        </label>
+                                        <input type="month" id="mes_ano_frequencia" name="mes_ano" class="form-control">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="observacoes_frequencia" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-comment mr-1"></i>
+                                            Observações
+                                        </label>
+                                        <textarea id="observacoes_frequencia" name="observacoes" class="form-control" rows="3" placeholder="Observações adicionais (opcional)"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="arquivo_frequencia" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-file-pdf mr-1"></i>
+                                            Arquivo PDF
+                                        </label>
+                                        <input type="file" id="arquivo_frequencia" name="arquivo" class="form-control" accept=".pdf" required>
+                                        <small class="text-muted">Apenas arquivos PDF (máx. 10MB)</small>
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        Anexar Frequência
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba Certificado -->
+                    <div class="tab-pane fade" id="certificado-content" role="tabpanel">
+                        <div class="row mb-4">
+                            <div class="col-lg-8">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-certificate mr-2 text-primary"></i>
+                                    Certificados Anexados
+                                </h5>
+                                <div id="lista_certificado"></div>
+                            </div>
+                            <div class="col-lg-4">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-plus-circle mr-2 text-success"></i>
+                                    Adicionar Certificado
+                                </h5>
+                                <form id="form-certificado" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="nome_certificado" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-tag mr-1"></i>
+                                            Nome do Certificado
+                                        </label>
+                                        <input type="text" id="nome_certificado" name="nome_certificado" class="form-control" placeholder="Ex: NR-10, NR-35, Primeiros Socorros..." required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="data_emissao_certificado" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            Data de Emissão
+                                        </label>
+                                        <input type="date" id="data_emissao_certificado" name="data_emissao" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="data_validade_certificado" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-calendar-times mr-1"></i>
+                                            Data de Validade (opcional)
+                                        </label>
+                                        <input type="date" id="data_validade_certificado" name="data_validade" class="form-control">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="observacoes_certificado" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-comment mr-1"></i>
+                                            Observações
+                                        </label>
+                                        <textarea id="observacoes_certificado" name="observacoes" class="form-control" rows="3" placeholder="Observações adicionais (opcional)"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="arquivo_certificado" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-file-pdf mr-1"></i>
+                                            Arquivo PDF
+                                        </label>
+                                        <input type="file" id="arquivo_certificado" name="arquivo" class="form-control" accept=".pdf" required>
+                                        <small class="text-muted">Apenas arquivos PDF (máx. 10MB)</small>
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        Anexar Certificado
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba ASOS -->
+                    <div class="tab-pane fade" id="asos-content" role="tabpanel">
+                        <div class="row mb-4">
+                            <div class="col-lg-8">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-heartbeat mr-2 text-primary"></i>
+                                    ASOS Anexados
+                                </h5>
+                                <div id="lista_asos"></div>
+                            </div>
+                            <div class="col-lg-4">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-plus-circle mr-2 text-success"></i>
+                                    Adicionar ASOS
+                                </h5>
+                                <form id="form-asos" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="data_asos" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            Data do Exame
+                                        </label>
+                                        <input type="date" id="data_asos" name="data_exame" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="tipo_asos" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-list mr-1"></i>
+                                            Tipo de Exame
+                                        </label>
+                                        <select id="tipo_asos" name="tipo_exame" class="form-control" required>
+                                            <option value="">Selecione...</option>
+                                            <option value="admissional">Admissional</option>
+                                            <option value="periodico">Periódico</option>
+                                            <option value="mudanca_funcao">Mudança de Função</option>
+                                            <option value="retorno_trabalho">Retorno ao Trabalho</option>
+                                            <option value="demissional">Demissional</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="medico_responsavel" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-user-md mr-1"></i>
+                                            Médico Responsável (opcional)
+                                        </label>
+                                        <input type="text" id="medico_responsavel" name="medico_responsavel" class="form-control" placeholder="Nome do médico responsável">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="observacoes_asos" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-comment mr-1"></i>
+                                            Observações
+                                        </label>
+                                        <textarea id="observacoes_asos" name="observacoes" class="form-control" rows="3" placeholder="Observações adicionais (opcional)"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="arquivo_asos" class="font-weight-bold text-muted mb-2">
+                                            <i class="fas fa-file-pdf mr-1"></i>
+                                            Arquivo PDF
+                                        </label>
+                                        <input type="file" id="arquivo_asos" name="arquivo" class="form-control" accept=".pdf" required>
+                                        <small class="text-muted">Apenas arquivos PDF (máx. 10MB)</small>
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-block">
+                                        <i class="fas fa-upload mr-2"></i>
+                                        Anexar ASOS
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba O.S. -->
+                    <div class="tab-pane fade" id="os-content" role="tabpanel">
+                        <div class="row mb-4">
+                            <div class="col-lg-12">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-file-signature mr-2 text-primary"></i>
+                                    Ordens de Serviço do Funcionário
+                                </h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Nº O.S.</th>
+                                                <th>Data</th>
+                                                <th>Cidade/UF</th>
+                                                <th>Telefone</th>
+                                                <th style="width:120px;">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="lista_os_funcionario">
+                                            <tr>
+                                                <td colspan="5" class="text-center text-muted">Selecione um funcionário para visualizar.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Modal Visualizar OS -->
+                                <div class="modal fade" id="modalVerOS" tabindex="-1" role="dialog" aria-hidden="true">
+                                  <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title"><i class="fas fa-file-signature mr-2"></i> Ordem de Serviço</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                          <span aria-hidden="true">&times;</span>
+                                        </button>
+                                      </div>
+                                      <div class="modal-body" id="conteudoOS">
+                                        <div class="text-center text-muted py-4">Carregando...</div>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                        <button type="button" class="btn btn-primary" onclick="imprimirOS(window._osIdAtual)"><i class="fas fa-print mr-1"></i> Imprimir</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba Termo Aditivo -->
+                    <div class="tab-pane fade" id="termo-aditivo-content" role="tabpanel">
+                        <div class="row">
+                            <div class="col-lg-6 mb-4">
+                                <div class="modern-card-anexo h-100">
+                                    <div class="card-header-anexo d-flex align-items-center">
+                                        <i class="fas fa-folder-open mr-2"></i>
+                                        <h5 class="mb-0">Termos Aditivos Anexados</h5>
+                                    </div>
+                                    <div class="card-body-anexo">
+                                        <div id="lista_termo_aditivo"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mb-4">
+                                <div class="modern-card-anexo h-100">
+                                    <div class="card-header-anexo d-flex align-items-center">
+                                        <i class="fas fa-plus-circle mr-2"></i>
+                                        <h5 class="mb-0">Adicionar Termo Aditivo</h5>
+                                    </div>
+                                    <div class="card-body-anexo">
+                                        <form id="form-termo-aditivo" enctype="multipart/form-data">
+                                            <div class="form-group">
+                                                <label for="nome_termo_aditivo" class="font-weight-bold text-muted mb-2">
+                                                    <i class="fas fa-file-signature mr-1"></i>
+                                                    Nome do Termo
+                                                </label>
+                                                <input type="text" id="nome_termo_aditivo" name="nome_termo" class="form-control" placeholder="Ex: Termo aditivo de função..." required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="data_termo_aditivo" class="font-weight-bold text-muted mb-2">
+                                                    <i class="fas fa-calendar-day mr-1"></i>
+                                                    Data do Termo
+                                                </label>
+                                                <input type="date" id="data_termo_aditivo" name="data_termo" class="form-control" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="observacoes_termo_aditivo" class="font-weight-bold text-muted mb-2">
+                                                    <i class="fas fa-comment-dots mr-1"></i>
+                                                    Observações
+                                                </label>
+                                                <textarea id="observacoes_termo_aditivo" name="observacoes" class="form-control" rows="3" placeholder="Observações adicionais (opcional)"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="arquivo_termo_aditivo" class="font-weight-bold text-muted mb-2">
+                                                    <i class="fas fa-paperclip mr-1"></i>
+                                                    Arquivo PDF
+                                                </label>
+                                                <div class="upload-area">
+                                                    <div class="file-input-wrapper">
+                                                        <input type="file" id="arquivo_termo_aditivo" name="arquivo" class="form-control" accept=".pdf" required>
+                                                    </div>
+                                                    <small class="text-muted">Apenas arquivos PDF (máx. 10MB)</small>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-success btn-block">
+                                                <i class="fas fa-upload mr-2"></i>
+                                                Anexar Termo Aditivo
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -518,6 +1141,125 @@
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/modern-design.css') }}">
 <style>
+/* Estilo moderno para o formulário de anexo */
+.modern-card-anexo {
+    background: #fff;
+    border-radius: 16px;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.modern-card-anexo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+.card-header-anexo {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 14px 14px 0 0;
+    border-bottom: none;
+}
+
+.card-header-anexo h5 {
+    color: white !important;
+    margin: 0;
+    font-weight: 600;
+}
+
+.card-body-anexo {
+    padding: 24px;
+}
+
+.upload-area {
+    background: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+}
+
+.upload-area:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.file-input-wrapper {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.file-display {
+    flex: 1;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.file-display:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+.btn-outline-primary {
+    border: 2px solid #3b82f6;
+    color: #3b82f6;
+    background: transparent;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background: #3b82f6;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-success.btn-lg {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-success.btn-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+/* Animação de entrada */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modern-card-anexo {
+    animation: fadeInUp 0.5s ease-out;
+}
+
 /* Estilo personalizado para lista de resultados */
 .search-result-item {
     background: #fff;
@@ -675,6 +1417,27 @@
         return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
     }
 
+    // Função para formatar apenas data (DD/MM/AAAA)
+    function formatarDataSemHora(dataISO) {
+        if (!dataISO) return '—';
+        
+        // Se já está no formato YYYY-MM-DD, converter diretamente
+        if (typeof dataISO === 'string' && dataISO.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            const [ano, mes, dia] = dataISO.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+        
+        // Caso contrário, usar Date object
+        const data = new Date(dataISO);
+        if (isNaN(data.getTime())) return '—';
+        
+        const dia = String(data.getDate()).padStart(2, '0');
+        const mes = String(data.getMonth() + 1).padStart(2, '0');
+        const ano = data.getFullYear();
+        
+        return `${dia}/${mes}/${ano}`;
+    }
+
 // Função getStatusBadge removida
 
     function renderResultados(funcs){
@@ -747,11 +1510,21 @@
         }[f.status] || f.status;
         document.getElementById('status-atual-funcionario').textContent = statusTexto;
         
-        // Carregar documentos, atestados, advertências e EPIs
+        // Carregar documentos, atestados, advertências, EPIs e novos documentos
         carregarDocumentos(f.id);
         carregarAtestados(f.id);
         carregarAdvertencias(f.id);
         carregarEpis(f.id);
+        carregarEpisRetroativos(f.id);
+        carregarContraCheques(f.id);
+        carregarFerias(f.id);
+        carregarDecimo(f.id);
+        carregarRescisao(f.id);
+        carregarFrequencia(f.id);
+        carregarCertificado(f.id);
+        carregarTermoAditivo(f.id);
+        carregarAsos(f.id);
+        carregarOS(f.id);
     }
 
     function voltarParaBusca(){
@@ -799,27 +1572,39 @@
             }
             
             data.documentos.forEach((d, index) => {
-                const link = document.createElement('a');
-                link.className = 'document-item-modern';
-                link.href = `{{ route('documentos-dp.arquivo', ['id' => 'ARQ_PLACE']) }}`.replace('ARQ_PLACE', d.id);
-                link.target = '_blank';
-                link.style.animationDelay = `${index * 0.1}s`;
-                link.innerHTML = `
-                    <div class="document-title">
-                        <i class="fas fa-file-pdf mr-2 text-danger"></i>
-                        ${d.tipo_documento}
-                    </div>
-                    <div class="document-meta">
-                        <span>
-                            <i class="fas fa-file mr-1"></i>
-                            ${d.arquivo_nome}
-                        </span>
-                        <span class="document-size">
-                            ${(d.arquivo_tamanho/1024).toFixed(1)} KB
-                        </span>
+                const item = document.createElement('div');
+                item.className = 'document-item-modern';
+                item.style.animationDelay = `${index * 0.1}s`;
+                item.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="document-title">
+                                <i class="fas fa-file-pdf mr-2 text-danger"></i>
+                                ${d.tipo_documento}
+                            </div>
+                            <div class="document-meta">
+                                <span>
+                                    <i class="fas fa-file mr-1"></i>
+                                    ${d.arquivo_nome}
+                                </span>
+                                <span class="document-size ml-2">
+                                    ${(d.arquivo_tamanho/1024).toFixed(1)} KB
+                                </span>
+                            </div>
+                        </div>
+                        <div class="btn-group ml-3" role="group">
+                            <a href="{{ route('documentos-dp.arquivo', ['id' => 'DOC_ID']) }}" target="_blank" class="btn btn-sm btn-outline-primary" onclick="this.href=this.href.replace('DOC_ID', ${d.id})">
+                                <i class="fas fa-eye mr-1"></i>Ver
+                            </a>
+                            <button onclick="excluirDocumento('documento', ${d.id})" 
+                                    class="btn btn-sm btn-outline-danger"
+                                    title="Excluir documento">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 `;
-                lista.appendChild(link);
+                lista.appendChild(item);
             });
         } catch (error) {
             lista.innerHTML = `
@@ -869,6 +1654,17 @@
                 `;
             }
         }, 300);
+    });
+
+    // Botão escolher arquivo
+    document.getElementById('btn-escolher-arquivo').addEventListener('click', function() {
+        document.getElementById('arquivo').click();
+    });
+
+    // Mostrar nome do arquivo escolhido
+    document.getElementById('arquivo').addEventListener('change', function() {
+        const file = this.files && this.files[0] ? this.files[0] : null;
+        document.getElementById('arquivo-nome').value = file ? file.name : '';
     });
 
     // Anexar documento com feedback visual
@@ -935,7 +1731,14 @@
 
         try {
             const response = await fetch(`/documentos-dp/funcionario/${funcionarioId}/atestados`);
-            const data = await response.json();
+            let data;
+            const ctDec = response.headers.get('content-type') || '';
+            if (ctDec.includes('application/json')) {
+                data = await response.json();
+            } else {
+                const text = await response.text();
+                throw new Error(text || 'Erro interno do servidor');
+            }
             
             lista.innerHTML = '';
             
@@ -971,10 +1774,17 @@
                             ${atestado.dias_afastamento ? `<br><small class="text-muted"><i class="fas fa-clock mr-1"></i>Afastamento: ${atestado.dias_afastamento} dias</small>` : ''}
                         </div>
                         <div class="text-right">
-                            <a href="/documentos-dp/atestado/${atestado.id}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-eye mr-1"></i>Ver
-                            </a>
-                            <span class="document-size ml-2">
+                            <div class="btn-group mb-2" role="group">
+                                <a href="/documentos-dp/atestado/${atestado.id}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye mr-1"></i>Ver
+                                </a>
+                                <button onclick="excluirDocumento('atestado', ${atestado.id})" 
+                                        class="btn btn-sm btn-outline-danger"
+                                        title="Excluir documento">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <br><span class="document-size">
                                 ${(atestado.arquivo_tamanho/1024).toFixed(1)} KB
                             </span>
                         </div>
@@ -1009,7 +1819,14 @@
 
         try {
             const response = await fetch(`/documentos-dp/funcionario/${funcionarioId}/advertencias`);
-            const data = await response.json();
+            let data;
+            const ctRes = response.headers.get('content-type') || '';
+            if (ctRes.includes('application/json')) {
+                data = await response.json();
+            } else {
+                const text = await response.text();
+                throw new Error(text || 'Erro interno do servidor');
+            }
             
             lista.innerHTML = '';
             
@@ -1029,7 +1846,8 @@
                 const tipoClass = {
                     'verbal': 'info',
                     'escrita': 'warning', 
-                    'suspensao': 'danger'
+                    'suspensao': 'danger',
+                    'ocorrencia': 'warning'
                 }[advertencia.tipo_advertencia] || 'secondary';
 
                 const link = document.createElement('div');
@@ -1054,10 +1872,17 @@
                             ${advertencia.dias_suspensao ? `<br><small class="text-muted"><i class="fas fa-ban mr-1"></i>Suspensão: ${advertencia.dias_suspensao} dias</small>` : ''}
                         </div>
                         <div class="text-right">
-                            <a href="/documentos-dp/advertencia/${advertencia.id}" target="_blank" class="btn btn-sm btn-outline-danger">
-                                <i class="fas fa-eye mr-1"></i>Ver
-                            </a>
-                            <span class="document-size ml-2">
+                            <div class="btn-group mb-2" role="group">
+                                <a href="/documentos-dp/advertencia/${advertencia.id}" target="_blank" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-eye mr-1"></i>Ver
+                                </a>
+                                <button onclick="excluirDocumento('advertencia', ${advertencia.id})" 
+                                        class="btn btn-sm btn-outline-danger"
+                                        title="Excluir documento">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <br><span class="document-size">
                                 ${(advertencia.arquivo_tamanho/1024).toFixed(1)} KB
                             </span>
                         </div>
@@ -1112,6 +1937,8 @@
             
             const data = await response.json();
             
+
+            
             if (data.success) {
                 this.reset();
                 carregarAtestados(funcionarioSelecionado.id);
@@ -1121,6 +1948,21 @@
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                 }, 2000);
+
+                // Verificar se há aviso de limite de dias
+                if (data.aviso_limite) {
+                    setTimeout(() => {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Atenção!',
+                            text: data.aviso_limite,
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'Entendi',
+                            timer: 0, // Não fechar automaticamente
+                            allowOutsideClick: false
+                        });
+                    }, 500); // Reduzido para 0.5 segundos
+                }
             } else {
                 throw new Error(data.message || 'Erro ao anexar atestado');
             }
@@ -1503,6 +2345,1671 @@
         // Aplica a máscara
         return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
     }
+
+    // Função para formatar valor monetário brasileiro (para digitação)
+    function formatarMoeda(valor) {
+        // Remove tudo que não é dígito
+        let numeros = valor.replace(/\D/g, '');
+        
+        // Se não tiver números, retorna vazio
+        if (!numeros) return '';
+        
+        // Converte para decimal dividindo por 100 (centavos)
+        let valorDecimal = parseFloat(numeros) / 100;
+        
+        // Formata com separadores brasileiros
+        return valorDecimal.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    // Função para formatar valor decimal para exibição brasileira
+    function formatarValorParaExibicao(valor) {
+        if (!valor) return '0,00';
+        
+        // Converte para número e formata
+        const numero = parseFloat(valor);
+        return numero.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    // Função para aplicar máscara de moeda em tempo real
+    function aplicarMascaraMoeda(input) {
+        input.addEventListener('input', function(e) {
+            let valor = e.target.value;
+            let valorFormatado = formatarMoeda(valor);
+            e.target.value = valorFormatado;
+        });
+        
+        input.addEventListener('focus', function(e) {
+            if (e.target.value === '0,00') {
+                e.target.value = '';
+            }
+        });
+    }
+
+    // ========================================
+    // FUNÇÕES PARA CONTRA CHEQUES
+    // ========================================
+    
+    async function carregarContraCheques(funcionarioId) {
+        const lista = document.getElementById('lista_contra_cheques');
+        
+        lista.innerHTML = `
+            <div class="text-center py-4">
+                <div class="loading-spinner mr-2"></div>
+                Carregando contra cheques...
+            </div>
+        `;
+        
+        try {
+            const response = await fetch(`/documentos-dp/funcionario/${funcionarioId}/contra-cheques`);
+            const data = await response.json();
+            
+            if (!data.success || data.contraCheques.length === 0) {
+                lista.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Nenhum contra cheque anexado ainda.
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            data.contraCheques.forEach(function(contracheque) {
+                const dataFormatada = formatarDataBR(contracheque.created_at);
+                // Formatar mes_referencia de YYYY-MM para MM/YYYY
+                const mesReferencia = contracheque.mes_referencia ? 
+                    contracheque.mes_referencia.split('-').reverse().join('/') : 
+                    'Mês não informado';
+                
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-money-check mr-2 text-primary"></i>
+                                        ${mesReferencia}
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Anexado em ${dataFormatada}
+                                    </small>
+                                    ${contracheque.observacoes ? `<br><small class="text-info"><i class="fas fa-comment mr-1"></i>${contracheque.observacoes}</small>` : ''}
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <div class="btn-group" role="group">
+                                        <a href="/documentos-dp/contra-cheque/${contracheque.id}/download" 
+                                           target="_blank" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            Ver
+                                        </a>
+                                        <button onclick="excluirDocumento('contra-cheque', ${contracheque.id})" 
+                                                class="btn btn-outline-danger btn-sm"
+                                                title="Excluir documento">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+            
+        } catch (error) {
+            lista.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Erro ao carregar contra cheques.
+                </div>
+            `;
+        }
+    }
+
+    // ========================================
+    // FUNÇÕES PARA FÉRIAS
+    // ========================================
+    
+    async function carregarFerias(funcionarioId) {
+        const lista = document.getElementById('lista_ferias');
+        
+        lista.innerHTML = `
+            <div class="text-center py-4">
+                <div class="loading-spinner mr-2"></div>
+                Carregando férias...
+            </div>
+        `;
+        
+        try {
+            const response = await fetch(`/documentos-dp/funcionario/${funcionarioId}/ferias`);
+            const data = await response.json();
+            
+            if (!data.success || data.ferias.length === 0) {
+                lista.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Nenhuma férias anexada ainda.
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            data.ferias.forEach(function(ferias) {
+                const dataFormatada = formatarDataBR(ferias.created_at);
+                const periodoInicio = formatarDataBR(ferias.periodo_inicio);
+                const periodoFim = formatarDataBR(ferias.periodo_fim);
+                
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-umbrella-beach mr-2 text-primary"></i>
+                                        Férias ${ferias.ano_exercicio}
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        ${periodoInicio} até ${periodoFim}
+                                    </small>
+                                    <br><small class="text-muted">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Anexado em ${dataFormatada}
+                                    </small>
+                                    ${ferias.observacoes ? `<br><small class="text-info"><i class="fas fa-comment mr-1"></i>${ferias.observacoes}</small>` : ''}
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <div class="btn-group" role="group">
+                                        <a href="/documentos-dp/ferias/${ferias.id}/download" 
+                                           target="_blank" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            Ver
+                                        </a>
+                                        <button onclick="excluirDocumento('ferias', ${ferias.id})" 
+                                                class="btn btn-outline-danger btn-sm"
+                                                title="Excluir documento">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+            
+        } catch (error) {
+            lista.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Erro ao carregar férias.
+                </div>
+            `;
+        }
+    }
+    
+    // ========================================
+    // EPIS RETROATIVOS
+    // ========================================
+    
+    async function carregarEpisRetroativos(funcionarioId) {
+        const lista = document.getElementById('lista_epis_retroativos');
+        
+        lista.innerHTML = `
+            <div class="text-center py-4">
+                <div class="loading-spinner mr-2"></div>
+                Carregando EPIs retroativos...
+            </div>
+        `;
+        
+        try {
+            const response = await fetch(`/documentos-dp/funcionario/${funcionarioId}/epis-retroativos`);
+            const data = await response.json();
+            
+            if (!data.success || data.epis.length === 0) {
+                lista.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Nenhum EPI retroativo anexado ainda.
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            data.epis.forEach(function(epi) {
+                const dataFormatada = formatarDataBR(epi.created_at);
+                const dataEpi = formatarDataSemHora(epi.data);
+                
+                html += `
+                    <div class="card mb-3" id="epi-retroativo-${epi.id}">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-hard-hat mr-2 text-primary"></i>
+                                        EPI - ${dataEpi}
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Anexado em ${dataFormatada}
+                                    </small>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <div class="btn-group" role="group">
+                                        <a href="/documentos-dp/epi-retroativo/${epi.id}/download" 
+                                           target="_blank" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            Ver
+                                        </a>
+                                        <button onclick="excluirDocumento('epi-retroativo', ${epi.id})" 
+                                                class="btn btn-outline-danger btn-sm"
+                                                title="Excluir documento">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+            
+        } catch (error) {
+            lista.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Erro ao carregar EPIs retroativos.
+                </div>
+            `;
+        }
+    }
+    
+    // ========================================
+    // FUNÇÕES PARA DÉCIMO TERCEIRO
+    // ========================================
+    
+    async function carregarDecimo(funcionarioId) {
+        const lista = document.getElementById('lista_decimo');
+        
+        lista.innerHTML = `
+            <div class="text-center py-4">
+                <div class="loading-spinner mr-2"></div>
+                Carregando décimo terceiro...
+            </div>
+        `;
+        
+        try {
+            const response = await fetch(`/documentos-dp/funcionario/${funcionarioId}/decimo`);
+            const data = await response.json();
+            
+            if (!data.success || data.decimo.length === 0) {
+                lista.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Nenhum décimo terceiro anexado ainda.
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            data.decimo.forEach(function(decimo) {
+                const dataFormatada = formatarDataBR(decimo.created_at);
+                const parcelaTexto = {
+                    '1': '1ª Parcela',
+                    '2': '2ª Parcela',
+                    'unica': 'Parcela Única'
+                }[decimo.parcela] || decimo.parcela;
+                
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-gift mr-2 text-primary"></i>
+                                        13º Salário ${decimo.ano_referencia} - ${parcelaTexto}
+                                    </h6>
+                                    ${decimo.valor_bruto ? `<small class="text-success"><i class="fas fa-dollar-sign mr-1"></i>R$ ${formatarValorParaExibicao(decimo.valor_bruto)}</small><br>` : ''}
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Anexado em ${dataFormatada}
+                                    </small>
+                                    ${decimo.observacoes ? `<br><small class="text-info"><i class="fas fa-comment mr-1"></i>${decimo.observacoes}</small>` : ''}
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <div class="btn-group" role="group">
+                                        <a href="/documentos-dp/decimo/${decimo.id}/download" 
+                                           target="_blank" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            Ver
+                                        </a>
+                                        <button onclick="excluirDocumento('decimo', ${decimo.id})" 
+                                                class="btn btn-outline-danger btn-sm"
+                                                title="Excluir documento">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+            
+        } catch (error) {
+            lista.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Erro ao carregar décimo terceiro.
+                </div>
+            `;
+        }
+    }
+
+    // ========================================
+    // FUNÇÕES PARA RESCISÃO
+    // ========================================
+    
+    async function carregarRescisao(funcionarioId) {
+        const lista = document.getElementById('lista_rescisao');
+        
+        lista.innerHTML = `
+            <div class="text-center py-4">
+                <div class="loading-spinner mr-2"></div>
+                Carregando rescisão...
+            </div>
+        `;
+        
+        try {
+            const response = await fetch(`/documentos-dp/funcionario/${funcionarioId}/rescisao`);
+            const data = await response.json();
+            
+            if (!data.success || data.rescisao.length === 0) {
+                lista.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Nenhuma rescisão anexada ainda.
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            data.rescisao.forEach(function(rescisao) {
+                const dataFormatada = formatarDataBR(rescisao.created_at);
+                const dataRescisao = formatarDataBR(rescisao.data_rescisao);
+                const tipoTexto = {
+                    'demissao_sem_justa_causa': 'Demissão sem Justa Causa',
+                    'demissao_justa_causa': 'Demissão com Justa Causa',
+                    'pedido_demissao': 'Pedido de Demissão',
+                    'acordo_mutuo': 'Acordo Mútuo',
+                    'aposentadoria': 'Aposentadoria',
+                    'fim_contrato': 'Fim de Contrato',
+                    'outros': 'Outros'
+                }[rescisao.tipo_rescisao] || rescisao.tipo_rescisao;
+                
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-handshake mr-2 text-primary"></i>
+                                        ${tipoTexto}
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        Data da Rescisão: ${dataRescisao}
+                                    </small>
+                                    ${rescisao.valor_total ? `<br><small class="text-success"><i class="fas fa-dollar-sign mr-1"></i>R$ ${formatarValorParaExibicao(rescisao.valor_total)}</small>` : ''}
+                                    <br><small class="text-muted">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Anexado em ${dataFormatada}
+                                    </small>
+                                    ${rescisao.observacoes ? `<br><small class="text-info"><i class="fas fa-comment mr-1"></i>${rescisao.observacoes}</small>` : ''}
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <div class="btn-group" role="group">
+                                        <a href="/documentos-dp/rescisao/${rescisao.id}/download" 
+                                           target="_blank" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            Ver
+                                        </a>
+                                        <button onclick="excluirDocumento('rescisao', ${rescisao.id})" 
+                                                class="btn btn-outline-danger btn-sm"
+                                                title="Excluir documento">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+            
+        } catch (error) {
+            lista.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Erro ao carregar rescisão.
+                </div>
+            `;
+        }
+    }
+
+    // ========================================
+    // CARREGAR FREQUÊNCIA
+    // ========================================
+    async function carregarFrequencia(funcionarioId) {
+        const lista = document.getElementById('lista_frequencia');
+        
+        lista.innerHTML = `
+            <div class="text-center py-4">
+                <div class="loading-spinner mr-2"></div>
+                Carregando frequência...
+            </div>
+        `;
+        
+        try {
+            const response = await fetch(`/documentos-dp/funcionario/${funcionarioId}/frequencia`);
+            const data = await response.json();
+            
+            if (!data.success || data.frequencia.length === 0) {
+                lista.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Nenhuma frequência anexada ainda.
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            data.frequencia.forEach(function(freq) {
+                const dataFormatada = formatarDataBR(freq.created_at);
+                
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-calendar-check mr-2 text-primary"></i>
+                                        Frequência - ${freq.mes_ano}
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Anexado em ${dataFormatada}
+                                    </small>
+                                    ${freq.observacoes ? `<br><small class="text-muted"><strong>Obs:</strong> ${freq.observacoes}</small>` : ''}
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <div class="btn-group" role="group">
+                                        <a href="/documentos-dp/frequencia/${freq.id}/download" 
+                                           target="_blank" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            Ver
+                                        </a>
+                                        <button onclick="excluirDocumento('frequencia', ${freq.id})" 
+                                                class="btn btn-outline-danger btn-sm"
+                                                title="Excluir documento">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+            
+        } catch (error) {
+            lista.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Erro ao carregar frequência.
+                </div>
+            `;
+        }
+    }
+
+    // ========================================
+    // CARREGAR CERTIFICADOS
+    // ========================================
+    async function carregarCertificado(funcionarioId) {
+        const lista = document.getElementById('lista_certificado');
+        
+        lista.innerHTML = `
+            <div class="text-center py-4">
+                <div class="loading-spinner mr-2"></div>
+                Carregando certificados...
+            </div>
+        `;
+        
+        try {
+            const response = await fetch(`/documentos-dp/funcionario/${funcionarioId}/certificado`);
+            const data = await response.json();
+            
+            if (!data.success || data.certificado.length === 0) {
+                lista.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Nenhum certificado anexado ainda.
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            data.certificado.forEach(function(cert) {
+                const dataFormatada = formatarDataBR(cert.created_at);
+                const dataEmissao = formatarDataBR(cert.data_emissao);
+                const dataValidade = cert.data_validade ? formatarDataBR(cert.data_validade) : null;
+                
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-certificate mr-2 text-primary"></i>
+                                        ${cert.nome_certificado}
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        Emissão: ${dataEmissao}
+                                        ${dataValidade ? ` | Validade: ${dataValidade}` : ''}
+                                    </small>
+                                    <br><small class="text-muted">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Anexado em ${dataFormatada}
+                                    </small>
+                                    ${cert.observacoes ? `<br><small class="text-muted"><strong>Obs:</strong> ${cert.observacoes}</small>` : ''}
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <div class="btn-group" role="group">
+                                        <a href="/documentos-dp/certificado/${cert.id}/download" 
+                                           target="_blank" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            Ver
+                                        </a>
+                                        <button onclick="excluirDocumento('certificado', ${cert.id})" 
+                                                class="btn btn-outline-danger btn-sm"
+                                                title="Excluir documento">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+            
+        } catch (error) {
+            lista.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Erro ao carregar certificados.
+                </div>
+            `;
+        }
+    }
+
+    // ========================================
+    // CARREGAR TERMOS ADITIVOS
+    // ========================================
+    async function carregarTermoAditivo(funcionarioId) {
+        const lista = document.getElementById('lista_termo_aditivo');
+        if (!lista) return;
+        lista.innerHTML = `
+            <div class="text-center py-4">
+                <div class="loading-spinner mr-2"></div>
+                Carregando termos aditivos...
+            </div>
+        `;
+        try {
+            const resp = await fetch(`/documentos-dp/funcionario/${funcionarioId}/termo-aditivo`);
+            const data = await resp.json();
+            if (!data.success || (data.termos?.length||0) === 0) {
+                lista.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Nenhum termo aditivo anexado ainda.
+                    </div>
+                `;
+                return;
+            }
+            let html = '';
+            data.termos.forEach(t => {
+                const dataTermo = t.data_termo ? formatarDataBR(t.data_termo) : '-';
+                const criado = formatarDataBR(t.created_at);
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1"><i class="fas fa-file-contract mr-2 text-primary"></i>${t.nome_termo}</h6>
+                                    <small class="text-muted"><i class="fas fa-calendar mr-1"></i> Data do termo: ${dataTermo}</small>
+                                    <br><small class="text-muted"><i class="fas fa-clock mr-1"></i> Anexado em ${criado}</small>
+                                    ${t.observacoes ? `<br><small class="text-muted"><strong>Obs:</strong> ${t.observacoes}</small>` : ''}
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <div class="btn-group" role="group">
+                                        <a href="/documentos-dp/termo-aditivo/${t.id}/download" target="_blank" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye mr-1"></i> Ver
+                                        </a>
+                                        <button onclick="excluirDocumento('termo-aditivo', ${t.id})" class="btn btn-outline-danger btn-sm" title="Excluir documento">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            lista.innerHTML = html;
+        } catch (e) {
+            lista.innerHTML = `<div class="alert alert-danger"><i class=\"fas fa-exclamation-triangle mr-2\"></i> Erro ao carregar termos aditivos.</div>`;
+        }
+    }
+
+    // ========================================
+    // CARREGAR ASOS
+    // ========================================
+    async function carregarAsos(funcionarioId) {
+        const lista = document.getElementById('lista_asos');
+        
+        lista.innerHTML = `
+            <div class="text-center py-4">
+                <div class="loading-spinner mr-2"></div>
+                Carregando ASOS...
+            </div>
+        `;
+        
+        try {
+            const response = await fetch(`/documentos-dp/funcionario/${funcionarioId}/asos`);
+            const data = await response.json();
+            
+            if (!data.success || data.asos.length === 0) {
+                lista.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Nenhum ASOS anexado ainda.
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            data.asos.forEach(function(asos) {
+                const dataFormatada = formatarDataBR(asos.created_at);
+                const dataExame = formatarDataBR(asos.data_exame);
+                const tipoTexto = {
+                    'admissional': 'Admissional',
+                    'periodico': 'Periódico',
+                    'mudanca_funcao': 'Mudança de Função',
+                    'retorno_trabalho': 'Retorno ao Trabalho',
+                    'demissional': 'Demissional'
+                }[asos.tipo_exame] || asos.tipo_exame;
+                
+                html += `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-heartbeat mr-2 text-primary"></i>
+                                        ASOS - ${tipoTexto}
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        Data do Exame: ${dataExame}
+                                    </small>
+                                    ${asos.medico_responsavel ? `<br><small class="text-muted"><i class="fas fa-user-md mr-1"></i>Médico: ${asos.medico_responsavel}</small>` : ''}
+                                    <br><small class="text-muted">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Anexado em ${dataFormatada}
+                                    </small>
+                                    ${asos.observacoes ? `<br><small class="text-muted"><strong>Obs:</strong> ${asos.observacoes}</small>` : ''}
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <div class="btn-group" role="group">
+                                        <a href="/documentos-dp/asos/${asos.id}/download" 
+                                           target="_blank" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            Ver
+                                        </a>
+                                        <button onclick="excluirDocumento('asos', ${asos.id})" 
+                                                class="btn btn-outline-danger btn-sm"
+                                                title="Excluir documento">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+            
+        } catch (error) {
+            lista.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Erro ao carregar ASOS.
+                </div>
+            `;
+        }
+    }
+
+    // ========================================
+    // APLICAR MÁSCARAS DE MOEDA
+    // ========================================
+    
+    // Aplicar máscaras nos campos de valor quando o documento carrega
+    document.addEventListener('DOMContentLoaded', function() {
+        // Garantir que o modal de OS esteja diretamente sob <body> para evitar z-index/stacking-context bugs
+        const modalEl = document.getElementById('modalVerOS');
+        if (modalEl && modalEl.parentElement !== document.body) {
+            document.body.appendChild(modalEl);
+        }
+
+        // Campo de valor bruto do décimo terceiro
+        const valorBrutoDecimo = document.getElementById('valor_bruto');
+        if (valorBrutoDecimo) {
+            aplicarMascaraMoeda(valorBrutoDecimo);
+        }
+        
+        // Campo de valor total da rescisão
+        const valorTotalRescisao = document.getElementById('valor_total');
+        if (valorTotalRescisao) {
+            aplicarMascaraMoeda(valorTotalRescisao);
+        }
+    });
+
+    // ========================================
+    // EVENT LISTENERS PARA OS FORMULÁRIOS
+    // ========================================
+    
+    // Contra Cheque
+    document.getElementById('form-contra-cheque').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!funcionarioSelecionado) return;
+        
+        const formData = new FormData(this);
+        formData.append('funcionario_id', funcionarioSelecionado.id);
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
+        submitBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/documentos-dp/contra-cheque/store', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.reset();
+                carregarContraCheques(funcionarioSelecionado.id);
+                Swal.fire('Sucesso!', 'Contra cheque anexado com sucesso!', 'success');
+            } else {
+                throw new Error(data.message || 'Erro ao anexar contra cheque');
+            }
+        } catch (error) {
+            Swal.fire('Erro!', error.message || 'Erro ao anexar contra cheque', 'error');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // Férias
+    document.getElementById('form-ferias').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!funcionarioSelecionado) return;
+        
+        const formData = new FormData(this);
+        formData.append('funcionario_id', funcionarioSelecionado.id);
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
+        submitBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/documentos-dp/ferias/store', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.reset();
+                carregarFerias(funcionarioSelecionado.id);
+                Swal.fire('Sucesso!', 'Férias anexadas com sucesso!', 'success');
+            } else {
+                throw new Error(data.message || 'Erro ao anexar férias');
+            }
+        } catch (error) {
+            Swal.fire('Erro!', error.message || 'Erro ao anexar férias', 'error');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // EPI Retroativo
+    document.getElementById('form-epi-retroativo').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!funcionarioSelecionado) return;
+        
+        const formData = new FormData(this);
+        formData.append('funcionario_id', funcionarioSelecionado.id);
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
+        submitBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/documentos-dp/epi-retroativo/store', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.reset();
+                // Atualização otimista: inserir o item sem recarregar toda a lista
+                if (data.epi) {
+                    const lista = document.getElementById('lista_epis_retroativos');
+                    const dataFormatada = formatarDataBR(data.epi.created_at);
+                    const dataEpi = formatarDataSemHora(data.epi.data);
+                    const item = document.createElement('div');
+                    item.className = 'card mb-3';
+                    item.innerHTML = `
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-hard-hat mr-2 text-primary"></i>
+                                        EPI - ${dataEpi}
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Anexado em ${dataFormatada}
+                                    </small>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <div class="btn-group" role="group">
+                                        <a href="/documentos-dp/epi-retroativo/${data.epi.id}/download" 
+                                           target="_blank" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            Ver
+                                        </a>
+                                        <button onclick="excluirDocumento('epi-retroativo', ${data.epi.id})" 
+                                                class="btn btn-outline-danger btn-sm"
+                                                title="Excluir documento">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    // Se a lista estava com alerta "nenhum", limpa antes
+                    if (lista.querySelector('.alert')) { lista.innerHTML = ''; }
+                    lista.prepend(item);
+                } else {
+                    carregarEpisRetroativos(funcionarioSelecionado.id);
+                }
+                Swal.fire('Sucesso!', 'EPI retroativo anexado com sucesso!', 'success');
+            } else {
+                throw new Error(data.message || 'Erro ao anexar EPI retroativo');
+            }
+        } catch (error) {
+            Swal.fire('Erro!', error.message || 'Erro ao anexar EPI retroativo', 'error');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // Décimo Terceiro
+    document.getElementById('form-decimo').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!funcionarioSelecionado) return;
+        
+        const formData = new FormData(this);
+        formData.append('funcionario_id', funcionarioSelecionado.id);
+        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+        
+        // Converter valor formatado para número decimal antes de enviar
+        const valorBrutoInput = document.getElementById('valor_bruto');
+        if (valorBrutoInput.value) {
+            // Remove pontos de milhares e converte vírgula para ponto decimal
+            const valorNumerico = valorBrutoInput.value.replace(/\./g, '').replace(',', '.');
+            formData.set('valor_bruto', valorNumerico);
+        }
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
+        submitBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/documentos-dp/decimo/store', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+            
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Erro interno do servidor');
+            }
+            
+            const ctDec = response.headers.get('content-type') || '';
+            let data;
+            if (ctDec.includes('application/json')) {
+                data = await response.json();
+            } else {
+                const text = await response.text();
+                throw new Error(text || 'Erro interno do servidor');
+            }
+            
+            if (data.success) {
+                this.reset();
+                carregarDecimo(funcionarioSelecionado.id);
+                Swal.fire('Sucesso!', 'Décimo terceiro anexado com sucesso!', 'success');
+            } else {
+                throw new Error(data.message || 'Erro ao anexar décimo terceiro');
+            }
+        } catch (error) {
+            Swal.fire('Erro!', error.message || 'Erro ao anexar décimo terceiro', 'error');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // Rescisão
+    document.getElementById('form-rescisao').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!funcionarioSelecionado) return;
+        
+        const formData = new FormData(this);
+        formData.append('funcionario_id', funcionarioSelecionado.id);
+        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+        
+        // Converter valor formatado para número decimal antes de enviar
+        const valorTotalInput = document.getElementById('valor_total');
+        if (valorTotalInput.value) {
+            // Remove pontos de milhares e converte vírgula para ponto decimal
+            const valorNumerico = valorTotalInput.value.replace(/\./g, '').replace(',', '.');
+            formData.set('valor_total', valorNumerico);
+        }
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
+        submitBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/documentos-dp/rescisao/store', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+            
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Erro interno do servidor');
+            }
+            
+            const ctRes = response.headers.get('content-type') || '';
+            let data;
+            if (ctRes.includes('application/json')) {
+                data = await response.json();
+            } else {
+                const text = await response.text();
+                throw new Error(text || 'Erro interno do servidor');
+            }
+            
+            if (data.success) {
+                this.reset();
+                carregarRescisao(funcionarioSelecionado.id);
+                Swal.fire('Sucesso!', 'Rescisão anexada com sucesso!', 'success');
+            } else {
+                throw new Error(data.message || 'Erro ao anexar rescisão');
+            }
+        } catch (error) {
+            Swal.fire('Erro!', error.message || 'Erro ao anexar rescisão', 'error');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // Frequência
+    document.getElementById('form-frequencia').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!funcionarioSelecionado) return;
+        
+        const formData = new FormData(this);
+        formData.append('funcionario_id', funcionarioSelecionado.id);
+        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
+        submitBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/documentos-dp/frequencia/store', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+            
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Erro interno do servidor');
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.reset();
+                carregarFrequencia(funcionarioSelecionado.id);
+                Swal.fire('Sucesso!', 'Frequência anexada com sucesso!', 'success');
+            } else {
+                throw new Error(data.message || 'Erro ao anexar frequência');
+            }
+        } catch (error) {
+            Swal.fire('Erro!', error.message || 'Erro ao anexar frequência', 'error');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // Certificado
+    document.getElementById('form-certificado').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!funcionarioSelecionado) return;
+        
+        const formData = new FormData(this);
+        formData.append('funcionario_id', funcionarioSelecionado.id);
+        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
+        submitBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/documentos-dp/certificado/store', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+            
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Erro interno do servidor');
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.reset();
+                carregarCertificado(funcionarioSelecionado.id);
+                Swal.fire('Sucesso!', 'Certificado anexado com sucesso!', 'success');
+            } else {
+                throw new Error(data.message || 'Erro ao anexar certificado');
+            }
+        } catch (error) {
+            Swal.fire('Erro!', error.message || 'Erro ao anexar certificado', 'error');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // Termo Aditivo
+    const formTermo = document.getElementById('form-termo-aditivo');
+    if (formTermo) {
+        formTermo.addEventListener('submit', async function(e){
+            e.preventDefault();
+            if (!funcionarioSelecionado) { Swal.fire('Aviso!','Selecione um funcionário','warning'); return; }
+            const fd = new FormData(this);
+            fd.append('funcionario_id', funcionarioSelecionado.id);
+            try {
+                const response = await fetch('/documentos-dp/termo-aditivo/store', { method:'POST', headers:{ 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') }, body: fd });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.message || 'Erro ao anexar termo aditivo');
+                this.reset();
+                carregarTermoAditivo(funcionarioSelecionado.id);
+                Swal.fire('Sucesso!', 'Termo aditivo anexado com sucesso!', 'success');
+            } catch (err) {
+                Swal.fire('Erro!', err.message || 'Erro ao anexar termo aditivo', 'error');
+            }
+        });
+    }
+    
+    // ASOS
+    document.getElementById('form-asos').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!funcionarioSelecionado) return;
+        
+        const formData = new FormData(this);
+        formData.append('funcionario_id', funcionarioSelecionado.id);
+        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
+        submitBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/documentos-dp/asos/store', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+            
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Erro interno do servidor');
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.reset();
+                carregarAsos(funcionarioSelecionado.id);
+                Swal.fire('Sucesso!', 'ASOS anexado com sucesso!', 'success');
+            } else {
+                throw new Error(data.message || 'Erro ao anexar ASOS');
+            }
+        } catch (error) {
+            Swal.fire('Erro!', error.message || 'Erro ao anexar ASOS', 'error');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // ========================================
+    // FUNÇÃO PARA EXCLUIR DOCUMENTOS
+    // ========================================
+    window.excluirDocumento = async function(tipo, id) {
+        // Confirmação antes de excluir
+        const result = await Swal.fire({
+            title: 'Confirmar Exclusão',
+            text: 'Tem certeza que deseja excluir este documento? Esta ação não pode ser desfeita.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="fas fa-trash mr-2"></i>Sim, excluir',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+            // Mostrar loading
+            Swal.fire({
+                title: 'Excluindo documento...',
+                text: 'Por favor, aguarde.',
+                icon: 'info',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const response = await fetch(`/documentos-dp/${tipo}/${id}/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro na requisição');
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Recarregar a lista do tipo de documento correspondente
+                if (funcionarioSelecionado) {
+                    switch(tipo) {
+                        case 'frequencia':
+                            carregarFrequencia(funcionarioSelecionado.id);
+                            break;
+                        case 'certificado':
+                            carregarCertificado(funcionarioSelecionado.id);
+                            break;
+                        case 'asos':
+                            carregarAsos(funcionarioSelecionado.id);
+                            break;
+                        case 'rescisao':
+                            carregarRescisao(funcionarioSelecionado.id);
+                            break;
+                        case 'decimo':
+                            carregarDecimo(funcionarioSelecionado.id);
+                            break;
+                        case 'ferias':
+                            carregarFerias(funcionarioSelecionado.id);
+                            break;
+                        case 'contra-cheque':
+                            carregarContraCheques(funcionarioSelecionado.id);
+                            break;
+                        case 'atestado':
+                            carregarAtestados(funcionarioSelecionado.id);
+                            break;
+                        case 'advertencia':
+                            carregarAdvertencias(funcionarioSelecionado.id);
+                            break;
+                        case 'documento':
+                            carregarDocumentos(funcionarioSelecionado.id);
+                            break;
+                        case 'epi-retroativo':
+                            // Remover o item do DOM imediatamente
+                            const item = document.getElementById(`epi-retroativo-${id}`);
+                            if (item && item.parentNode) {
+                                item.parentNode.removeChild(item);
+                            } else {
+                                // Fallback: recarregar lista
+                                carregarEpisRetroativos(funcionarioSelecionado.id);
+                            }
+                            break;
+                        case 'termo-aditivo':
+                            carregarTermoAditivo(funcionarioSelecionado.id);
+                            break;
+                    }
+                }
+
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: 'Documento excluído com sucesso.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else {
+                throw new Error(data.message || 'Erro ao excluir documento');
+            }
+
+        } catch (error) {
+            Swal.fire({
+                title: 'Erro!',
+                text: error.message || 'Erro ao excluir documento. Tente novamente.',
+                icon: 'error',
+                confirmButtonColor: '#3085d6'
+            });
+        }
+    };
+
+    // Função para gerar arquivo completo do funcionário (ZIP)
+    window.gerarArquivoCompleto = function() {
+        if (!funcionarioSelecionado) {
+            Swal.fire('Aviso!', 'Nenhum funcionário selecionado', 'warning');
+            return;
+        }
+        
+        // Confirmação com informações sobre o que será baixado
+        Swal.fire({
+            title: 'Gerar Arquivo Completo?',
+            html: `
+                <div class="text-left">
+                    <p><strong>Funcionário:</strong> ${funcionarioSelecionado.nome}</p>
+                    <p><strong>CPF:</strong> ${funcionarioSelecionado.cpf || 'Não informado'}</p>
+                    <p><strong>Função:</strong> ${funcionarioSelecionado.funcao || 'Não informado'}</p>
+                    <hr>
+                    <p><i class="fas fa-info-circle text-info mr-2"></i>Será gerado um arquivo ZIP contendo:</p>
+                    <ul class="text-left">
+                        <li>📄 Documentos Gerais</li>
+                        <li>🏥 Atestados</li>
+                        <li>⚠️ Advertências</li>
+                        <li>💰 Décimo Terceiro</li>
+                        <li>📋 Rescisão</li>
+                        <li>💵 Contra-cheques</li>
+                        <li>🏖️ Férias</li>
+                        <li>📅 Frequência</li>
+                        <li>🏆 Certificados</li>
+                        <li>💗 ASOS</li>
+                        <li>📊 Resumo do funcionário</li>
+                    </ul>
+                </div>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="fas fa-download mr-2"></i>Baixar ZIP',
+            cancelButtonText: 'Cancelar',
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Mostrar loading
+                Swal.fire({
+                    title: 'Gerando arquivo...',
+                    html: '<i class="fas fa-spinner fa-spin fa-2x text-primary"></i><br><br>Coletando todos os documentos do funcionário...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false
+                });
+                
+                // Redirecionar para download
+                const url = `/documentos-dp/funcionario/${funcionarioSelecionado.id}/arquivo-completo`;
+                window.location.href = url;
+                
+                // Fechar loading após um tempo
+                setTimeout(() => {
+                    Swal.close();
+                    Swal.fire({
+                        title: 'Download Iniciado!',
+                        text: 'O arquivo ZIP está sendo baixado...',
+                        icon: 'success',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                }, 2000);
+            }
+        });
+    };
+
+    // ========================================
+    // CARREGAR ORDENS DE SERVIÇO DO FUNCIONÁRIO
+    // ========================================
+    async function carregarOS(funcionarioId) {
+        const corpo = document.getElementById('lista_os_funcionario');
+        if (!corpo) return;
+        corpo.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center py-4">
+                    <div class="loading-spinner mr-2"></div> Carregando O.S...
+                </td>
+            </tr>`;
+
+        try {
+            const resp = await fetch(`/api/ordens-servico/por-funcionario/${funcionarioId}`);
+            const json = await resp.json();
+            if (!json.success) throw new Error('Falha ao carregar O.S.');
+
+            if (!json.data || json.data.length === 0) {
+                corpo.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Nenhuma O.S. encontrada para este funcionário.</td></tr>`;
+                return;
+            }
+
+            corpo.innerHTML = json.data.map(os => `
+                <tr>
+                    <td>${os.numero_os}</td>
+                    <td>${formatarDataBR(os.data_os)}</td>
+                    <td>${[os.cidade, os.estado].filter(Boolean).join(' / ')}</td>
+                    <td>${os.telefone || ''}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="verOS(${os.id})">
+                            <i class="fas fa-eye mr-1"></i> Ver
+                        </button>
+                     </td>
+                </tr>
+            `).join('');
+        } catch (e) {
+            corpo.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Erro ao carregar O.S.</td></tr>`;
+        }
+    }
+
+    // Abrir modal e renderizar OS
+    async function verOS(id) {
+        const container = document.getElementById('conteudoOS');
+        container.innerHTML = `<div class=\"text-center text-muted py-4\">Carregando...</div>`;
+        // Fechar qualquer modal aberto residual e remover backdrops órfãos
+        try { $('.modal').modal('hide'); } catch (e) {}
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open').css('padding-right', '');
+        $('#modalVerOS').modal({backdrop: 'static', keyboard: true}).modal('show');
+        try {
+            const resp = await fetch(`/api/ordens-servico/${id}`);
+            const json = await resp.json();
+            if (!json.success) throw new Error(json.message || 'Erro ao buscar O.S.');
+            const os = json.data;
+            // guardar id atual para o botão Imprimir do modal usar o layout correto
+            window._osIdAtual = id;
+            container.innerHTML = `
+                <div class=\"row\">
+                  <div class=\"col-md-6\">
+                    <p><strong>Nº O.S.:</strong> ${os.numero_os}</p>
+                    <p><strong>Data:</strong> ${formatarDataBR(os.data_os)}</p>
+                    <p><strong>Funcionário:</strong> ${os.funcionario || ''}</p>
+                    <p><strong>Descrição:</strong><br>${os.descricao || ''}</p>
+                  </div>
+                  <div class=\"col-md-6\">
+                    <p><strong>Endereço:</strong> ${os.endereco || ''}</p>
+                    <p><strong>Cidade/UF:</strong> ${[os.cidade, os.estado].filter(Boolean).join(' / ')}</p>
+                    <p><strong>CEP:</strong> ${os.cep || ''}</p>
+                    <p><strong>Telefone:</strong> ${os.telefone || ''}</p>
+                    <p><strong>CPF/CNPJ:</strong> ${os.cpf_cnpj || ''}</p>
+                  </div>
+                </div>
+                ${os.observacoes ? `<hr><p><strong>Observações:</strong><br>${os.observacoes}</p>` : ''}
+            `;
+        } catch (e) {
+            container.innerHTML = `<div class=\"alert alert-danger\">${e.message || 'Erro ao carregar O.S.'}</div>`;
+        }
+    }
+    // Função de impressão com layout padrão da O.S.
+    async function imprimirOS(id){
+      try {
+        const resp = await fetch(`/api/ordens-servico/${id}`);
+        const json = await resp.json();
+        if (!json.success) throw new Error(json.message || 'Erro ao carregar O.S.');
+        const os = json.data;
+
+        const dataBR = new Date(os.data_os).toLocaleDateString('pt-BR');
+        const logoUrl = window.location.origin + '/img/brs-logo.png';
+        
+        // Função para formatar CPF/CNPJ
+        function formatarCpfCnpj(valor) {
+          if (!valor) return '';
+          const numeros = valor.replace(/\D/g, '');
+          if (numeros.length === 11) {
+            // CPF: 000.000.000-00
+            return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+          } else if (numeros.length === 14) {
+            // CNPJ: 00.000.000/0000-00
+            return numeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+          }
+          return valor; // Retorna original se não for CPF nem CNPJ
+        }
+        
+        const cpfCnpjFormatado = formatarCpfCnpj(os.funcionario_cpf || os.cpf_cnpj || '');
+
+        const html = `<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Ordem de Serviço - ${os.numero_os}</title>
+  <style>
+    @page { 
+      margin: 20mm 15mm; 
+      size: A4;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Arial', sans-serif; color: #2c3e50; font-size: 9pt; line-height: 1.3; }
+    .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #3498db; padding-bottom: 15px; margin-bottom: 25px; }
+    .logo { max-height: 60px; max-width: 120px; }
+    .header-info { text-align: right; }
+    .titulo { font-size: 20pt; font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
+    .numero-os { font-size: 12pt; color: #3498db; font-weight: bold; }
+    .data-emissao { font-size: 8pt; color: #7f8c8d; margin-top: 3px; }
+    .secao { margin-bottom: 20px; }
+    .secao-titulo { background: #ecf0f1; padding: 6px 10px; font-weight: bold; font-size: 10pt; color: #2c3e50; border-left: 4px solid #3498db; margin-bottom: 8px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+    .campo { margin-bottom: 8px; }
+    .campo-label { font-weight: bold; color: #34495e; font-size: 8pt; margin-bottom: 2px; display: block; }
+    .campo-valor { color: #2c3e50; font-size: 9pt; min-height: 16px; padding: 2px 0; }
+    .descricao-box { padding: 8px 0; min-height: 40px; font-size: 9pt; line-height: 1.4; }
+    .observacoes-box { padding: 8px 0; min-height: 30px; margin-top: 8px; font-size: 9pt; line-height: 1.4; }
+    .footer { position: fixed; bottom: 15mm; left: 0; right: 0; text-align: center; font-size: 9pt; color: #95a5a6; border-top: 1px solid #ecf0f1; padding-top: 8px; }
+    .separador-assinatura { margin-top: 80px; border-top: 2px solid #2c3e50; padding-top: 40px; }
+    .assinatura { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; }
+    .assinatura-campo { text-align: center; border-top: 1px solid #2c3e50; padding-top: 8px; font-size: 9pt; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="${logoUrl}" alt="Logo" class="logo" />
+    <div class="header-info">
+      <div class="titulo">ORDEM DE SERVIÇO</div>
+      <div class="numero-os">Nº ${os.numero_os || ''}</div>
+      <div class="data-emissao">Emitida em: ${dataBR}</div>
+    </div>
+  </div>
+
+  <div class="secao">
+    <div class="secao-titulo">DADOS DO FUNCIONÁRIO</div>
+    <div class="grid">
+      <div class="campo">
+        <span class="campo-label">Nome:</span>
+        <div class="campo-valor">${os.funcionario || ''}</div>
+      </div>
+      <div class="campo">
+        <span class="campo-label">CPF/CNPJ:</span>
+        <div class="campo-valor">${cpfCnpjFormatado}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="secao">
+    <div class="secao-titulo">TERMO DE RESPONSABILIDADE</div>
+    <div style="padding: 10px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; font-size: 9pt; line-height: 1.4; text-align: justify;">
+      Conforme a cláusula sexta do contrato firmado entre empregador e empregado, fica designado o colaborador(a) acima identificado(a) para realizar as atividades no local informado abaixo.
+    </div>
+  </div>
+
+  <div class="secao">
+    <div class="secao-titulo">LOCALIZAÇÃO</div>
+    <div class="grid">
+      <div class="campo">
+        <span class="campo-label">Endereço:</span>
+        <div class="campo-valor">${os.endereco || ''}</div>
+      </div>
+      <div class="campo">
+        <span class="campo-label">Cidade/UF:</span>
+        <div class="campo-valor">${[os.cidade, os.estado].filter(Boolean).join(' / ')}</div>
+      </div>
+      <div class="campo">
+        <span class="campo-label">CEP:</span>
+        <div class="campo-valor">${os.cep || ''}</div>
+      </div>
+      <div class="campo">
+        <span class="campo-label">Telefone:</span>
+        <div class="campo-valor">${os.telefone || ''}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="secao">
+    <div class="secao-titulo">DESCRIÇÃO DO SERVIÇO</div>
+    <div class="descricao-box">${os.descricao || ''}</div>
+    ${os.observacoes ? `
+      <div class="secao-titulo" style="margin-top: 20px;">OBSERVAÇÕES</div>
+      <div class="observacoes-box">${os.observacoes}</div>
+    ` : ''}
+  </div>
+
+  <div class="separador-assinatura">
+    <div class="assinatura">
+      <div class="assinatura-campo"><strong>Assinatura do Gerente</strong></div>
+      <div class="assinatura-campo"><strong>${os.funcionario || '_________________________'}</strong></div>
+    </div>
+  </div>
+
+  <div class="footer">Sistema de Gestão - Ordem de Serviço gerada automaticamente</div>
+</body>
+</html>`;
+
+        const win = window.open('', '_blank', 'width=900,height=700');
+        if (!win) { alert('Permita pop-ups para imprimir.'); return; }
+        win.document.open();
+        win.document.write(html);
+        win.document.close();
+        win.focus();
+        setTimeout(function(){ try { win.print(); } finally { win.close(); } }, 150);
+      } catch(e) {
+        alert(e.message || 'Erro ao imprimir O.S.');
+      }
+    }
+
+    // Expor para escopo global
+    window.verOS = verOS;
+    window.imprimirOS = imprimirOS;
 })();
 </script>
 @stop

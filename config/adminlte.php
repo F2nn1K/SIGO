@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'Sistema BRS',
+    'title' => 'SIGO',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -48,7 +48,7 @@ return [
     */
 
     'google_fonts' => [
-        'allowed' => true,
+        'allowed' => false, // Desabilitado para melhor performance mobile
     ],
 
     /*
@@ -63,12 +63,12 @@ return [
     |
     */
 
-    'logo' => 'Sistema BRS',
+    'logo' => 'SIGO',
     'logo_img' => 'img/brs-logo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'Sistema BRS',
+    'logo_img_alt' => 'SIGO',
 
     /*
     |--------------------------------------------------------------------------
@@ -87,7 +87,7 @@ return [
         'enabled' => true,
         'img' => [
             'path' => 'img/brs-logo.png',
-            'alt' => 'Sistema BRS',
+            'alt' => 'SIGO',
             'class' => '',
             'width' => 60,
             'height' => null,
@@ -114,7 +114,7 @@ return [
         'mode' => 'fullscreen',
         'img' => [
             'path' => 'img/brs-logo.png',
-            'alt' => 'Sistema BRS',
+            'alt' => 'SIGO',
             'effect' => 'animation__shake',
             'width' => 60,
             'height' => 60,
@@ -264,7 +264,7 @@ return [
     'password_reset_url' => 'password/reset',
     'password_email_url' => 'password/email',
     'profile_url' => false,
-    'disable_darkmode_routes' => false,
+    'disable_darkmode_routes' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -305,7 +305,7 @@ return [
             'icon' => 'fas fa-tachometer-alt',
         ],
         [
-            'text'        => 'Documentos DP',
+            'text'        => 'DP',
             'icon'        => 'fas fa-file-alt',
             'submenu'     => [
                 [
@@ -320,6 +320,12 @@ return [
                     'icon' => 'fas fa-users',
                     'can'  => 'vis_func',
                 ],
+                [
+                    'text' => 'Ordem de Serviço',
+                    'url'  => 'documentos-dp/ordem-servico',
+                    'icon' => 'fas fa-file-signature',
+                    'can'  => 'ord_serv',
+                ],
             ],
         ],
         [
@@ -331,6 +337,12 @@ return [
                     'url'  => 'brs/controle-estoque',
                     'icon' => 'fas fa-boxes',
                     'can'  => 'controle-estoque',
+                ],
+                [
+                    'text' => 'Estoque Mínimo e Máximo',
+                    'url'  => 'brs/estoque-min-max',
+                    'icon' => 'fas fa-layer-group',
+                    'can'  => 'est_mm',
                 ],
             ],
         ],
@@ -351,6 +363,12 @@ return [
                     'can'  => 'autorizacao-pedidos',
                 ],
                 [
+                    'text' => 'Duplicar Pedido',
+                    'url'  => 'pedidos/duplicar',
+                    'icon' => 'fas fa-copy',
+                    'can'  => 'dup_ped',
+                ],
+                [
                     'text' => 'Minhas Interações',
                     'url'  => 'pedidos/minhas-interacoes',
                     'icon' => 'fas fa-comments',
@@ -362,11 +380,122 @@ return [
                     'icon' => 'fas fa-eye',
                     'can'  => 'Acompanhar Pedido',
                 ],
+                [
+                    'text' => 'Produtos',
+                    'url'  => 'pedidos/produtos',
+                    'icon' => 'fas fa-box',
+                    'can'  => 'ati_prod',
+                ],
+                [
+                    'text' => 'Bloquear Itens',
+                    'url'  => 'pedidos/bloquear-itens',
+                    'icon' => 'fas fa-ban',
+                    'can'  => 'bloq_ite',
+                ],
             ],
         ],
         [
-            'text'        => 'Relatórios',
-            'icon'        => 'fas fa-chart-bar',
+            'text'        => 'Frota',
+            'icon'        => 'fas fa-car-side',
+            'submenu'     => [
+                [
+                    'text' => 'Veículos',
+                    'url'  => 'frota/veiculos',
+                    'icon' => 'fas fa-car',
+                    'can'  => 'veiculos',
+                ],
+                [
+                    'text' => 'Abastecimentos',
+                    'url'  => 'frota/abastecimentos',
+                    'icon' => 'fas fa-gas-pump',
+                    'can'  => 'abastecimento',
+                ],
+                [
+                    'text' => 'Manutenções',
+                    'url'  => 'frota/manutencoes',
+                    'icon' => 'fas fa-tools',
+                    'can'  => 'manutencao',
+                ],
+                [
+                    'text' => 'Viagens',
+                    'url'  => 'frota/viagens',
+                    'icon' => 'fas fa-route',
+                    'can'  => 'viagens',
+                ],
+                [
+                    'text' => 'Ocorrências',
+                    'url'  => 'frota/ocorrencias',
+                    'icon' => 'fas fa-exclamation-triangle',
+                    'can'  => 'ocorrencia',
+                ],
+                [
+                    'text' => 'Gestor de Ocorrências',
+                    'url'  => 'frota/ocorrencias/gestor',
+                    'icon' => 'fas fa-tasks',
+                    'can'  => 'Gestão de Ocorrencia',
+                ],
+                [
+                    'text' => 'NF Abastecimento',
+                    'url'  => 'frota/nf-abastecimento',
+                    'icon' => 'fas fa-file-invoice',
+                    'can'  => 'Nf_abas',
+                ],
+                [
+                    'text' => 'Licenciamento',
+                    'url'  => 'frota/licenciamento',
+                    'icon' => 'fas fa-id-card-alt',
+                    'can'  => 'licens',
+                ],
+                [
+                    // Relatórios foram movidos para o menu principal "Relatórios"
+                ],
+            ],
+        ],
+        [
+            'text'        => 'Roçagem',
+            'icon'        => 'fas fa-leaf',
+            'submenu'     => [
+                [
+                    'text' => 'Manutenção Roçagem',
+                    'url'  => 'rocagem/manutencao',
+                    'icon' => 'fas fa-tools',
+                    'can'  => 'manu_roça',
+                ],
+                [
+                    'text' => 'Abastecimentos',
+                    'url'  => 'rocagem/abastecimentos',
+                    'icon' => 'fas fa-gas-pump',
+                    'can'  => 'abas_roca',
+                ],
+            ],
+        ],
+        [
+            'text'        => 'Relatório DP',
+            'icon'        => 'fas fa-file-alt',
+            'submenu'     => [
+                [
+                    'text' => 'Relatório DP',
+                    'url'  => 'relatorios/dp',
+                    'icon' => 'fas fa-file-alt',
+                    'can'  => 'rel_dp',
+                ],
+                [
+                    'text' => 'Funcionários Ativos/Inativos',
+                    'url'  => 'relatorios/funcionarios-ativos-inativos',
+                    'icon' => 'fas fa-users',
+                    'can'  => 'rel_ati-ina',
+                ],
+                [
+                    'text' => 'Relatório Absentismo',
+                    'url'  => 'relatorios/absenteismo',
+                    'icon' => 'fas fa-user-times',
+                    'can'  => 'rel_abse',
+                ],
+            ],
+        ],
+        [
+            'text'        => 'Relatório Estoque',
+            'icon'        => 'fas fa-boxes',
             'submenu'     => [
                 [
                     'text' => 'Relatório Estoque',
@@ -375,22 +504,88 @@ return [
                     'can'  => 'relatorio-estoque',
                 ],
                 [
-                    'text' => 'Relatório Centro Custo',
+                    'text' => 'Rel. Máximo e Mínimo',
+                    'url'  => 'relatorios/estoque-min-max',
+                    'icon' => 'fas fa-level-down-alt',
+                    'can'  => 'rel_maxmin',
+                ],
+                [
+                    'text' => 'Relatório C.C.(estoque)',
                     'url'  => 'relatorios/centro-custo',
                     'icon' => 'fas fa-building',
                     'can'  => 'relatorio-centro-custo',
                 ],
                 [
-                    'text' => 'Relatório por Funcionário',
+                    'text' => 'Relatório por Funcionário(estoque)',
                     'url'  => 'relatorios/funcionario',
                     'icon' => 'fas fa-user-tie',
                     'can'  => 'relatorio-funcionario',
                 ],
                 [
-                    'text' => 'Relatório Pedido de Compras',
+                    'text' => 'Relatório por Produto (Estoque)',
+                    'url'  => 'relatorios/produto-estoque',
+                    'icon' => 'fas fa-box-open',
+                    'can'  => 'rel_por_prod',
+                ],
+            ],
+        ],
+        [
+            'text'        => 'Relatório Pedido de Compras',
+            'icon'        => 'fas fa-file-invoice-dollar',
+            'submenu'     => [
+                [
+                    'text' => 'Relatório de Pedido C.C.',
+                    'url'  => 'relatorios/pedido-cc',
+                    'icon' => 'fas fa-stream',
+                    'can'  => 'rel_ped_cc',
+                ],
+                [
+                    'text' => 'Relatório Pedido(estoque)',
                     'url'  => 'relatorios/pedidos-compra',
                     'icon' => 'fas fa-file-invoice-dollar',
                     'can'  => 'rel_pc',
+                ],
+            ],
+        ],
+        [
+            'text'        => 'Relatório Frota',
+            'icon'        => 'fas fa-car-side',
+            'submenu'     => [
+                [
+                    'text' => 'Relatório de Abastecimento (Frota)',
+                    'url'  => 'frota/relatorios/abastecimento',
+                    'icon' => 'fas fa-gas-pump',
+                    'can'  => 'rel_abast',
+                ],
+                [
+                    'text' => 'Relatório Consumo (Frota)',
+                    'url'  => 'frota/relatorios/consumo',
+                    'icon' => 'fas fa-chart-line',
+                    'can'  => 'rel_consm',
+                ],
+                [
+                    'text' => 'Relatório Custo Total (Frota)',
+                    'url'  => 'frota/relatorios/custo',
+                    'icon' => 'fas fa-dollar-sign',
+                    'can'  => 'rel_cust',
+                ],
+                [
+                    'text' => 'Relatório Manutenções (Frota)',
+                    'url'  => 'frota/relatorios/manutencoes',
+                    'icon' => 'fas fa-tools',
+                    'can'  => 'Rel_manu',
+                ],
+                [
+                    'text' => 'Relatório KM Percorrido (Frota)',
+                    'url'  => 'frota/relatorios/km-percorrido',
+                    'icon' => 'fas fa-road',
+                    'can'  => 'rel_km',
+                ],
+                [
+                    'text' => 'Conferência de NF (Frota)',
+                    'url'  => 'frota/relatorios/conferencia-nf',
+                    'icon' => 'fas fa-file-search',
+                    'can'  => 'Rel_conf_nf',
                 ],
             ],
         ],
@@ -453,6 +648,36 @@ return [
     */
 
     'plugins' => [
+        'DarkMode' => [
+            'active' => false,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/css/dark-mode.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '/js/dark-mode.js',
+                ],
+            ],
+        ],
+        'SidebarUX' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/css/sidebar-ux.css',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '/css/fix-menu.css',
+                ],
+            ],
+        ],
         'Datatables' => [
             'active' => true,
             'files' => [

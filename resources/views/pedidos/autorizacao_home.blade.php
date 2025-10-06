@@ -8,6 +8,15 @@
 
 @section('content')
 <div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="filtro_mes" class="font-weight-bold text-dark mb-1">Filtrar por mês</label>
+            <input type="month" id="filtro_mes" class="form-control">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="button" id="btn-limpar-mes" class="btn btn-outline-secondary">Limpar</button>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-4 col-md-6">
             <div class="small-box bg-warning shadow-sm box-hover">
@@ -53,11 +62,36 @@
 
 @section('js')
 <script>
-$(function(){ atualizarContagens(); setInterval(atualizarContagens, 30000); });
+$(function(){
+  // Define mês atual como padrão e inicializa
+  const agora = new Date();
+  const valorMesAtual = agora.toISOString().slice(0,7);
+  $('#filtro_mes').val(valorMesAtual);
+  atualizarContagens();
+  setInterval(atualizarContagens, 30000);
+
+  $('#filtro_mes').on('change', atualizarContagens);
+  $('#btn-limpar-mes').on('click', function(){
+    $('#filtro_mes').val('');
+    atualizarContagens();
+  });
+});
+
+function periodoSelecionado(){
+  const mes = $('#filtro_mes').val();
+  if(!mes){ return {}; }
+  const [ano, m] = mes.split('-');
+  const first = `${ano}-${m}-01`;
+  const lastDay = new Date(parseInt(ano,10), parseInt(m,10), 0).getDate();
+  const last = `${ano}-${m}-${String(lastDay).padStart(2,'0')}`;
+  return { data_ini: first, data_fim: last };
+}
+
 function atualizarContagens(){
-  $.get('/api/pedidos-pendentes', function(r){ if(r.success) $('#count-pendentes').text(r.data.length); });
-  $.get('/api/pedidos-aprovados', function(r){ if(r.success) $('#count-aprovadas').text(r.data.length); });
-  $.get('/api/pedidos-rejeitados', function(r){ if(r.success) $('#count-rejeitadas').text(r.data.length); });
+  const params = periodoSelecionado();
+  $.get('/api/pedidos-pendentes-agrupados', params, function(r){ if(r.success) $('#count-pendentes').text(r.data.length); });
+  $.get('/api/pedidos-aprovados-agrupados', params, function(r){ if(r.success) $('#count-aprovadas').text(r.data.length); });
+  $.get('/api/pedidos-rejeitados-agrupados', params, function(r){ if(r.success) $('#count-rejeitadas').text(r.data.length); });
 }
 </script>
 @stop

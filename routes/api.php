@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Http\Controllers\PermissoesController;
 use App\Http\Controllers\UsuariosController;
-use App\Http\Controllers\Api\UserController;
+// use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\PedidoComprasController;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,7 +42,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
 
     // Perfis e Usuários (grupo protegido por permissões administrativas)
     // Troca para permissões específicas e independentes: "Gerenciar Usuários" e "Gerenciar Permissões"
-    Route::middleware(['verifica.permissao.api:Gerenciar Permissões'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/perfis', [PermissoesController::class, 'listarPerfis']);
         Route::get('/perfis/{id}', [PermissoesController::class, 'obterPerfil']);
         Route::post('/perfis', [PermissoesController::class, 'criarPerfil']);
@@ -164,9 +164,9 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             }
         });
         
-        // Usuários (API Controller)
-        Route::post('/users/criar', [UserController::class, 'store']);
-        Route::delete('/users/{id}', [UserController::class, 'destroy']);
+        // Usuários (API Controller) - COMENTADO: Controller não existe
+        // Route::post('/users/criar', [UserController::class, 'store']);
+        // Route::delete('/users/{id}', [UserController::class, 'destroy']);
     });
     
     // Rotas para Pedido de Compras
@@ -186,41 +186,46 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
     });
 });
 
-// Rota de teste para depuração de usuários
-Route::get('/usuarios/debug/{id}', function ($id) {
-    try {
-        // Buscar usuário diretamente do banco de dados
-        $usuario = DB::table('users')
-            ->select('id', 'name', 'login', 'empresa', 'active', 'profile_id')
-            ->where('id', $id)
-            ->first();
-        
-        if (!$usuario) {
+// Proteção das rotas de usuários com autenticação e limite de requisições
+Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
+    // Rota de teste para depuração de usuários
+    Route::get('/usuarios/debug/{id}', function ($id) {
+        try {
+            // Buscar usuário diretamente do banco de dados
+            $usuario = DB::table('users')
+                ->select('id', 'name', 'login', 'empresa', 'active', 'profile_id')
+                ->where('id', $id)
+                ->first();
+
+            if (!$usuario) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuário não encontrado no banco de dados'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'method' => 'debug',
+                'data' => $usuario
+            ]);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Usuário não encontrado no banco de dados'
-            ], 404);
+                'message' => 'Erro ao buscar usuário: ' . $e->getMessage()
+            ], 500);
         }
-        
-        return response()->json([
-            'success' => true,
-            'method' => 'debug',
-            'data' => $usuario
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Erro ao buscar usuário: ' . $e->getMessage()
-        ], 500);
-    }
+    });
+
+    // Rotas de acesso geral (agora autenticadas)
+    Route::get('/usuarios/{id}', [UsuariosController::class, 'obter']);
 });
 
 // Route::get('relatorio/recursos-humanos', 'App\Http\Controllers\Api\RelatorioController@recursosHumanos');
 
-// Rotas de acesso geral (apenas autenticadas)
-Route::get('/usuarios/{id}', [UsuariosController::class, 'obter']);
-Route::get('/users/{id}', [UserController::class, 'show']);
-Route::put('/users/{id}', [UserController::class, 'update']);
+// Rotas de acesso geral (apenas autenticadas) — movidas para o grupo acima
+// Route::get('/users/{id}', [UserController::class, 'show']);
+// Route::put('/users/{id}', [UserController::class, 'update']);
 
 // Rota específica para atualizar usuários pela nova API
 Route::put('/usuarios/{id}', function (Request $request, $id) {

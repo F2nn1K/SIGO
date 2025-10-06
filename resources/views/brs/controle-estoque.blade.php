@@ -241,6 +241,11 @@
                         </div>
                     </div>
 
+                    <div id="alertaFardamento" class="alert alert-warning" style="display: none;">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        <span id="alertaFardamentoTexto"></span>
+                    </div>
+
                     <!-- Produtos -->
                     <div class="form-group">
                         <label class="font-weight-bold">
@@ -262,6 +267,7 @@
                                     <div class="col-md-4">
                                         <label>Quantidade</label>
                                         <input type="number" class="form-control quantidade-input" name="produtos[0][quantidade]" min="1" required>
+                                        <small class="text-warning d-none aviso-minimo"></small>
                                     </div>
                                     <div class="col-md-2 d-flex align-items-end">
                                         <button type="button" class="btn btn-danger btn-sm remover-produto" style="display: none;">
@@ -1035,7 +1041,7 @@
             });
     }
     
-    // Autocomplete para funcionários
+    // Autocomplete para funcionários + verificação automática quando match único
     $('#funcionario').on('input', function() {
         const query = $(this).val().trim();
         const resultsContainer = $('#funcionarioResults');
@@ -1044,13 +1050,15 @@
             resultsContainer.hide().empty();
             $('#funcionario_id').val('');
             $('#infoFuncionario').hide();
+            $('#alertaFardamento').hide();
             return;
         }
         
         // Filtrar funcionários que começam com a consulta
-        const filteredFuncionarios = funcionarios.filter(funcionario => 
-            funcionario.nome.toLowerCase().startsWith(query.toLowerCase())
-        );
+        const filteredFuncionarios = funcionarios.filter(function(funcionario){
+            const nome = (funcionario.nome||'').toLowerCase();
+            return nome.startsWith(query.toLowerCase()) || nome.includes(' ' + query.toLowerCase());
+        });
         
         if (filteredFuncionarios.length > 0) {
             let resultsHtml = '';
@@ -1079,6 +1087,46 @@
             }
             
             resultsContainer.html(resultsHtml).show();
+            // Se houver apenas 1 resultado, auto-selecionar e disparar verificação
+            if (filteredFuncionarios.length === 1) {
+                const unico = filteredFuncionarios[0];
+                $('#funcionario').val(unico.nome);
+                $('#funcionario_id').val(unico.id);
+                $('#funcionarioNome').text(unico.nome);
+                $('#funcionarioFuncao').text(unico.funcao);
+                $('#funcionarioCpf').text(unico.cpf);
+                $('#infoFuncionario').show();
+                resultsContainer.hide();
+
+                // Limpar alerta
+                $('#alertaFardamento').hide();
+                $('#alertaFardamentoTexto').text('');
+
+                const csrfToken = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    url: '/api/baixas/verificar-funcionario',
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json' },
+                    data: JSON.stringify({ funcionario_id: unico.id })
+                }).done(function(resp){
+                    if (resp && resp.success && Array.isArray(resp.avisos) && resp.avisos.length > 0) {
+                        const linhas = resp.avisos.map(function(a){
+                            const qtd = a.quantidade ? ` (qtd: ${a.quantidade})` : '';
+                            return `- ${a.produto}${qtd} em ${a.data}`;
+                        });
+                        $('#alertaFardamentoTexto').text(linhas.join(' '));
+                        $('#alertaFardamento').show();
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'EPI já retirado neste mês',
+                                html: linhas.map(l=>`<div style=\"text-align:left\">${l}</div>`).join(''),
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    }
+                }).fail(function(){});
+            }
         } else {
             resultsContainer.html('<div class="no-results">Nenhum funcionário encontrado</div>').show();
         }
@@ -1101,6 +1149,41 @@
         $('#funcionarioFuncao').text(funcao);
         $('#funcionarioCpf').text(cpf);
         $('#infoFuncionario').show();
+
+        // Limpar alerta
+        $('#alertaFardamento').hide();
+        $('#alertaFardamentoTexto').text('');
+
+        // Verificar em tempo real fardamentos recentes do funcionário
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        $.ajax({
+            url: '/api/baixas/verificar-funcionario',
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({ funcionario_id: funcionarioId })
+        }).done(function(resp){
+            if (resp && resp.success && Array.isArray(resp.avisos) && resp.avisos.length > 0) {
+                const linhas = resp.avisos.map(function(a){
+                    const qtd = a.quantidade ? ` (qtd: ${a.quantidade})` : '';
+                    return `- ${a.produto}${qtd} em ${a.data}`;
+                });
+                $('#alertaFardamentoTexto').text(linhas.join(' '));
+                $('#alertaFardamento').show();
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'EPI já retirado neste mês',
+                        html: linhas.map(l=>`<div style="text-align:left">${l}</div>`).join(''),
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+        }).fail(function(){
+            // silencioso
+        });
     });
     
     // Ocultar resultados quando clicar fora
@@ -1196,6 +1279,7 @@
             resultsContainer.hide();
             $(this).siblings('.produto-id').val('');
             $(this).closest('.produto-item').find('.estoque-info').text('');
+            $(this).closest('.produto-item').find('.aviso-minimo').addClass('d-none').text('');
             return;
         }
         
@@ -1217,6 +1301,7 @@
                     <div class="produto-result-item" data-id="${produto.id}" 
                          data-nome="${escapeHtml(produto.nome)}" 
                          data-estoque="${produto.quantidade}"
+                         data-minimo="${produto.minimo || 0}"
                          data-descricao="${escapeHtml(produto.descricao || '')}">
                         <div class="produto-result-name">${escapeHtml(produto.nome)}</div>
                         <div class="produto-result-info">Estoque: ${produto.quantidade} unidades${produto.descricao ? ' - ' + escapeHtml(produto.descricao) : ''}</div>
@@ -1253,6 +1338,7 @@
                             <div class="produto-result-item" data-id="${produto.id}" 
                                  data-nome="${escapeHtml(produto.nome)}" 
                                  data-estoque="${produto.quantidade}"
+                                 data-minimo="${produto.minimo || 0}"
                                  data-descricao="${escapeHtml(produto.descricao || '')}">
                                 <div class="produto-result-name">${escapeHtml(produto.nome)}</div>
                                 <div class="produto-result-info">Estoque: ${produto.quantidade} unidades${produto.descricao ? ' - ' + escapeHtml(produto.descricao) : ''}</div>
@@ -1272,6 +1358,7 @@
         const produtoId = $(this).data('id');
         const produtoNome = $(this).data('nome');
         const produtoEstoque = $(this).data('estoque');
+        const produtoMinimo = parseInt($(this).data('minimo') || 0, 10);
         const produtoDescricao = $(this).data('descricao');
         
         const container = $(this).closest('.produto-search-container');
@@ -1300,6 +1387,68 @@
         } else {
             quantidadeInput.attr('disabled', false).removeClass('text-danger');
         }
+
+        // Exibir aviso se houver mínimo configurado e estoque atual já estiver abaixo do mínimo
+        const minimoCfg = isNaN(produtoMinimo) ? 0 : produtoMinimo;
+        if (minimoCfg > 0 && produtoEstoque < minimoCfg) {
+            produtoItem.find('.aviso-minimo').removeClass('d-none').text(`Atenção: estoque atual (${produtoEstoque}) abaixo do mínimo definido (${minimoCfg}).`);
+        } else {
+            produtoItem.find('.aviso-minimo').addClass('d-none').text('');
+        }
+
+        // Guardar estoque atual e mínimo no container para cálculo em tempo real ao digitar quantidade
+        produtoItem.attr('data-estoque', produtoEstoque);
+        produtoItem.attr('data-minimo', minimoCfg);
+    });
+
+    // Aviso em tempo real: ao digitar quantidade, calcular saldo previsto e comparar com mínimo
+    $(document).on('input change', '.quantidade-input', function(){
+        const produtoItem = $(this).closest('.produto-item');
+        const qtd = parseInt($(this).val() || '0', 10);
+        const estoqueAtual = parseInt(produtoItem.attr('data-estoque') || '0', 10);
+        const minimoCfg = parseInt(produtoItem.attr('data-minimo') || '0', 10);
+        const jaAvisouMin = produtoItem.data('avisou-min') === true;
+        const jaAvisouEst = produtoItem.data('avisou-est') === true;
+
+        // Oculta se não houver seleção de produto
+        if (!estoqueAtual && estoqueAtual !== 0) {
+            produtoItem.find('.aviso-minimo').addClass('d-none').text('');
+            return;
+        }
+
+        // Mensagem se exceder estoque atual
+        if (!isNaN(qtd) && qtd > estoqueAtual) {
+            produtoItem.find('.aviso-minimo').removeClass('d-none').text(`Quantidade excede o estoque disponível (${estoqueAtual}).`);
+            if (!jaAvisouEst) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Quantidade inválida',
+                    text: `A quantidade digitada excede o estoque disponível (${estoqueAtual}).`,
+                    confirmButtonColor: '#007bff'
+                });
+                produtoItem.data('avisou-est', true);
+            }
+            return;
+        } else {
+            produtoItem.data('avisou-est', false);
+        }
+
+        const saldoPrevisto = estoqueAtual - (isNaN(qtd) ? 0 : qtd);
+        if (minimoCfg > 0 && saldoPrevisto < minimoCfg) {
+            produtoItem.find('.aviso-minimo').removeClass('d-none').text(`Atenção: com esta saída o saldo ficará ${saldoPrevisto}, abaixo do mínimo (${minimoCfg}).`);
+            if (!jaAvisouMin) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Estoque abaixo do mínimo',
+                    html: `Com esta saída o saldo ficará <b>${saldoPrevisto}</b>, abaixo do mínimo (<b>${minimoCfg}</b>).`,
+                    confirmButtonColor: '#ffc107'
+                });
+                produtoItem.data('avisou-min', true);
+            }
+        } else {
+            produtoItem.find('.aviso-minimo').addClass('d-none').text('');
+            produtoItem.data('avisou-min', false);
+        }
     });
     
     // Esconder resultados ao clicar fora
@@ -1325,6 +1474,7 @@
                     <div class="col-md-4">
                         <label>Quantidade</label>
                         <input type="number" class="form-control quantidade-input" name="produtos[${contadorProdutos}][quantidade]" min="1" required>
+                        <small class="text-warning d-none aviso-minimo"></small>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
                         <button type="button" class="btn btn-danger btn-sm remover-produto">
@@ -1382,11 +1532,19 @@
         $('.produto-item').each(function() {
             const produtoId = $(this).find('.produto-id').val();
             const quantidade = $(this).find('.quantidade-input').val();
+            const estoqueInfoText = $(this).find('.estoque-info').text();
+            const matchEstoque = estoqueInfoText.match(/Estoque disponível:\s*(\d+)/);
+            const estoqueAtual = matchEstoque ? parseInt(matchEstoque[1], 10) : null;
+            const minimoText = $(this).find('.aviso-minimo').text();
+            const matchMin = minimoText.match(/mínimo definido \((\d+)\)/i);
+            const minimoCfg = matchMin ? parseInt(matchMin[1], 10) : 0;
             
             if (produtoId && quantidade) {
                 baixas.push({
                     produto_id: produtoId,
-                    quantidade: parseInt(quantidade)
+                    quantidade: parseInt(quantidade),
+                    estoque_atual: estoqueAtual,
+                    minimo_definido: minimoCfg
                 });
             }
         });
@@ -1396,41 +1554,88 @@
             return;
         }
         
-        // Mostrar loading
+        // Mostrar loading inicial (verificação)
         const submitBtn = $('#formRegistrarSaida button[type="submit"]');
         const originalText = submitBtn.html();
-        submitBtn.html('<i class="fas fa-spinner fa-spin mr-1"></i> Registrando...').prop('disabled', true);
-        
-        // Enviar dados
-        $.ajax({
-            url: '/api/baixas',
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify({
-                funcionario_id: funcionarioId,
-                centro_custo_id: centroCustoId,
-                baixas: baixas,
-                observacoes: observacoes
-            }),
-            success: function(response) {
-                showModernNotification(response.message, 'success');
-                $('#modalRegistrarSaida').modal('hide');
-                
-                // Recarregar a página para atualizar os dados
-                setTimeout(() => {
-                    location.reload();
-                }, 1500);
-            },
-            error: function(xhr) {
-                const response = xhr.responseJSON;
-                showModernNotification(response?.message || 'Erro ao registrar saída', 'error');
-            },
-            complete: function() {
-                submitBtn.html(originalText).prop('disabled', false);
+        submitBtn.html('<i class="fas fa-spinner fa-spin mr-1"></i> Verificando...').prop('disabled', true);
+
+        // Verificar prazos de fardamento e aviso de mínimo antes de enviar
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        const verificacoes = baixas.map(function(item){
+            return $.ajax({
+                url: '/api/baixas/verificar',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify({
+                    funcionario_id: funcionarioId,
+                    produto_id: item.produto_id
+                })
+            }).then(function(resp){
+                // Adicionar alerta local de estoque mínimo
+                if (item.minimo_definido && item.estoque_atual !== null) {
+                    if (item.estoque_atual - item.quantidade < item.minimo_definido) {
+                        resp = resp || { success: true };
+                        resp.alertar = true;
+                        resp.mensagem = (resp.mensagem ? resp.mensagem + '\n' : '') +
+                            `Atenção: após a saída, o estoque do produto (${item.estoque_atual - item.quantidade}) ficará abaixo do mínimo (${item.minimo_definido}).`;
+                    }
+                }
+                return resp;
+            }).catch(function(){
+                return { success: false };
+            });
+        });
+
+        Promise.all(verificacoes).then(function(resultados){
+            const mensagensAlerta = [];
+            (resultados || []).forEach(function(r){
+                if (r && r.success && r.alertar && r.mensagem) {
+                    mensagensAlerta.push(r.mensagem);
+                }
+            });
+
+            if (mensagensAlerta.length > 0) {
+                const confirmar = window.confirm(mensagensAlerta.join('\n\n'));
+                if (!confirmar) {
+                    submitBtn.html(originalText).prop('disabled', false);
+                    return;
+                }
             }
+
+            // Prosseguir com o envio após verificação
+            submitBtn.html('<i class="fas fa-spinner fa-spin mr-1"></i> Registrando...').prop('disabled', true);
+            $.ajax({
+                url: '/api/baixas',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify({
+                    funcionario_id: funcionarioId,
+                    centro_custo_id: centroCustoId,
+                    baixas: baixas,
+                    observacoes: observacoes
+                }),
+                success: function(response) {
+                    showModernNotification(response.message, 'success');
+                    $('#modalRegistrarSaida').modal('hide');
+                    setTimeout(function(){ location.reload(); }, 1500);
+                },
+                error: function(xhr) {
+                    const response = xhr.responseJSON;
+                    showModernNotification((response && response.message) || 'Erro ao registrar saída', 'error');
+                },
+                complete: function() {
+                    submitBtn.html(originalText).prop('disabled', false);
+                }
+            });
+        }).catch(function(){
+            showModernNotification('Erro ao verificar prazo de fardamento', 'error');
+            submitBtn.html(originalText).prop('disabled', false);
         });
     });
     
