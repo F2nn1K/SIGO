@@ -622,7 +622,7 @@ Para reportar bugs ou solicitar funcionalidades:
 
 - **E-mail**: leo.vdf3@gmail.com
 - **Repositório**: https://github.com/F2nn1K/SIGO
-- **Desenvolvedor**: Leonardo Vitor de Freitas
+- **Desenvolvedor**: Leonardo Vicente Dantas Ferreira
 
 ---
 
@@ -660,7 +660,7 @@ Para reportar bugs ou solicitar funcionalidades:
 ---
 
 <p align="center">
-  Desenvolvido com ❤️ por <a href="mailto:leo.vdf3@gmail.com">Leonardo Vitor de Freitas</a>
+  Desenvolvido com ❤️ por <a href="mailto:leo.vdf3@gmail.com">Leonardo Vicente Dantas Ferreira</a>
 </p>
 
 <p align="center">

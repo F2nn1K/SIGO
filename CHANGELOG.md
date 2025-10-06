@@ -182,5 +182,5 @@ Formato: `MAJOR.MINOR.PATCH`
 
 ---
 
-**Mantido por**: Leonardo Vitor de Freitas (leo.vdf3@gmail.com)
+**Mantido por**: Leonardo Vicente Dantas Ferreira (leo.vdf3@gmail.com)
 
