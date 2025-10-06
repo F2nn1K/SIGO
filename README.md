@@ -660,7 +660,7 @@ Para reportar bugs ou solicitar funcionalidades:
 ---
 
 <p align="center">
-  Desenvolvido com ❤️ por <a href="mailto:leo.vdf3@gmail.com">Leonardo Vicente Dantas Ferreira</a>
+  Desenvolvido por <a href="mailto:leo.vdf3@gmail.com">Leonardo Vicente Dantas Ferreira</a>
 </p>
 
 <p align="center">
